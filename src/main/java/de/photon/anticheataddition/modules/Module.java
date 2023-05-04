@@ -13,7 +13,7 @@ import java.util.Set;
 
 @EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY, onlyExplicitlyIncluded = true)
 @ToString
-public abstract class Module implements ConfigLoading
+public abstract class Module implements ConfigLoading, Submodules
 {
     @Getter protected final String configString;
     @Getter @EqualsAndHashCode.Include private final String moduleId;
@@ -45,29 +45,23 @@ public abstract class Module implements ConfigLoading
         this(configString, Set.of(children));
     }
 
-    public void setEnabled(boolean enabled)
+    public void activate()
     {
-        if (this.enabled != enabled) {
-            if (enabled) enableModule();
-            else disableModule();
-        }
-    }
+        if (this.enabled) return;
 
-    public final void enableModule()
-    {
-        if (!this.enabled && this.getModuleLoader().load()) {
+        if (this.getModuleLoader().load()) {
+            this.enableChildren();
             this.enabled = true;
             this.enable();
         }
     }
 
-    public final void disableModule()
+    public void deactivate()
     {
-        if (this.enabled) {
-            this.enabled = false;
-            this.getModuleLoader().unload();
-            this.disable();
-        }
+        this.getModuleLoader().unload();
+        this.disableChildren();
+        this.enabled = false;
+        this.disable();
     }
 
     protected ModuleLoader createModuleLoader()

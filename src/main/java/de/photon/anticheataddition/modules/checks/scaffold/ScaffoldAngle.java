@@ -8,11 +8,12 @@ import org.bukkit.util.Vector;
 
 final class ScaffoldAngle extends Module
 {
+    public static final ScaffoldAngle INSTANCE = new ScaffoldAngle();
     private static final double MAX_ANGLE = Math.toRadians(90);
 
-    ScaffoldAngle(String scaffoldConfigString)
+    private ScaffoldAngle()
     {
-        super(scaffoldConfigString + ".parts.Angle");
+        super("Scaffold.parts.Angle");
     }
 
     public int getVl(User user, BlockPlaceEvent event)

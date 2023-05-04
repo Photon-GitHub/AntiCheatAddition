@@ -10,9 +10,11 @@ import de.photon.anticheataddition.util.messaging.Log;
  */
 final class ScaffoldSprinting extends Module
 {
-    ScaffoldSprinting(String scaffoldConfigString)
+    public static final ScaffoldSprinting INSTANCE = new ScaffoldSprinting();
+
+    private ScaffoldSprinting()
     {
-        super(scaffoldConfigString + ".parts.Sprinting");
+        super("Scaffold.parts.Sprinting");
     }
 
     public int getVl(User user)

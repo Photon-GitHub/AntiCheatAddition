@@ -68,52 +68,26 @@ public final class ModuleManager
                 // Checks
                 AutoEat.INSTANCE,
 
-                AutoFishConsistency.INSTANCE,
-                AutoFishInhumanReaction.INSTANCE,
                 ViolationModule.parentOf("AutoFish", AutoFishConsistency.INSTANCE, AutoFishInhumanReaction.INSTANCE),
 
                 AutoPotion.INSTANCE,
 
-                DupingDoubleDropped.INSTANCE,
-                DupingSecretCache.INSTANCE,
                 ViolationModule.parentOf("Duping", DupingDoubleDropped.INSTANCE, DupingSecretCache.INSTANCE),
 
                 Fastswitch.INSTANCE,
 
                 ImpossibleChat.INSTANCE,
 
-                InventoryAverageHeuristic.INSTANCE,
-                InventoryHit.INSTANCE,
-                InventoryMove.INSTANCE,
-                InventoryMultiInteraction.INSTANCE,
-                InventoryPerfectExit.INSTANCE,
-                InventoryRotation.INSTANCE,
-                InventorySprinting.INSTANCE,
                 ViolationModule.parentOf("Inventory", InventoryAverageHeuristic.INSTANCE, InventoryHit.INSTANCE, InventoryMove.INSTANCE, InventoryMultiInteraction.INSTANCE, InventoryPerfectExit.INSTANCE, InventoryRotation.INSTANCE, InventorySprinting.INSTANCE),
 
-                PacketAnalysisAnimation.INSTANCE,
-                PacketAnalysisEqualRotation.INSTANCE,
-                PacketAnalysisIllegalPitch.INSTANCE,
                 ViolationModule.parentOf("PacketAnalysis", PacketAnalysisAnimation.INSTANCE, PacketAnalysisEqualRotation.INSTANCE, PacketAnalysisIllegalPitch.INSTANCE),
 
                 Pingspoof.INSTANCE,
 
-                Scaffold.INSTANCE.getScaffoldAngle(),
-                Scaffold.INSTANCE.getScaffoldJumping(),
-                Scaffold.INSTANCE.getScaffoldPosition(),
-                Scaffold.INSTANCE.getScaffoldRotationDerivative(),
-                Scaffold.INSTANCE.getScaffoldRotationFastChange(),
-                Scaffold.INSTANCE.getScaffoldRotationSecondDerivative(),
-                Scaffold.INSTANCE.getScaffoldSafewalkPosition(),
-                Scaffold.INSTANCE.getScaffoldSafewalkTiming(),
-                Scaffold.INSTANCE.getScaffoldSprinting(),
                 Scaffold.INSTANCE,
 
-                ShieldHit.INSTANCE,
                 ViolationModule.parentOf("Shield", ShieldHit.INSTANCE),
 
-                SkinBlinkerUnusedBit.INSTANCE,
-                SkinBlinkerSprinting.INSTANCE,
                 ViolationModule.parentOf("Skinblinker", SkinBlinkerUnusedBit.INSTANCE, SkinBlinkerSprinting.INSTANCE),
 
                 Teaming.INSTANCE,
@@ -144,7 +118,7 @@ public final class ModuleManager
                                                       .toList());
 
         // Use moduleList to make sure the initial enabling log is sorted.
-        for (Module module : moduleList) module.enableModule();
+        for (Module module : moduleList) module.activate();
     }
 
     public static void addExternalModule(final Module externalModule)

@@ -48,6 +48,19 @@ final class ModernInventoryViewUtil implements InventoryViewUtil
             {
                 return title;
             }
+
+            @NotNull
+            @Override
+            public String getOriginalTitle()
+            {
+                return title;
+            }
+
+            @Override
+            public void setTitle(@NotNull String s)
+            {
+                // Ignore.
+            }
         };
     }
 }

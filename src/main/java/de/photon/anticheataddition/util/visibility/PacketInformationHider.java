@@ -29,16 +29,15 @@ public abstract class PacketInformationHider extends PlayerInformationHider impl
                 if (event.isPlayerTemporary() || event.isCancelled()) return;
                 final int entityId = event.getPacket().getIntegers().read(0);
 
-                // Get all hidden entities
-                final boolean hidden;
+                final boolean cancelPacket;
                 synchronized (hiddenFromPlayerMap) {
                     // The test for the entityId must happen here in the synchronized block as get only returns a view that might change async.
-                    hidden = hiddenFromPlayerMap.get(event.getPlayer()).stream()
+                    cancelPacket = hiddenFromPlayerMap.get(event.getPlayer()).stream()
                                                 .mapToInt(Player::getEntityId)
                                                 .anyMatch(i -> i == entityId);
                 }
 
-                if (hidden) event.setCancelled(true);
+                if (cancelPacket) event.setCancelled(true);
             }
         });
     }

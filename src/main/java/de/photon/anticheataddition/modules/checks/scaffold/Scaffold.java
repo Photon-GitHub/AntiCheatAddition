@@ -25,27 +25,20 @@ public final class Scaffold extends ViolationModule implements Listener
 {
     public static final Scaffold INSTANCE = new Scaffold();
 
-    private final ScaffoldAngle scaffoldAngle = new ScaffoldAngle(this.getConfigString());
-
-    private final ScaffoldJumping scaffoldJumping = new ScaffoldJumping(this.getConfigString());
-
-    private final ScaffoldPosition scaffoldPosition = new ScaffoldPosition(this.getConfigString());
-
-    private final ScaffoldRotationFastChange scaffoldRotationFastChange = new ScaffoldRotationFastChange(this.getConfigString());
-    private final ScaffoldRotationDerivative scaffoldRotationDerivative = new ScaffoldRotationDerivative(this.getConfigString());
-    private final ScaffoldRotationSecondDerivative scaffoldRotationSecondDerivative = new ScaffoldRotationSecondDerivative(this.getConfigString());
-
-    private final ScaffoldSafewalkPosition scaffoldSafewalkPosition = new ScaffoldSafewalkPosition(this.getConfigString());
-    private final ScaffoldSafewalkTiming scaffoldSafewalkTiming = new ScaffoldSafewalkTiming(this.getConfigString());
-
-    private final ScaffoldSprinting scaffoldSprinting = new ScaffoldSprinting(this.getConfigString());
-
     private final int cancelVl = loadInt(".cancel_vl", 110);
     private final int timeout = loadInt(".timeout", 1000);
 
     private Scaffold()
     {
-        super("Scaffold");
+        super("Scaffold", ScaffoldAngle.INSTANCE,
+              ScaffoldJumping.INSTANCE,
+              ScaffoldPosition.INSTANCE,
+              ScaffoldRotationDerivative.INSTANCE,
+              ScaffoldRotationFastChange.INSTANCE,
+              ScaffoldRotationSecondDerivative.INSTANCE,
+              ScaffoldSafewalkPosition.INSTANCE,
+              ScaffoldSafewalkTiming.INSTANCE,
+              ScaffoldSprinting.INSTANCE);
     }
 
     // ------------------------------------------- BlockPlace Handling ---------------------------------------------- //
@@ -104,25 +97,25 @@ public final class Scaffold extends ViolationModule implements Listener
 
             // --------------------------------------------- Rotations ---------------------------------------------- //
 
-            int vl = this.scaffoldAngle.getVl(user, event);
-            vl += this.scaffoldPosition.getVl(event);
+            int vl = ScaffoldAngle.INSTANCE.getVl(user, event);
+            vl += ScaffoldPosition.INSTANCE.getVl(event);
 
             // All these checks may have false positives in new situations.
             if (!newScaffoldLocation) {
                 // Do not check jumping for new locations as of wall-building / jumping.
-                vl += this.scaffoldJumping.getVl(user, event);
+                vl += ScaffoldJumping.INSTANCE.getVl(user, event);
 
                 final var angleInformation = user.getLookPacketData().getAngleInformation();
 
-                final var rotationVl = this.scaffoldRotationFastChange.getVl(user) +
-                                       this.scaffoldRotationDerivative.getVl(user, angleInformation[0]) +
-                                       this.scaffoldRotationSecondDerivative.getVl(user, angleInformation[1]);
+                final var rotationVl = ScaffoldRotationFastChange.INSTANCE.getVl(user) +
+                                       ScaffoldRotationDerivative.INSTANCE.getVl(user, angleInformation[0]) +
+                                       ScaffoldRotationSecondDerivative.INSTANCE.getVl(user, angleInformation[1]);
 
                 if (user.getData().counter.scaffoldRotationFails.conditionallyIncDec(rotationVl > 0)) vl += rotationVl;
 
-                vl += this.scaffoldSafewalkPosition.getVl(user, event);
-                vl += this.scaffoldSafewalkTiming.getVl(user);
-                vl += this.scaffoldSprinting.getVl(user);
+                vl += ScaffoldSafewalkPosition.INSTANCE.getVl(user, event);
+                vl += ScaffoldSafewalkTiming.INSTANCE.getVl(user);
+                vl += ScaffoldSprinting.INSTANCE.getVl(user);
             }
 
             if (vl > 0) {

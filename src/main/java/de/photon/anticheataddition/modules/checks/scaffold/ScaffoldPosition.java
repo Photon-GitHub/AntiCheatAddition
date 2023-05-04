@@ -10,9 +10,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
  */
 final class ScaffoldPosition extends Module
 {
-    ScaffoldPosition(String scaffoldConfigString)
+    public static final ScaffoldPosition INSTANCE = new ScaffoldPosition();
+
+    private ScaffoldPosition()
     {
-        super(scaffoldConfigString + ".parts.Position");
+        super("Scaffold.parts.Position");
     }
 
     public int getVl(BlockPlaceEvent event)

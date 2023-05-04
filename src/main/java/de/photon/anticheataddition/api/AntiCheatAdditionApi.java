@@ -86,7 +86,8 @@ public final class AntiCheatAdditionApi
         Preconditions.checkNotNull(moduleId, "Tried to set state of null moduleId.");
         final var module = ModuleManager.getModuleMap().getModule(moduleId);
         Preconditions.checkNotNull(module, "Tried to set state of unknown module.");
-        module.setEnabled(enabled);
+        if (enabled) module.activate();
+        else module.deactivate();
     }
 
     /**

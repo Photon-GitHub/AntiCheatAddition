@@ -10,9 +10,11 @@ import de.photon.anticheataddition.util.messaging.Log;
  */
 final class ScaffoldSafewalkTiming extends Module
 {
-    ScaffoldSafewalkTiming(String scaffoldConfigString)
+    public static final ScaffoldSafewalkTiming INSTANCE = new ScaffoldSafewalkTiming();
+
+    private ScaffoldSafewalkTiming()
     {
-        super(scaffoldConfigString + ".parts.Safewalk.Timing");
+        super("Scaffold.parts.Safewalk.Timing");
     }
 
     public int getVl(User user)

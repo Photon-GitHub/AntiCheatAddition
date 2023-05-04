@@ -11,9 +11,11 @@ import de.photon.anticheataddition.util.messaging.Log;
  */
 final class ScaffoldRotationFastChange extends Module
 {
-    ScaffoldRotationFastChange(String scaffoldConfigString)
+    public static final ScaffoldRotationFastChange INSTANCE = new ScaffoldRotationFastChange();
+
+    private ScaffoldRotationFastChange()
     {
-        super(scaffoldConfigString + ".parts.Rotation.FastChange");
+        super("Scaffold.parts.Rotation.FastChange");
     }
 
     public int getVl(User user)

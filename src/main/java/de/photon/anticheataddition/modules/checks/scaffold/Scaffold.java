@@ -108,8 +108,8 @@ public final class Scaffold extends ViolationModule implements Listener
                 final var angleInformation = user.getLookPacketData().getAngleInformation();
 
                 final var rotationVl = ScaffoldRotationFastChange.INSTANCE.getVl(user) +
-                                       ScaffoldRotationDerivative.INSTANCE.getVl(user, angleInformation[0]) +
-                                       ScaffoldRotationSecondDerivative.INSTANCE.getVl(user, angleInformation[1]);
+                                       ScaffoldRotationDerivative.INSTANCE.getVl(user, angleInformation) +
+                                       ScaffoldRotationSecondDerivative.INSTANCE.getVl(user, angleInformation);
 
                 if (user.getData().counter.scaffoldRotationFails.conditionallyIncDec(rotationVl > 0)) vl += rotationVl;
 

@@ -2,10 +2,17 @@ package de.photon.anticheataddition.util.violationlevels;
 
 import de.photon.anticheataddition.Dummy;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class ViolationLevelManagementTest
 {
+    @BeforeAll
+    static void setup()
+    {
+        Dummy.mockAntiCheatAddition();
+    }
+
     @Test
     void builderTest()
     {

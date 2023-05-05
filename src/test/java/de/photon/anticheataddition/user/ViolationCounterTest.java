@@ -18,6 +18,20 @@ class ViolationCounterTest
     }
 
     @Test
+    void testIncrementDecrement() {
+        final var counter = new ViolationCounter(3);
+        assertEquals(0, counter.getCounter());
+        counter.increment();
+        assertEquals(1, counter.getCounter());
+        counter.increment();
+        assertEquals(2, counter.getCounter());
+        counter.decrement();
+        assertEquals(1, counter.getCounter());
+        counter.decrement();
+        assertEquals(0, counter.getCounter());
+    }
+
+    @Test
     void testCompareThreshold()
     {
         final var counter = new ViolationCounter(5);

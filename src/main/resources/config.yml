@@ -156,10 +156,6 @@ AutoFish:
     consistency:
       # Do you want to enable the consistency part?
       enabled: true
-      # How many fishing attempts in a row should be checked by the consistency check?
-      fishing_attempt_count: 5
-      # The minimum variation a player has to have in their reaction times to count as legit (in milliseconds)
-      min_variation: 30
       # How many unsuccessful attempts at fishing should a player have before they are exempt from the consistency part?
       # This prevents AFK fishing farm false positives.
       # Do not substantially reduce this value, or bots with a custom failure rate won't be detected.
@@ -182,16 +178,6 @@ AutoPotion:
   cancel_vl: 2
   # A detection exceeding cancel_vl stops all potion throws for this time (in milliseconds).
   timeout: 1000
-  # How fast the player must look in the initial direction once again to be regarded as having bot-like reaction speed
-  # (in milliseconds).
-  look_restored_time: 200
-  # When looking back, beyond what angle difference should someone be considered as legit?
-  angle_offset: 5
-  # How many degrees does a player have to look down to begin the check?
-  initial_pitch_difference: 40
-  # The minimum angle, measured in degrees, that is counted as looking down.
-  # Negative values break the check. I recommended testing value changes as they have a major impact on the check.
-  look_down_angle: 80
   # Map of violation levels to commands.
   thresholds:
     50: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoPotion"
@@ -240,8 +226,6 @@ Fastswitch:
   # If a player's ping surpasses this value, they will be exempted from the check.
   # Set this to -1 to disable
   max_ping: 400
-  # The minimum time enforced between switches that are not considered scrolling (in milliseconds)
-  switch_milliseconds: 50
   # Map of violation levels to commands.
   thresholds:
     30: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Fastswitch"
@@ -571,9 +555,6 @@ Tower:
   # The violation level at which AntiCheatAddition starts to cancel the block placements.
   # Set this to 0 to never cancel block placement.
   cancel_vl: 6
-  # If you're encountering false positives, decrease this SLIGHTLY (for example 0.99).
-  # The Tower check is effective due to its leniency-curve. Touch this only if you have false positives.
-  tower_leniency: 1
   # A detection exceeding cancel_vl stops all block placements for this time (in milliseconds).
   timeout: 6000
   # Map of violation levels to commands.

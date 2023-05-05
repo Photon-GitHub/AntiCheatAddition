@@ -21,10 +21,11 @@ public final class AutoPotion extends ViolationModule implements Listener
 
     private final int cancelVl = loadInt(".cancel_vl", 2);
     private final int timeout = loadInt(".timeout", 1000);
-    private final int lookRestoredTime = loadInt(".look_restored_time", 200);
-    private final double angleOffset = loadDouble(".angle_offset", 5);
-    private final double initialPitchDifference = loadDouble(".initial_pitch_difference", 40);
-    private final double lookDownAngle = loadDouble(".look_down_angle", 80);
+    private static final int TIME_TO_LOOK_UP_AGAIN = 200;
+    private static final double ANGLE_DIFF_FROM_PREVIOUS_POSITION = 5;
+    private static final double LARGE_PITCH_CHANGE_THRESHOLD = 40;
+    // The pitch in degrees below which a player is considered looking down.
+    private static final double LOOKING_DOWN_THRESHOLD_ANGLE = 80;
 
     private AutoPotion()
     {
@@ -42,10 +43,10 @@ public final class AutoPotion extends ViolationModule implements Listener
             case POTION_THROWN -> {
                 // This should happen very fast, otherwise a normal player can trigger it.
                 // If we are past the time to recover the pitch, just search for new throws.
-                if (user.getTimeMap().at(TimeKey.AUTOPOTION_SUDDEN_MOVEMENT).recentlyUpdated(lookRestoredTime)) {
+                if (user.getTimeMap().at(TimeKey.AUTOPOTION_SUDDEN_MOVEMENT).recentlyUpdated(TIME_TO_LOOK_UP_AGAIN)) {
                     // Now to check if the yaw and pitch were actually recovered.
-                    if (MathUtil.absDiff(event.getTo().getPitch(), user.getData().floating.autopotionBeforeLastSuddenPitch) <= angleOffset &&
-                        MathUtil.absDiff(event.getTo().getYaw(), user.getData().floating.autopotionBeforeLastSuddenYaw) <= angleOffset)
+                    if (MathUtil.absDiff(event.getTo().getPitch(), user.getData().floating.autopotionBeforeLastSuddenPitch) <= ANGLE_DIFF_FROM_PREVIOUS_POSITION &&
+                        MathUtil.absDiff(event.getTo().getYaw(), user.getData().floating.autopotionBeforeLastSuddenYaw) <= ANGLE_DIFF_FROM_PREVIOUS_POSITION)
                     {
                         this.getManagement().flag(Flag.of(user)
                                                       .setAddedVl(50)
@@ -61,10 +62,10 @@ public final class AutoPotion extends ViolationModule implements Listener
             case AWAIT_POTION_THROW -> {
                 // Check if there is a large change in the pitch value (bot-like), and if the direction of the head movement is downwards (= higher pitch).
                 // Only if the head movement is downwards, this will be greater than 0.
-                if (event.getTo().getPitch() - event.getFrom().getPitch() > this.initialPitchDifference &&
+                if (event.getTo().getPitch() - event.getFrom().getPitch() > LARGE_PITCH_CHANGE_THRESHOLD &&
                     // getFrom() is not looking down, but getTo() is.
-                    event.getFrom().getPitch() < lookDownAngle &&
-                    event.getTo().getPitch() >= lookDownAngle)
+                    event.getFrom().getPitch() < LOOKING_DOWN_THRESHOLD_ANGLE &&
+                    event.getTo().getPitch() >= LOOKING_DOWN_THRESHOLD_ANGLE)
                 {
                     // Save the old pitch and yaw before looking down to check if they are recovered later.
                     user.getData().floating.autopotionBeforeLastSuddenPitch = event.getFrom().getPitch();
@@ -94,7 +95,7 @@ public final class AutoPotion extends ViolationModule implements Listener
             case RIGHT_CLICK_AIR, RIGHT_CLICK_BLOCK -> {
                 if (event.getItem() != null && event.getMaterial() == Material.SPLASH_POTION &&
                     // The last sudden movement was not long ago
-                    user.getTimeMap().at(TimeKey.AUTOPOTION_SUDDEN_MOVEMENT).recentlyUpdated(lookRestoredTime))
+                    user.getTimeMap().at(TimeKey.AUTOPOTION_SUDDEN_MOVEMENT).recentlyUpdated(TIME_TO_LOOK_UP_AGAIN))
                 {
                     // Now check that potion throw.
                     user.getData().object.autoPotionState = AutoPotionState.POTION_THROWN;

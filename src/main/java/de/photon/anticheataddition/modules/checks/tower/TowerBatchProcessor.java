@@ -21,9 +21,7 @@ import java.util.Set;
 final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlockPlace>
 {
     private static final Polynomial VL_CALCULATOR = new Polynomial(0.37125, 1);
-
     private final int cancelVl = loadInt(".cancel_vl", 6);
-    private final double towerLeniency = loadDouble(".tower_leniency", 1);
     private static final double LEVITATION_LENIENCY = 0.95;
 
     public TowerBatchProcessor(ViolationModule module)
@@ -56,7 +54,7 @@ final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBloc
     /**
      * Calculates the time needed to place one block.
      */
-    public double calculateDelay(TowerBatch.TowerBlockPlace blockPlace)
+    private static double calculateDelay(TowerBatch.TowerBlockPlace blockPlace)
     {
         final var levitation = blockPlace.levitation();
         final var jumpBoost = blockPlace.jumpBoost();
@@ -64,17 +62,17 @@ final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBloc
         // Levitation handling.
         if (levitation.isPresent()) {
             // 0.9 Blocks per second per levitation level.
-            return (900 / (levitation.get().getAmplifier() + 1D)) * towerLeniency * LEVITATION_LENIENCY;
+            return (900 / (levitation.get().getAmplifier() + 1D)) * LEVITATION_LENIENCY;
         }
 
         // No Jump Boost, tested value.
-        if (jumpBoost.isEmpty()) return 478.4D * towerLeniency;
+        if (jumpBoost.isEmpty()) return 478.4D;
         final int amplifier = jumpBoost.get().getAmplifier();
 
         // Negative Jump Boost -> Player is not allowed to place blocks -> Very high delay
         if (amplifier < 0) return 1500D;
 
-        return towerLeniency * switch (amplifier) {
+        return switch (amplifier) {
             // Cache for common JumpBoosts (I to IV)
             case 0 -> 578.4D;
             case 1 -> 290D;

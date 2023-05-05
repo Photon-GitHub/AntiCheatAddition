@@ -51,20 +51,24 @@ public final class Data
         public volatile long lastSprintDuration = Long.MAX_VALUE;
     }
 
+    /**
+     * Counters to ignore a set amount of detections.
+     * The default values were tuned by testing.
+     */
     public static final class Counter
     {
         public final ViolationCounter autofishFailed = new ViolationCounter("AutoFish.parts.consistency.maximum_fails");
 
         public final ViolationCounter inventoryAverageHeuristicsMisclicks = new ViolationCounter(0);
-        public final ViolationCounter inventoryPerfectExitFails = new ViolationCounter("Inventory.parts.PerfectExit.violation_threshold");
+        public final ViolationCounter inventoryPerfectExitFails = new ViolationCounter(6);
 
-        public final ViolationCounter scaffoldAngleFails = new ViolationCounter("Scaffold.parts.Angle.violation_threshold");
-        public final ViolationCounter scaffoldJumpingFails = new ViolationCounter("Scaffold.parts.Jumping.violation_threshold");
+        public final ViolationCounter scaffoldAngleFails = new ViolationCounter(4);
+        public final ViolationCounter scaffoldJumpingFails = new ViolationCounter(5);
         public final ViolationCounter scaffoldJumpingLegit = new ViolationCounter(20);
-        public final ViolationCounter scaffoldRotationFails = new ViolationCounter("Scaffold.parts.Rotation.violation_threshold");
-        public final ViolationCounter scaffoldSafewalkPositionFails = new ViolationCounter("Scaffold.parts.Safewalk.Position.violation_threshold");
-        public final ViolationCounter scaffoldSafewalkTimingFails = new ViolationCounter("Scaffold.parts.Safewalk.Timing.violation_threshold");
-        public final ViolationCounter scaffoldSprintingFails = new ViolationCounter("Scaffold.parts.Sprinting.violation_threshold");
+        public final ViolationCounter scaffoldRotationFails = new ViolationCounter(6);
+        public final ViolationCounter scaffoldSafewalkPositionFails = new ViolationCounter(4);
+        public final ViolationCounter scaffoldSafewalkTimingFails = new ViolationCounter(3);
+        public final ViolationCounter scaffoldSprintingFails = new ViolationCounter(5);
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")

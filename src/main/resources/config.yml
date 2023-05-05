@@ -320,9 +320,6 @@ Inventory:
       # This part is only active if the server has the required minimum TPS.
       # Low TPS cause an extreme amount of false positives.
       min_tps: 18.5
-      # How many suspicious interactions should Inventory count as legit?
-      # The value must be greater or equal to 0.
-      violation_threshold: 5
     # The rotation part detects head movement while having an open inventory.
     # Adds 1 VL.
     Rotation:
@@ -394,9 +391,6 @@ Scaffold:
     Angle:
       # Do you want to enable the Angle part?
       enabled: true
-      # How many suspicious angles should Scaffold count as legit?
-      # The value must be greater or equal to 0.
-      violation_threshold: 3
     # The core part of Scaffold preventing too fast Scaffolding.
     # This part is always enabled, as it provides the basic framework.
     # Adds 20 to 130 VLs.
@@ -416,9 +410,6 @@ Scaffold:
     Jumping:
       # Do you want to enable the Jumping part?
       enabled: true
-      # How many suspicious jumps should Scaffold count as legit
-      # The value must be greater or equal to 0.
-      violation_threshold: 4
     # This part detects suspicious placement positions.
     # Adds 30 VL.
     Position:
@@ -442,34 +433,21 @@ Scaffold:
       SecondDerivative:
         # Do you want to enable the SecondDerivative part?
         enabled: true
-      # How many suspicious rotations should Scaffold count as legit
-      # The value must be greater or equal to 0.
-      violation_threshold: 6
     # This checks for behaviour associated with safe-walk
     Safewalk:
       # Adds 15 VL.
       Position:
         # Do you want to enable the Safewalk Position part?
         enabled: true
-        # How many suspicious positions should Scaffold count as legit?
-        # The value must be greater or equal to 0.
-        violation_threshold: 3
       # Adds 20 VL.
       Timing:
         # Do you want to enable the Safewalk Timing part?
         enabled: true
-        # How many suspicious stop times should Scaffold count as legit?
-        # The value must be greater or equal to 0.
-        violation_threshold: 2
     # This part detects sprinting between block placements.
     # Adds 45 VL.
     Sprinting:
       # Do you want to enable Sprinting?
       enabled: true
-      # How many suspicious sprinting periods should Scaffold count as legit?
-      # This is needed as sprinting can be a legitimate action, for example, when beginning to place blocks.
-      # The value must be greater or equal to 0.
-      violation_threshold: 4
   # Map of violation levels to commands.
   thresholds:
     90: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Scaffold"

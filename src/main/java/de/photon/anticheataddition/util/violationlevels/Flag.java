@@ -31,7 +31,7 @@ public final class Flag
      */
     public static Flag of(User user)
     {
-        return new Flag(user.getPlayer());
+        return of(user.getPlayer());
     }
 
     /**
@@ -86,11 +86,13 @@ public final class Flag
 
     /**
      * This method will execute the runnables when applicable.
+     *
+     * @param oldVl The vl of the player before this flag. The method will add the vl of this {@link Flag} to it.
      */
-    public void runApplicableActions(int currentVl)
+    public void runApplicableActions(int oldVl)
     {
         if (this.debug != null) Log.fine(this.debug);
-        if (this.cancelVl >= 0 && currentVl >= this.cancelVl) this.onCancel.run();
+        if (this.cancelVl >= 0 && (oldVl + this.addedVl) >= this.cancelVl) this.onCancel.run();
         if (this.eventNotCancelled != null) this.eventNotCancelled.run();
     }
 }

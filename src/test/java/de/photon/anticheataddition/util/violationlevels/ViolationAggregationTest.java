@@ -3,12 +3,19 @@ package de.photon.anticheataddition.util.violationlevels;
 import de.photon.anticheataddition.Dummy;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 class ViolationAggregationTest
 {
+    @BeforeAll
+    static void setup()
+    {
+        Dummy.mockAntiCheatAddition();
+    }
+
     @Test
     void initTest()
     {

@@ -34,7 +34,6 @@ public final class InventoryMove extends ViolationModule implements Listener
     public static final double STANDING_STILL_THRESHOLD = 0.005;
 
     private final int cancelVl = loadInt(".cancel_vl", 60);
-    private final double minTps = loadDouble(".min_tps", 19.5);
     private final int lenienceMillis = loadInt(".lenience_millis", 0);
     private final int teleportBypassTime = loadInt(".teleport_bypass_time", 900);
     private final int worldChangeBypassTime = loadInt(".world_change_bypass_time", 2000);
@@ -100,7 +99,7 @@ public final class InventoryMove extends ViolationModule implements Listener
             // This would need to check for async chunk loads if done in packets (see history)
             user.isInLiquids() ||
             // Auto-Disable if TPS are too low
-            !TPSProvider.INSTANCE.atLeastTPS(minTps))
+            !TPSProvider.INSTANCE.atLeastTPS(Inventory.INSTANCE.getMinTps()))
         {
             user.getData().bool.allowedToJump = true;
             return;

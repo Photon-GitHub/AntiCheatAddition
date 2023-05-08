@@ -252,6 +252,13 @@ ImpossibleChat:
 Inventory:
   # Do you want to enable Inventory?
   enabled: true
+  # This check is only active if the server has the required minimum TPS.
+  # Low TPS cause an extreme amount of false positives.
+  min_tps: 19.0
+  # If a player's ping surpasses this value, they will be exempted from some parts of the check.
+  # Note: Most parts do not depend on ping and will ignore this value.
+  # Set this to -1 to disable
+  max_ping: 400
   # Control the different parts of Inventory
   parts:
     # This part searches for consistent intervals between inventory clicks, detecting simple chest stealer bots that
@@ -264,12 +271,6 @@ Inventory:
     AverageHeuristic:
       # Do you want to enable the AverageHeuristic part?
       enabled: true
-      # If a player's ping surpasses this value, they will be exempted from the check.
-      # Set this to -1 to disable
-      max_ping: 400
-      # This part is only active if the server has the required minimum TPS.
-      # Low TPS cause an extreme amount of false positives.
-      min_tps: 18.5
     # This part detects hitting while the inventory is open.
     # Adds 20 VL.
     Hit:
@@ -286,9 +287,6 @@ Inventory:
       # The violation level at which AntiCheatAddition starts to cancel the movement.
       # Set this to 0 to never cancel movement.
       cancel_vl: 60
-      # This part is only active if the server has the required minimum TPS.
-      # Low TPS cause an extreme amount of false positives.
-      min_tps: 19.5
       # The part will not check a player for this time after a teleport.
       # Increase this to avoid false positives with high-ping players after teleports.
       # Ender pearls, commands, and respawns are all forms of teleportation. (in milliseconds)
@@ -306,20 +304,11 @@ Inventory:
       # The violation level at which AntiCheatAddition starts to cancel the inventory interactions.
       # Set this to 0 to never cancel interacts.
       cancel_vl: 25
-      # If a player's ping surpasses this value, they will be exempted from the check.
-      # Set this to -1 to disable
-      max_ping: 400
-      # This part is only active if the server has the required minimum TPS.
-      # Low TPS cause an extreme amount of false positives.
-      min_tps: 18.5
     # This part detects chest stealers, which automatically close empty inventories with perfect timing.
     # Adds 20 to 40 VL.
     PerfectExit:
       # Do you want to enable the PerfectExit part?
       enabled: true
-      # This part is only active if the server has the required minimum TPS.
-      # Low TPS cause an extreme amount of false positives.
-      min_tps: 18.5
     # The rotation part detects head movement while having an open inventory.
     # Adds 1 VL.
     Rotation:
@@ -339,6 +328,11 @@ Inventory:
       # The violation level at which AntiCheatAddition starts to cancel the inventory interactions.
       # Set this to 0 to never cancel inventory interactions.
       cancel_vl: 110
+    # The Statistical part uses statistical tests to detect bot-like clicking behaviour even when the click delays
+    # are randomized.
+    Statistical:
+      # Do you want to enable the Statistical part?
+      enabled: true
   # Map of violation levels to commands.
   thresholds:
     110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for inventory cheats."

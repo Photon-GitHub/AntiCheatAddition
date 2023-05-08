@@ -2,6 +2,7 @@ package de.photon.anticheataddition.modules.checks.inventory;
 
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
+import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -29,7 +30,8 @@ public final class InventoryRotation extends ViolationModule implements Listener
         if (User.isUserInvalid(user, this) || event.getTo() == null) return;
 
         // Not flying (may trigger some fps)
-        if (!user.getPlayer().getAllowFlight() &&
+        if (TPSProvider.INSTANCE.atLeastTPS(Inventory.INSTANCE.getMinTps()) &&
+            !user.getPlayer().getAllowFlight() &&
             // Player is in an inventory
             user.hasOpenInventory() &&
             // Head-Rotation has changed (detection)

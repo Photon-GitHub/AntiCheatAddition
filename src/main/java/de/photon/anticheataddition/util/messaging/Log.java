@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.messaging;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.datastructure.Pair;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -123,7 +122,7 @@ public class Log
         // Add the violation debug messages.
         AntiCheatAddition.getInstance().registerListener(new ViolationLogger());
 
-        fine(() -> "Logger handlers: " + Arrays.stream(logger().getHandlers()).map(handler -> Pair.of(handler.getClass().getName(), handler.getLevel())).map(Pair::toString).collect(Collectors.joining(", ")));
+        fine(() -> "Logger handlers: " + Arrays.stream(logger().getHandlers()).map(handler -> handler.getClass().getName() + " with level " + handler.getLevel()).collect(Collectors.joining(", ")));
         info(() -> "Logging setup finished. Console: " + CONSOLE_LEVEL.getName() + " | File: " + FILE_LEVEL.getName() + " | Player: " + PLAYER_LEVEL.getName());
     }
 

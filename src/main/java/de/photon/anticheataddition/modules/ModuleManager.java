@@ -13,13 +13,7 @@ import de.photon.anticheataddition.modules.checks.duping.DupingDoubleDropped;
 import de.photon.anticheataddition.modules.checks.duping.DupingSecretCache;
 import de.photon.anticheataddition.modules.checks.fastswitch.Fastswitch;
 import de.photon.anticheataddition.modules.checks.impossiblechat.ImpossibleChat;
-import de.photon.anticheataddition.modules.checks.inventory.InventoryAverageHeuristic;
-import de.photon.anticheataddition.modules.checks.inventory.InventoryHit;
-import de.photon.anticheataddition.modules.checks.inventory.InventoryMove;
-import de.photon.anticheataddition.modules.checks.inventory.InventoryMultiInteraction;
-import de.photon.anticheataddition.modules.checks.inventory.InventoryPerfectExit;
-import de.photon.anticheataddition.modules.checks.inventory.InventoryRotation;
-import de.photon.anticheataddition.modules.checks.inventory.InventorySprinting;
+import de.photon.anticheataddition.modules.checks.inventory.Inventory;
 import de.photon.anticheataddition.modules.checks.packetanalysis.PacketAnalysisAnimation;
 import de.photon.anticheataddition.modules.checks.packetanalysis.PacketAnalysisEqualRotation;
 import de.photon.anticheataddition.modules.checks.packetanalysis.PacketAnalysisIllegalPitch;
@@ -77,7 +71,7 @@ public final class ModuleManager
 
                 ImpossibleChat.INSTANCE,
 
-                ViolationModule.parentOf("Inventory", InventoryAverageHeuristic.INSTANCE, InventoryHit.INSTANCE, InventoryMove.INSTANCE, InventoryMultiInteraction.INSTANCE, InventoryPerfectExit.INSTANCE, InventoryRotation.INSTANCE, InventorySprinting.INSTANCE),
+                Inventory.INSTANCE,
 
                 ViolationModule.parentOf("PacketAnalysis", PacketAnalysisAnimation.INSTANCE, PacketAnalysisEqualRotation.INSTANCE, PacketAnalysisIllegalPitch.INSTANCE),
 

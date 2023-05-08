@@ -20,7 +20,7 @@ public final class Fastswitch extends ViolationModule implements Listener
 
     private final int cancelVl = loadInt(".cancel_vl", 50);
     private final int maxPing = loadInt(".max_ping", 400);
-    private final int switchMilliseconds = loadInt(".switch_milliseconds", 50);
+    private static final int MIN_SWITCH_DELAY = 50;
 
     private Fastswitch()
     {
@@ -49,7 +49,7 @@ public final class Fastswitch extends ViolationModule implements Listener
             canBeLegit(event.getPreviousSlot(), event.getNewSlot())) return;
 
         // Already switched in the given timeframe
-        if (user.getTimeMap().at(TimeKey.FASTSWITCH_HOTBAR_SWITCH).recentlyUpdated(switchMilliseconds) &&
+        if (user.getTimeMap().at(TimeKey.FASTSWITCH_HOTBAR_SWITCH).recentlyUpdated(MIN_SWITCH_DELAY) &&
             // The ping is valid and in the borders that are set in the config.
             PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing) &&
             // User has done something except switching slots all the time.

@@ -20,8 +20,8 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
 
     private final int cancelVl = AntiCheatAddition.getInstance().getConfig().getInt("AutoFish.cancel_vl");
 
-    private final int fishingAttemptCount = loadInt(".fishing_attempt_count", 5);
-    private final int minVariation = loadInt(".min_variation", 30);
+    private static final int FISHING_ATTEMPTS_TO_CHECK = 5;
+    private static final int MIN_HUMAN_VARIATION = 50;
 
     private AutoFishConsistency()
     {
@@ -47,14 +47,14 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
                     consistencyData.accept(user.getTimeMap().at(TimeKey.AUTOFISH_DETECTION).passedTime());
 
                     // Check that we have enough data.
-                    if (consistencyData.getCount() < fishingAttemptCount) return;
+                    if (consistencyData.getCount() < FISHING_ATTEMPTS_TO_CHECK) return;
 
                     // Calculate the maximum offset.
                     final double maxOffset = Math.max(MathUtil.absDiff(consistencyData.getMin(), consistencyData.getAverage()), MathUtil.absDiff(consistencyData.getMax(), consistencyData.getAverage()));
 
-                    if (minVariation > (maxOffset + 1)) {
+                    if (MIN_HUMAN_VARIATION > (maxOffset + 1)) {
                         // (maxOffset / minVariation) will be at most 1 and at least 0
-                        final double flagOffset = 160 - (159 * (maxOffset / minVariation));
+                        final double flagOffset = 160 - (159 * (maxOffset / MIN_HUMAN_VARIATION));
 
                         this.getManagement().flag(Flag.of(event.getPlayer())
                                                       .setAddedVl((int) flagOffset)

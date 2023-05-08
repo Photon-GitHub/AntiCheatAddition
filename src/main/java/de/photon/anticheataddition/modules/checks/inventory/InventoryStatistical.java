@@ -4,21 +4,20 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import org.bukkit.event.Listener;
 
-public final class InventoryAverageHeuristic extends ViolationModule implements Listener
+public final class InventoryStatistical extends ViolationModule
 {
-    public static final InventoryAverageHeuristic INSTANCE = new InventoryAverageHeuristic();
+    public static final InventoryStatistical INSTANCE = new InventoryStatistical();
 
-    private InventoryAverageHeuristic()
+    private InventoryStatistical()
     {
-        super("Inventory.parts.AverageHeuristic");
+        super("Inventory.parts.Statistical");
     }
 
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        final var batchProcessor = new AverageHeuristicBatchProcessor(this);
+        final var batchProcessor = new StatisticalBatchProcessor(this);
         return ModuleLoader.builder(this)
                            .batchProcessor(batchProcessor)
                            .build();

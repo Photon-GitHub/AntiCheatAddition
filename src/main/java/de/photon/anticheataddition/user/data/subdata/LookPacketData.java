@@ -12,7 +12,7 @@ import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.buffer.RingBuffer;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.RotationUtil;
-import lombok.Getter;
+import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
@@ -22,17 +22,11 @@ public final class LookPacketData
         ProtocolLibrary.getProtocolManager().addPacketListener(new LookPacketDataUpdater());
     }
 
-    @Getter
     private final RingBuffer<RotationChange> rotationChangeQueue = new RingBuffer<>(20, new RotationChange(0, 0));
 
-    /**
-     * Calculates the total rotation change in the last time.
-     *
-     * @return an array which contains information about the angle changes. <br>
-     * [0] is the sum of the angle changes <br>
-     * [1] is the sum of the angle offsets
-     */
-    public double[] getAngleInformation()
+    public record ScaffoldAngleInfo(double changeSum, double offsetSum) {}
+
+    public ScaffoldAngleInfo getAngleInformation()
     {
         final RotationChange[] changes;
 
@@ -50,11 +44,9 @@ public final class LookPacketData
             if ((curTime - changes[i].getTime()) > 1000) continue;
 
             // Using -1 for the last element is fine as there is always the last element.
-            final long ticks = changes[i - 1].timeOffset(changes[i]) / 50;
+            final long ticks = changes[i - 1].tickOffset(changes[i]);
 
-            // The current tick should be ignored, no gap filler.
-            // How many ticks have been left out?
-            if (ticks > 1) gapFillers += (ticks - 1);
+            if (ticks >= 2) gapFillers += (ticks - 1);
 
             // This is a rotation.
             ++rotationCount;
@@ -64,13 +56,10 @@ public final class LookPacketData
         }
 
         // Just immediately return the [0,0] array here to avoid dividing by 0.
-        if (rotationCount == 0 && gapFillers == 0) return new double[]{0, 0};
+        if (rotationCount == 0 && gapFillers == 0) return new ScaffoldAngleInfo(0, 0);
 
-        return new double[]{
-                angleSum,
-                // Compute the difference of angleSum and angleSum * (rotationCount / (rotationCount + gapFillers))
-                MathUtil.absDiff((angleSum / (rotationCount + gapFillers)) * rotationCount, angleSum)
-        };
+        // Compute the difference of angleSum and angleSum * (rotationCount / (rotationCount + gapFillers))
+        return new ScaffoldAngleInfo(angleSum, MathUtil.absDiff((angleSum / (rotationCount + gapFillers)) * rotationCount, angleSum));
     }
 
     @Value
@@ -100,6 +89,11 @@ public final class LookPacketData
         public long timeOffset(RotationChange other)
         {
             return MathUtil.absDiff(this.time, other.time);
+        }
+
+        public long tickOffset(RotationChange other)
+        {
+            return TimeUtil.toTicks(timeOffset(other));
         }
     }
 

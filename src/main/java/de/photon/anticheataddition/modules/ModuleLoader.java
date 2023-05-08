@@ -112,7 +112,7 @@ public final class ModuleLoader
         for (MessageChannel messageChannel : outgoing) messageChannel.unregisterOutgoingChannel();
     }
 
-    public static class Builder
+    public static final class Builder
     {
         private final Module module;
         private final ImmutableSet.Builder<Listener> listeners = ImmutableSet.builder();

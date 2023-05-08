@@ -47,8 +47,7 @@ public final class ViolationCounter
      */
     public boolean incrementCompareThreshold()
     {
-        // getAndIncrement due to the config comments of "x violations are fine"
-        return this.counter.getAndIncrement() >= threshold;
+        return this.counter.incrementAndGet() >= threshold;
     }
 
     /**
@@ -58,7 +57,7 @@ public final class ViolationCounter
      */
     public boolean conditionallyIncDec(boolean condition)
     {
-        if (condition && this.incrementCompareThreshold()) return true;
+        if (condition) return this.incrementCompareThreshold();
         else {
             this.decrementAboveZero();
             return false;

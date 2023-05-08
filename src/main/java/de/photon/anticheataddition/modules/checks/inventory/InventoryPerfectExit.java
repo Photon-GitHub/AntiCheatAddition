@@ -20,8 +20,6 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
 
     private static final Polynomial VL_CALCULATOR = new Polynomial(-0.2857, 40);
 
-    private final double minTps = loadDouble(".min_tps", 18.5);
-
     private InventoryPerfectExit()
     {
         super("Inventory.parts.PerfectExit");
@@ -35,7 +33,7 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
             // Creative-clear might trigger this.
             !user.inAdventureOrSurvivalMode() ||
             // Minimum TPS before the check is activated as of a huge amount of fps
-            !TPSProvider.INSTANCE.atLeastTPS(minTps) ||
+            !TPSProvider.INSTANCE.atLeastTPS(Inventory.INSTANCE.getMinTps()) ||
             // The inventory has been completely cleared
             !InventoryUtil.isInventoryEmpty(event.getInventory())) return;
 

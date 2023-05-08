@@ -21,8 +21,6 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
     public static final InventoryMultiInteraction INSTANCE = new InventoryMultiInteraction();
 
     private final int cancelVl = loadInt(".cancel_vl", 25);
-    private final int maxPing = loadInt(".max_ping", 400);
-    private final double minTps = loadDouble(".min_tps", 18.5);
 
     private InventoryMultiInteraction()
     {
@@ -49,15 +47,15 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
             // Creative-clear might trigger this.
             !user.inAdventureOrSurvivalMode() ||
             // Minimum TPS before the check is activated as of a huge amount of fps
-            !TPSProvider.INSTANCE.atLeastTPS(minTps) ||
+            !TPSProvider.INSTANCE.atLeastTPS(Inventory.INSTANCE.getMinTps()) ||
             // Maximum ping
-            !PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing) ||
+            !PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), Inventory.INSTANCE.getMaxPing()) ||
             // False positive: Click-spamming on the same slot
             event.getRawSlot() == user.getData().number.lastRawSlotClicked) return;
 
-        // Default vl to 6
+        // Default vl is 6
         int addedVl = 6;
-        // Time in ms that will flag if it has not passed
+        // Time in ticks that have to pass to not be flagged by this check for too fast inventory interactions.
         int enforcedTicks = 0;
 
         //noinspection EnhancedSwitchMigration

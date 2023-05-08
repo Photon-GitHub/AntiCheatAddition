@@ -204,7 +204,6 @@ Duping:
 # The check will self-disable when the server has low TPS.
 # Adds 25 VL.
 Fastswitch:
-
   enabled: true
   # The violation level at which AntiCheatAddition starts to hotbar selections.
   # Set this to 0 to never cancel hotbar selections.

@@ -70,9 +70,10 @@ EnchantmentHider:
 # - Equipment-Hider: If a player is not visible to another player, ESP will hide any equipment they are wearing or have in their hands.
 #                    Therefore, cheaters can no longer gauge a player's combat strength.
 #                    This part automatically disables itself on servers with Minecraft versions below 1.11.
+#
+# IF THERE ARE MANY PLAYERS CONCENTRATED IN ONE WORLD, THE ESP CHECK MAY CAUSE A HIGH CPU LOAD.
+# Please RESTART your server after CREATING NEW WORLDS to activate ESP in them.
 Esp:
-  # If there are many players concentrated in one world, the ESP check may cause a high CPU load.
-  # Please restart your server after creating new worlds to activate ESP in them.
   enabled: false
   # How many ticks shall separate two ESP cycles?
   # Low values can cause performance issues, high values may cause players to be hidden for too long and pop up.

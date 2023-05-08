@@ -8,6 +8,7 @@ import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
 import de.photon.anticheataddition.util.mathematics.DataUtil;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 
 import java.util.Arrays;
@@ -32,6 +33,7 @@ public final class StatisticalBatchProcessor extends AsyncBatchProcessor<Invento
                                                      .mapToLong(pair -> pair.first().timeOffset(pair.second()))
                                                      .toArray();
 
+        Log.finest(() -> "Inventory-Debug | Statistical Player: %s LEN: %d".formatted(user.getPlayer().getName(), timeOffsets.length));
 
         // Not enough data to check as the player opened many inventories.
         if (timeOffsets.length < 10) return;
@@ -52,6 +54,8 @@ public final class StatisticalBatchProcessor extends AsyncBatchProcessor<Invento
 
         final double[] scaledTimeOffsets = Arrays.stream(sortedCenterOffset).map(d -> d / scalingFactor).map(d -> d + startAtZeroFactor).toArray();
 
+        Log.finest(() -> "Inventory-Debug | Statistical Player: %s | RAW-OFFSET: %s | SCALED-OFFSET: %s".formatted(user.getPlayer().getName(), Arrays.toString(sortedCenterOffset), Arrays.toString(scaledTimeOffsets)));
+
         double d_max = 0;
         for (int i = 0; i < scaledTimeOffsets.length; i++) {
             final double uniform = (i + 0.5) / scaledTimeOffsets.length;
@@ -59,11 +63,13 @@ public final class StatisticalBatchProcessor extends AsyncBatchProcessor<Invento
             if (d > d_max) d_max = d;
         }
 
-        if (d_max >= D_TEST) return;
-
         final double finalD_max = d_max;
+
+        Log.finer(() -> "Inventory-Debug | Statistical Player: %s SCALE: %f, START: %f, D_MAX: %f, D_TEST: %f".formatted(user.getPlayer(), scalingFactor, startAtZeroFactor, finalD_max, D_TEST));
+
+        if (d_max >= D_TEST) return;
         this.getModule().getManagement().flag(Flag.of(user)
                                                   .setAddedVl(D_TEST_VL_CALCULATOR.apply(d_max / D_TEST).intValue())
-                                                  .setDebug(() -> "Inventory-Debug | Player: %s has suspiciously distributed click delays. (SCALE: %f, START: %f, D_MAX: %f, D_TEST: %f)".formatted(user.getPlayer(), scalingFactor, startAtZeroFactor, finalD_max, D_TEST)));
+                                                  .setDebug(() -> "Inventory-Debug | Player: %s has suspiciously distributed click delays. (SCALE: %f, START: %f, D_MAX: %f, D_TEST: %f)".formatted(user.getPlayer().getName(), scalingFactor, startAtZeroFactor, finalD_max, D_TEST)));
     }
 }

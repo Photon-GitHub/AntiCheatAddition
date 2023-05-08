@@ -22,7 +22,7 @@ public class Inventory extends ViolationModule implements Listener
     public static final Inventory INSTANCE = new Inventory();
 
     @Getter private final int maxPing = loadInt(".max_ping", 400);
-    @Getter private final double minTps = loadDouble(".min_tps", 18.5);
+    @Getter private final double minTps = loadDouble(".min_tps", 19.0);
 
     protected Inventory()
     {

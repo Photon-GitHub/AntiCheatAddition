@@ -23,6 +23,7 @@ import java.util.Set;
 public final class Teaming extends ViolationModule implements Listener
 {
     public static final Teaming INSTANCE = new Teaming();
+    private static final long CHECK_INTERVAL = TimeUtil.toTicks(5000);
 
     private Teaming()
     {
@@ -68,7 +69,6 @@ public final class Teaming extends ViolationModule implements Listener
         final double proximityRangeSquared = proximityRange * proximityRange;
 
         final int noPvpTime = loadInt(".no_pvp_time", 6000);
-        final long period = TimeUtil.toTicks(loadLong(".delay", 5000));
 
         final int allowedSize = loadInt(".allowed_size", 1);
         Preconditions.checkArgument(allowedSize > 0, "The Teaming allowed_size must be greater than 0.");
@@ -108,7 +108,7 @@ public final class Teaming extends ViolationModule implements Listener
                     for (final var node : teamNodes) this.getManagement().flag(Flag.of(node.element()).setAddedVl(vl));
                 }
             }
-        }, 1L, period);
+        }, 1L, CHECK_INTERVAL);
     }
 
     @Override

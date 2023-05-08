@@ -493,9 +493,6 @@ Skinblinker:
 Teaming:
   # Do you want to enable the Teaming check?
   enabled: false
-  # What is the interval between checks?
-  # This must be below 15000. (in milliseconds)
-  delay: 5000
   # What is the maximum distance between players for them to be considered teaming? (in blocks)
   proximity_range: 4.5
   # If you wish to limit teams to a certain amount of players, adjust this value accordingly.

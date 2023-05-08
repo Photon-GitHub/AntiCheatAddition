@@ -39,7 +39,6 @@ BrandHider:
 # mods that try to display other players' health ineffective.
 # Other plugins can still get the accurate player health.
 DamageIndicator:
-
   enabled: true
   # Spoof the health of the following entity categories.
   spoof:

@@ -238,6 +238,7 @@ Fastswitch:
 ImpossibleChat:
   # Do you want to enable ImpossibleChat?
   # Disabled by default, as some servers allow auto-chat mods.
+  # If you do not allow them, enable this.
   enabled: false
   # The violation level at which AntiCheatAddition starts to cancel the messages.
   # Set this to 0 to never cancel messages.
@@ -330,6 +331,7 @@ Inventory:
       cancel_vl: 110
     # The Statistical part uses statistical tests to detect bot-like clicking behaviour even when the click delays
     # are randomized.
+    # Adds 1 to 60 VL.
     Statistical:
       # Do you want to enable the Statistical part?
       enabled: true

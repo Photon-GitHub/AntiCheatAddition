@@ -25,7 +25,6 @@
 # BrandHider allows you to modify the brand that is shown on Minecraft’s debug screen.
 # This can be useful for hiding your server software or creating a custom message.
 BrandHider:
-  # Do you want to enable BrandHider?
   enabled: false
   # This is the replacement text for the brand.
   # You can use the character ‘&’ for color codes and all placeholders that are available in normal checks.
@@ -40,7 +39,7 @@ BrandHider:
 # mods that try to display other players' health ineffective.
 # Other plugins can still get the accurate player health.
 DamageIndicator:
-  # Do you want to enable DamageIndicator?
+
   enabled: true
   # Spoof the health of the following entity categories.
   spoof:
@@ -52,7 +51,6 @@ DamageIndicator:
 # EnchantmentHider obfuscates enchantments by replacing them on the packet level with the infinity enchantment.
 # Therefore, legit players can still see the enchantment's glow, but those using ESP or texture packs cannot gain any extra information.
 EnchantmentHider:
-  # Do you want to enable EnchantmentHider?
   enabled: true
   # Spoof the health of the following entity categories.
   # Please note that spoofing all enchantments might cause performance issues if you use a custom mob equipment system.
@@ -74,10 +72,7 @@ EnchantmentHider:
 #                    Therefore, cheaters can no longer gauge a player's combat strength.
 #                    This part automatically disables itself on servers with Minecraft versions below 1.11.
 Esp:
-  # Do you want to enable ESP?
-  #
   # If there are many players concentrated in one world, the ESP check may cause a high CPU load.
-  #
   # Please restart your server after creating new worlds to activate ESP in them.
   enabled: false
   # How many ticks shall separate two ESP cycles?
@@ -95,7 +90,6 @@ Esp:
 # LogBot clears old log files from both AntiCheatAddition and the server.
 # Upon restarting, it activates automatically, and then follows a 12-hour pattern.
 LogBot:
-  # Do you want to enable LogBot?
   enabled: false
   # After how many days should AntiCheatAddition logs be deleted?
   # Set to -1 to disable
@@ -115,7 +109,6 @@ LogBot:
 # AutoEat VL decreases only every 5 minutes to identify cheats, no matter how spaced out eating sessions are.
 # Adds 20 VL.
 AutoEat:
-  # Do you want to enable AutoEat?
   enabled: true
   # The violation level at which AntiCheatAddition starts to cancel consume events.
   # Set this to 0 to never cancel events.
@@ -133,7 +126,6 @@ AutoEat:
 # If you have modified fishing time and/or behaviour, please test if this check is compatible with your setup.
 # This check automatically disables itself on Minecraft versions below 1.11 because of changes to the Spigot API.
 AutoFish:
-  # Do you want to enable AutoFish?
   enabled: true
   # The violation level at which AntiCheatAddition starts to cancel fishing.
   # Please think of potential luck. Therefore, I advise against setting this to a value smaller than 70.
@@ -145,7 +137,6 @@ AutoFish:
     # This might cause some false positives with experienced fishers.
     # Adds 1 to 60 VL.
     inhuman_reaction:
-      # Do you want to enable the inhuman reaction part?
       enabled: true
       # How many milliseconds must elapse for a fishing action to count as legit?
       # Beyond this limit, the VL increases linearly with faster, more inhuman reactions.
@@ -154,7 +145,6 @@ AutoFish:
     # Human players have at least a minor variation in their reaction times.
     # Adds 1 to 160 VL.
     consistency:
-      # Do you want to enable the consistency part?
       enabled: true
       # How many unsuccessful attempts at fishing should a player have before they are exempt from the consistency part?
       # This prevents AFK fishing farm false positives.
@@ -171,7 +161,6 @@ AutoFish:
 # This check automatically disables itself on Minecraft versions below 1.11 because of changes to the Spigot API.
 # Adds 50 VL.
 AutoPotion:
-  # Do you want to enable AutoPotion?
   enabled: true
   # The violation level at which AntiCheatAddition starts to cancel potion throws.
   # Set this to 0 to never cancel throwing potions.
@@ -191,18 +180,15 @@ AutoPotion:
 # To help with investigations, this check logs both the world and the exact location of any suspicious
 # behaviour in AntiCheatAddition’s log file.
 Duping:
-  # Do you want to enable Duping?
   enabled: true
   # Control the different parts of Duping
   parts:
     # The DoubleDropped part detects picking up exactly twice the item count one dropped.
     DoubleDropped:
-      # Do you want to enable the DoubleDropped part?
       enabled: true
     # Secret cache tries to spot the creation of secret caches which are engulfed by other blocks.
     # Duping players often create multiple secret caches at once to allow alt accounts to gather the items later on.
     SecretCache:
-      # Do you want to enable the SecretCache part?
       enabled: true
       # How much time should pass after a chest or shulker box is closed before AntiCheatAddition looks to see
       # if it is a secret cache (in minutes)?
@@ -218,7 +204,7 @@ Duping:
 # The check will self-disable when the server has low TPS.
 # Adds 25 VL.
 Fastswitch:
-  # Do you want to enable Fastswitch?
+
   enabled: true
   # The violation level at which AntiCheatAddition starts to hotbar selections.
   # Set this to 0 to never cancel hotbar selections.
@@ -236,7 +222,6 @@ Fastswitch:
 # other related situations.
 # Adds 25 VL.
 ImpossibleChat:
-  # Do you want to enable ImpossibleChat?
   # Disabled by default, as some servers allow auto-chat mods.
   # If you do not allow them, enable this.
   enabled: false
@@ -251,7 +236,6 @@ ImpossibleChat:
 
 # This check monitors inventory interactions of players.
 Inventory:
-  # Do you want to enable Inventory?
   enabled: true
   # This check is only active if the server has the required minimum TPS.
   # Low TPS cause an extreme amount of false positives.
@@ -270,12 +254,10 @@ Inventory:
     # This part adds 20-70 VL, based on mis-clicks and time between clicks.
     # Therefore, rapid clicking, like at the start of Survival Games, is not penalized when many empty slots are clicked.
     AverageHeuristic:
-      # Do you want to enable the AverageHeuristic part?
       enabled: true
     # This part detects hitting while the inventory is open.
     # Adds 20 VL.
     Hit:
-      # Do you want to enable the Hit part?
       enabled: true
       # The violation level at which AntiCheatAddition starts to cancel the hits.
       # Set this to 0 to never cancel hits.
@@ -283,7 +265,6 @@ Inventory:
     # The move part detects when a player moves while they are in their inventory.
     # This part adds 5 VL for moving and 20 VL for jumping while in an inventory.
     Move:
-      # Do you want to enable the Move part?
       enabled: true
       # The violation level at which AntiCheatAddition starts to cancel the movement.
       # Set this to 0 to never cancel movement.
@@ -300,7 +281,6 @@ Inventory:
     # The MultiInteraction part prevents players from moving items too fast.
     # Adds 1 to 8 VL.
     MultiInteraction:
-      # Do you want to enable the MultiInteraction part?
       enabled: true
       # The violation level at which AntiCheatAddition starts to cancel the inventory interactions.
       # Set this to 0 to never cancel interacts.
@@ -308,12 +288,10 @@ Inventory:
     # This part detects chest stealers, which automatically close empty inventories with perfect timing.
     # Adds 20 to 40 VL.
     PerfectExit:
-      # Do you want to enable the PerfectExit part?
       enabled: true
     # The rotation part detects head movement while having an open inventory.
     # Adds 1 VL.
     Rotation:
-      # Do you want to enable the Rotation part?
       enabled: true
       # The part will not check a player for this time after a teleport.
       # Increase this to avoid false positives with high-ping players after teleports.
@@ -324,7 +302,6 @@ Inventory:
     # This part detects inventory interactions while a player is sprinting or sneaking.
     # Adds 30 VL.
     Sprinting:
-      # Do you want to enable the Sprinting part?
       enabled: true
       # The violation level at which AntiCheatAddition starts to cancel the inventory interactions.
       # Set this to 0 to never cancel inventory interactions.
@@ -333,7 +310,6 @@ Inventory:
     # are randomized.
     # Adds 1 to 60 VL.
     Statistical:
-      # Do you want to enable the Statistical part?
       enabled: true
   # Map of violation levels to commands.
   thresholds:
@@ -344,7 +320,6 @@ Inventory:
 # PacketAnalysis is a general purpose check searching for modifications that directly interfere with the protocol,
 # such as Derp, Freecam, Killaura, Aimbot and other rotation-based cheats.
 PacketAnalysis:
-  # Do you want to enable PacketAnalysis?
   enabled: true
   # Control the different parts of PacketAnalysis
   parts:
@@ -352,18 +327,15 @@ PacketAnalysis:
     # This only detects the worst Killauras.
     # Adds 30 VL.
     Animation:
-      # Do you want to enable the Animation part?
       enabled: true
     # EqualRotation scans for invalid rotation packets, identical to the last rotation.
     # This catches some Scaffold, Tower, Killaura and Aimbot cheats.
     # Adds 5 VL.
     EqualRotation:
-      # Do you want to enable the EqualRotation part?
       enabled: true
     # IllegalPitch detects illegal pitches that a vanilla client cannot send.
     # Adds 150 VL.
     IllegalPitch:
-      # Do you want to enable the IllegalPitch part?
       enabled: true
   # Map of violation levels to commands.
   thresholds:
@@ -373,7 +345,6 @@ PacketAnalysis:
 
 # Scaffold detects cheats that place blocks below the player to rapidly construct bridges.
 Scaffold:
-  # Do you want to enable Scaffold?
   enabled: true
   # The violation level at which AntiCheatAddition starts to cancel the block placements.
   # Set this to 0 to never cancel block placement.
@@ -385,7 +356,6 @@ Scaffold:
     # This part detects suspicious angles when the player places blocks.
     # Adds 15 VL.
     Angle:
-      # Do you want to enable the Angle part?
       enabled: true
     # The core part of Scaffold preventing too fast Scaffolding.
     # This part is always enabled, as it provides the basic framework.
@@ -404,45 +374,37 @@ Scaffold:
     # achieve without the help of a scaffold cheat.
     # Adds 20 VL.
     Jumping:
-      # Do you want to enable the Jumping part?
       enabled: true
     # This part detects suspicious placement positions.
     # Adds 30 VL.
     Position:
-      # Do you want to enable the Position part?
       enabled: true
     # This part analyzes the rotations of a player while scaffolding.
     Rotation:
       # This part checks the player's rotation's derivative.
       # Adds 10 VL.
       Derivative:
-        # Do you want to enable the Derivative part?
         enabled: true
       # FastChange tracks sudden changes in a player's looking direction.
       # This provides a swift detection of Killaura and Scaffold combinations.
       # Adds 15 VL.
       FastChange:
-        # Do you want to enable the FastChange part?
         enabled: true
       # This part checks the player's rotation's second derivative.
       # Adds 5 VL.
       SecondDerivative:
-        # Do you want to enable the SecondDerivative part?
         enabled: true
     # This checks for behaviour associated with safe-walk
     Safewalk:
       # Adds 15 VL.
       Position:
-        # Do you want to enable the Safewalk Position part?
         enabled: true
       # Adds 20 VL.
       Timing:
-        # Do you want to enable the Safewalk Timing part?
         enabled: true
     # This part detects sprinting between block placements.
     # Adds 45 VL.
     Sprinting:
-      # Do you want to enable Sprinting?
       enabled: true
   # Map of violation levels to commands.
   thresholds:
@@ -453,13 +415,11 @@ Scaffold:
 # Shield detects cheats that influence the interaction with a shield.
 # This check is only available in minecraft 1.15+
 Shield:
-  # Do you want to enable the Shield check?
   enabled: true
   # Control the different parts of Shield
   parts:
     # This part detects when a player is attacking and blocking with a shield simultaneously.
     Hit:
-      # Do you want to enable ShieldHit?
       enabled: true
       # The violation level at which AntiCheatAddition starts to cancel the hits.
       # Set this to 0 to never cancel hits.
@@ -471,19 +431,16 @@ Shield:
 
 # Skinblinker detects cheats that alter skin parts while a player is sprinting or sneaking.
 Skinblinker:
-  # Do you want to enable the Skinblinker check?
   enabled: true
   # Control the different parts of Skinblinker
   parts:
     # This part detects settings packets that are sent while sprinting or sneaking.
     # Adds 50 VL.
     Sprinting:
-      # Do you want to enable Sprinting?
       enabled: true
     # The current protocol has an unutilized bit in the skin packet that Skinblinker cheats often toggle.
     # Please note that false positives may occur with certain custom clients that use this bit for cosmetics.
     UnusedBit:
-      # Do you want to enable UnusedBit?
       enabled: true
   # Map of violation levels to commands.
   thresholds:
@@ -493,7 +450,6 @@ Skinblinker:
 # This check tries to alert you of teamers.
 # This is safe to enable, just make sure that you configure this check for your own needs.
 Teaming:
-  # Do you want to enable the Teaming check?
   enabled: false
   # What is the maximum distance between players for them to be considered teaming? (in blocks)
   proximity_range: 4.5
@@ -521,7 +477,6 @@ Teaming:
 # Tower check detects cheats that allow for quick vertical construction.
 # Adds 1 to 1000 VL (the latter being reserved for instant towers).
 Tower:
-  # Do you want to enable the Tower check?
   enabled: true
   # The violation level at which AntiCheatAddition starts to cancel the block placements.
   # Set this to 0 to never cancel block placement.
@@ -554,7 +509,6 @@ Sentinel:
     # actions when created in creative mode: Opening files, executing commands and more.
     # This sentinel eliminates any books on your server that correspond to the categories listed below.
     BookPage:
-      # Do you want to enable the BookPage exploit detection?
       enabled: true
       # What is the page limit for books on your server?
       # Vanilla clients have a 100-page limit when writing with a book and quill.
@@ -580,7 +534,6 @@ Sentinel:
     # players that used some exploit to get a command block. This will also delete any command blocks found in the
     # player's inventory.
     CommandBlock:
-      # Do you want to enable the CommandBlock exploit detection?
       enabled: true
       # What commands will be executed if the mod is detected?
       # Automatic banning can be considered.
@@ -591,7 +544,6 @@ Sentinel:
     # instant health potion effects kill a player. Moreover, equally high instant damage potions can kill any undead mobs.
     # This Sentinel detects the use of such potions, neutralizes their effects, and removes them from the inventory.
     CreativeKillPotion:
-      # Do you want to enable the CreativeKillPotion exploit detection?
       enabled: true
       # What commands will be executed if an illegal potion is detected?
       # Automatic banning can be considered.
@@ -601,7 +553,6 @@ Sentinel:
     # Various cheat clients allow a player to attack themselves, giving them an advantage in some scenarios, like
     # abusing a game's death mechanics.
     SelfDamage:
-      # Do you want to enable the SelfDamage exploit detection?
       enabled: true
       # What commands will be executed if a self-attack is detected?
       # Automatic banning can be considered.
@@ -618,7 +569,6 @@ Sentinel:
     # to access them, as this can lead to a poor gaming experience.
     # This Sentinel detects the use of such potions, neutralizes their effects, and removes them from the inventory.
     TrollPotion:
-      # Do you want to enable the TrollPotion exploit detection?
       enabled: true
       # The minimum time of the effects to trigger a detection.
       # Must be greater than or equal to 0. (in seconds)
@@ -630,7 +580,6 @@ Sentinel:
 
   # A popular pvp mod that can display a HUD, capes and has multiple social features.
   5Zig:
-    # Do you want to enable 5Zig?
     enabled: false
     # What commands will be executed if the mod is detected?
     commands:
@@ -638,7 +587,6 @@ Sentinel:
 
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
   BetterSprinting:
-    # Do you want to enable BetterSprinting?
     enabled: true
     # This mod provides a method to disable parts of it.
     disable:
@@ -655,13 +603,11 @@ Sentinel:
   # This Sentinel is for the up-to-date version of LabyMod, a popular PvP mod similar to 5zig, but with more features and TS3 support.
   # If activated, the Sentinel will override the config options of the LabyModAPI plugin that is needed for this Sentinel to work.
   LabyMod:
-    # Do you want to enable LabyMod-Sentinel?
     enabled: false
     # This allows you to show LabyMod players a banner image in their tablist.
     # As specified in their documentation (https://docs.labymod.net/pages/server/displays/tablist/)
     # the image ratio must be 5:1 and the recommended resolution is 1280x256 pixels.
     TablistBanner:
-      # Do you want to enable LabyModServerInfo?
       enabled: false
       # Please specify the URL to get the image here.
       url: ""
@@ -706,7 +652,6 @@ Sentinel:
   # A mod that projects (client-side) holograms to simplify building, but also has a module for downloading worlds.
   # This Sentinel only activates on Minecraft versions 1.8-1.12 because of the mod’s age.
   Schematica:
-    # Do you want to enable Schematica-Sentinel?
     enabled: false
     # This mod provides a method to disable parts of it.
     # Set the corresponding value to true if you want to block a part of the mod
@@ -726,7 +671,6 @@ Sentinel:
   # to uncover in screen-shares. The Sentinel only identifies some cracked client versions.
   # This Sentinel won't work with Minecraft 1.13+ since the cracked version is 1.8 and 1.13 has seen massive API alterations.
   Vape:
-    # Do you want to enable Vape-Sentinel?
     enabled: true
     # What commands will be executed if the mod is detected?
     # Automatic banning can be considered.
@@ -735,7 +679,6 @@ Sentinel:
 
   # WorldDownloader is a popular modification to retrieve the maps of a server.
   WorldDownloader:
-    # Do you want to enable WorldDownloader-Sentinel?
     enabled: false
     # This mod provides a method to disable parts of it.
     disable:
@@ -782,7 +725,6 @@ Sentinel:
   Custom:
     # This detects Forge.
     Forge:
-      # Do you want to enable Forge-Sentinel?
       enabled: false
       # The channels AntiCheatAddition will listen to.
       incoming_channels:
@@ -800,7 +742,6 @@ Sentinel:
 
     # This detects Liteloader.
     LiteLoader:
-      # Do you want to enable LiteLoader-Sentinel?
       enabled: false
       # The channels AntiCheatAddition will listen to.
       incoming_channels:
@@ -818,7 +759,6 @@ Sentinel:
 
     # This detects the PixelClient.
     PixelClient:
-      # Do you want to enable PixelClient-Sentinel?
       enabled: false
       # The channels AntiCheatAddition will listen to.
       incoming_channels:
@@ -836,7 +776,6 @@ Sentinel:
 
     # This detects the PXMod.
     PXMod:
-      # Do you want to enable PXMod-Sentinel?
       enabled: false
       # The channels AntiCheatAddition will listen to.
       incoming_channels:
@@ -854,7 +793,6 @@ Sentinel:
 
     # This detects Rift.
     Rift:
-      # Do you want to enable Rift-Sentinel?
       enabled: false
       # The channels AntiCheatAddition will listen to.
       incoming_channels:
@@ -872,7 +810,6 @@ Sentinel:
 
     # This detects Winterware.
     Winterware:
-      # Do you want to enable Winterware-Sentinel?
       enabled: true
       # The channels AntiCheatAddition will listen to.
       incoming_channels:

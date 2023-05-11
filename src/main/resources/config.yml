@@ -164,7 +164,7 @@ AutoPotion:
   enabled: true
   # The violation level at which AntiCheatAddition starts to cancel potion throws.
   # Set this to 0 to never cancel throwing potions.
-  cancel_vl: 2
+  cancel_vl: 100
   # A detection exceeding cancel_vl stops all potion throws for this time (in milliseconds).
   timeout: 1000
   # Map of violation levels to commands.

@@ -1,6 +1,6 @@
 package de.photon.anticheataddition.modules.additions.esp;
 
-import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
+import de.photon.anticheataddition.util.minecraft.entity.InternalPotion;
 import org.bukkit.entity.Player;
 
 public interface CanSee

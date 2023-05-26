@@ -2,8 +2,7 @@ package de.photon.anticheataddition.modules.additions.esp;
 
 import de.photon.anticheataddition.util.mathematics.Hitbox;
 import de.photon.anticheataddition.util.mathematics.ResetVector;
-import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
-import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
+import de.photon.anticheataddition.util.minecraft.world.OcclusionUtil;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -42,8 +41,8 @@ final class ThirdPersonCameraCanSee implements CanSee
         // [0] = frontIntersection
         // [1] = behindIntersection
         final double[] intersections = new double[]{
-                CanSee.getDistanceToFirstIntersectionWithBlock(eyeLocation, locations[1].toVector()),
-                CanSee.getDistanceToFirstIntersectionWithBlock(eyeLocation, locations[2].toVector())
+                OcclusionUtil.getDistanceToFirstIntersectionWithBlock(eyeLocation, locations[1].toVector()),
+                OcclusionUtil.getDistanceToFirstIntersectionWithBlock(eyeLocation, locations[2].toVector())
         };
 
         for (int i = 0; i < intersections.length; ++i) {
@@ -66,11 +65,8 @@ final class ThirdPersonCameraCanSee implements CanSee
     }
 
     @Override
-    public boolean canSee(Player observer, Player watched)
+    public boolean canSeeTracing(Player observer, Player watched)
     {
-        // Glowing.
-        if (InternalPotion.GLOWING.hasPotionEffect(watched)) return true;
-
         // ----------------------------------- Calculation ---------------------------------- //
         final Location[] watchedHitboxLocations = Hitbox.espHitboxLocationOf(watched).getEspLocations();
 
@@ -82,12 +78,8 @@ final class ThirdPersonCameraCanSee implements CanSee
 
                 // Ignore FOV checking as 3rd person has a look back option.
 
-                // Make sure the chunks are loaded.
-                // If the chunks are not loaded assume the players can see each other.
-                if (!WorldUtil.INSTANCE.areChunksLoadedBetweenLocations(cameraLocation, hitLoc)) return true;
-
                 // No intersection found
-                if (CanSee.canSeeHeuristic(cameraLocation, between, hitLoc)) return true;
+                if (!OcclusionUtil.isRayOccluded(cameraLocation, between, hitLoc)) return true;
             }
         }
         return false;

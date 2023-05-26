@@ -2,8 +2,7 @@ package de.photon.anticheataddition.modules.additions.esp;
 
 import de.photon.anticheataddition.util.mathematics.Hitbox;
 import de.photon.anticheataddition.util.mathematics.ResetVector;
-import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
-import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
+import de.photon.anticheataddition.util.minecraft.world.OcclusionUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -16,11 +15,8 @@ final class SingleCameraCanSee implements CanSee
     private static final double MAX_FOV = Math.toRadians(165D / 2);
 
     @Override
-    public boolean canSee(Player observer, Player watched)
+    public boolean canSeeTracing(Player observer, Player watched)
     {
-        // Glowing.
-        if (InternalPotion.GLOWING.hasPotionEffect(watched)) return true;
-
         // ----------------------------------- Calculation ---------------------------------- //
         final Vector viewDirection = observer.getLocation().getDirection();
         final Location cameraLocation = observer.getEyeLocation();
@@ -33,12 +29,8 @@ final class SingleCameraCanSee implements CanSee
             // Ignore directions that cannot be seen by the player due to FOV.
             if (viewDirection.angle(between) > MAX_FOV) continue;
 
-            // Make sure the chunks are loaded.
-            // If the chunks are not loaded assume the players can see each other.
-            if (!WorldUtil.INSTANCE.areChunksLoadedBetweenLocations(cameraLocation, hitLoc)) return true;
-
             // No intersection found
-            if (CanSee.canSeeHeuristic(cameraLocation, between, hitLoc)) return true;
+            if (!OcclusionUtil.isRayOccluded(cameraLocation, between, hitLoc)) return true;
         }
         return false;
     }

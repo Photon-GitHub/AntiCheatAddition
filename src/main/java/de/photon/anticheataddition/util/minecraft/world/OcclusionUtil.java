@@ -44,14 +44,13 @@ public final class OcclusionUtil
      *
      * @return The length when the {@link Vector} intersects or 0 if no intersection was found
      */
-    public static double getDistanceToFirstIntersectionWithBlock(final Location start, final Vector direction)
+    public static double getDistanceToFirstIntersectionWithBlock(final Location start, final Vector direction, final int distance)
     {
         Preconditions.checkNotNull(start.getWorld(), "RayTrace: Unknown start world.");
-        final int length = (int) direction.length();
 
-        if (length >= 1) {
+        if (distance >= 1) {
             try {
-                final var blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, length);
+                final var blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, distance);
                 Block block;
                 while (blockIterator.hasNext()) {
                     block = blockIterator.next();

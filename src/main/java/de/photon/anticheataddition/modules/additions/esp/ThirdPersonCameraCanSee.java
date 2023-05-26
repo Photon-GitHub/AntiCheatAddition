@@ -31,8 +31,7 @@ final class ThirdPersonCameraCanSee implements CanSee
         double behindDistance = getCameraDistance(eyeLocation, lookingBehind);
 
         // All locations and camera rays go out from the eye location.
-        final Location[] result = new Location[3];
-        for (int i = 0; i < result.length; i++) result[i] = eyeLocation.clone();
+        final Location[] result = new Location[]{eyeLocation, eyeLocation.clone(), eyeLocation.clone()};
 
         // result[0] is the eye location and should not be changed.
         // Subtract half a block to make sure that our intersection is before and not in a block.

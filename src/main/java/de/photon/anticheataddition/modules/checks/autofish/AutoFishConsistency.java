@@ -19,7 +19,7 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
 {
     public static final AutoFishConsistency INSTANCE = new AutoFishConsistency();
 
-    private static final int FISHING_ATTEMPTS_TO_CHECK = 5;
+    private static final int FISHING_ATTEMPTS_TO_CHECK = 6;
     private static final int MIN_HUMAN_VARIATION = 50;
 
     private final int cancelVl = AntiCheatAddition.getInstance().getConfig().getInt("AutoFish.cancel_vl");
@@ -54,8 +54,9 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
 
                 this.getManagement().flag(Flag.of(user)
                                               .setAddedVl((int) flagOffset)
-                                              .setDebug(() -> "AutoFish-Debug | Player %s failed consistency | average time: %f | maximum offset: %f | flag offset: %f"
+                                              .setDebug(() -> "AutoFish-Debug | Player %s failed consistency | key %s | average time: %f | maximum offset: %f | flag offset: %f"
                                                       .formatted(user.getPlayer().getName(),
+                                                                 key.name(),
                                                                  consistencyData.getAverage(),
                                                                  maxOffset,
                                                                  flagOffset))

@@ -140,7 +140,7 @@ AutoFish:
       enabled: true
     # The consistency part detects the constant reaction times of simple fishing bots.
     # Human players have at least a minor variation in their reaction times.
-    # Adds 1 to 160 VL.
+    # Adds 1 to 130 VL.
     consistency:
       enabled: true
       # Do you allow afk fishing farms on your server?

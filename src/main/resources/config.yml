@@ -122,19 +122,17 @@ AutoEat:
     200: "kick {player} AutoEat"
 
 # AutoFish detects automatic fishing bots which can yield a lot of treasure and food for those who use them.
-#
 # If you have modified fishing time and/or behaviour, please test if this check is compatible with your setup.
 # This check automatically disables itself on Minecraft versions below 1.11 because of changes to the Spigot API.
 AutoFish:
   enabled: true
   # The violation level at which AntiCheatAddition starts to cancel fishing.
-  # Please think of potential luck. Therefore, I advise against setting this to a value smaller than 70.
   # Set this to 0 to never cancel fishing.
   cancel_vl: 100
   # Control the different parts of AutoFish.
   parts:
-    # The inhuman reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
-    # This might cause some false positives with experienced fishers.
+    # This part recognizes instantaneous reaction speeds to detect AutoFishing mods.
+    # False positives might occur among experienced fishers.
     # Adds 1 to 60 VL.
     inhuman_reaction:
       enabled: true
@@ -167,12 +165,9 @@ AutoPotion:
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoPotion"
     200: "kick {player} AutoPotion"
 
-# Through heuristics, duping can pick out familiar behaviour patterns when duplicating items.
+# Duping can pick out familiar behaviour patterns when duplicating items.
 # Since this only recognizes patterns, it is not entirely precise and may overlook cases of duping.
-# However, it can often alert moderators to investigate any suspicions.
-#
-# To help with investigations, this check logs both the world and the exact location of any suspicious
-# behaviour in AntiCheatAddition’s log file.
+# To help with investigations, AntiCheatAddition records the location of any suspicious behavior in its log file.
 Duping:
   enabled: true
   # Control the different parts of Duping
@@ -195,7 +190,7 @@ Duping:
 
 # Fastswitch detects players switching their hotbar-selection too quickly.
 # This is a typical behaviour when cheaters simultaneously use Killaura and Scaffold.
-# The check will self-disable when the server has low TPS.
+# The check will auto-disable when the server has low TPS.
 # Adds 25 VL.
 Fastswitch:
   enabled: true
@@ -228,6 +223,7 @@ ImpossibleChat:
     200: "kick {player} ImpossibleChat"
 
 # This check monitors inventory interactions of players.
+# The check will auto-disable when the server has low TPS.
 Inventory:
   enabled: true
   # If a player's ping surpasses this value, they will be exempted from some parts of the check.
@@ -251,7 +247,7 @@ Inventory:
       # Set this to 0 to never cancel hits.
       cancel_vl: 60
     # The move part detects when a player moves while they are in their inventory.
-    # This part adds 5 VL for moving and 20 VL for jumping while in an inventory.
+    # Adds 5 (moving) to 20 (jumping) VL
     Move:
       enabled: true
       # The violation level at which AntiCheatAddition starts to cancel the movement.
@@ -267,7 +263,7 @@ Inventory:
       # The violation level at which AntiCheatAddition starts to cancel the inventory interactions.
       # Set this to 0 to never cancel interacts.
       cancel_vl: 25
-    # This part detects chest stealers, which automatically close empty inventories with perfect timing.
+    # This part detects chest stealers that close empty inventories with perfect timing.
     # Adds 20 to 40 VL.
     PerfectExit:
       enabled: true
@@ -415,7 +411,7 @@ Skinblinker:
     Sprinting:
       enabled: true
     # The current protocol has an unutilized bit in the skin packet that Skinblinker cheats often toggle.
-    # Please note that false positives may occur with certain custom clients that use this bit for cosmetics.
+    # Please note that false positives may occur with custom clients that use this bit for cosmetics.
     UnusedBit:
       enabled: true
   # Map of violation levels to commands.

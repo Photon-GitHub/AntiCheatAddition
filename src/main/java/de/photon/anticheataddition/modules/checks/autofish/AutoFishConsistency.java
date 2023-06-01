@@ -48,7 +48,7 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
             // Calculate the maximum offset.
             final double maxOffset = Math.max(MathUtil.absDiff(consistencyData.getMin(), consistencyData.getAverage()), MathUtil.absDiff(consistencyData.getMax(), consistencyData.getAverage()));
 
-            if (MIN_HUMAN_VARIATION > (maxOffset + 1)) {
+            if (maxOffset < MIN_HUMAN_VARIATION) {
                 // (maxOffset / minVariation) will be at most 1 and at least 0
                 final double flagOffset = 130 - (129 * (maxOffset / MIN_HUMAN_VARIATION));
 

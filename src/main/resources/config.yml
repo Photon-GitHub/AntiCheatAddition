@@ -143,11 +143,8 @@ AutoFish:
     # Adds 1 to 160 VL.
     consistency:
       enabled: true
-      # How many unsuccessful attempts at fishing should a player have before they are exempt from the consistency part?
-      # This prevents AFK fishing farm false positives.
-      # Do not substantially reduce this value, or bots with a custom failure rate won't be detected.
-      # If you forbid AFK fishing farms on your server, set this to 99999.
-      maximum_fails: 12
+      # Do you allow afk fishing farms on your server?
+      allow_afk_fishing_farms: true
   # Map of violation levels to commands.
   thresholds:
     90: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoFish"

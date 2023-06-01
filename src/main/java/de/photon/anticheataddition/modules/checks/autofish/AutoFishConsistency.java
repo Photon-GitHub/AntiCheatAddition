@@ -10,6 +10,7 @@ import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
+import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -22,6 +23,8 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
 
     private static final int FISHING_ATTEMPTS_TO_CHECK = 5;
     private static final int MIN_HUMAN_VARIATION = 50;
+
+    @Getter private final int autofishFailedThreshold = loadBoolean(".allow_afk_fishing_farms", true) ? 20 : Integer.MAX_VALUE;
 
     private AutoFishConsistency()
     {

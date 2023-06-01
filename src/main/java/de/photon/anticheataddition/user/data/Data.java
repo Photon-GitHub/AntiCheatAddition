@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.user.data;
 
+import de.photon.anticheataddition.modules.checks.autofish.AutoFishConsistency;
 import de.photon.anticheataddition.modules.checks.autopotion.AutoPotion;
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
 import org.bukkit.Location;
@@ -57,7 +58,7 @@ public final class Data
      */
     public static final class Counter
     {
-        public final ViolationCounter autofishFailed = new ViolationCounter("AutoFish.parts.consistency.maximum_fails");
+        public final ViolationCounter autofishFailed = new ViolationCounter(AutoFishConsistency.INSTANCE.getAutofishFailedThreshold());
 
         public final ViolationCounter inventoryAverageHeuristicsMisclicks = new ViolationCounter(0);
         public final ViolationCounter inventoryPerfectExitFails = new ViolationCounter(6);

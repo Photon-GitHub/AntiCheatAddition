@@ -236,13 +236,11 @@ Inventory:
   max_ping: 400
   # Control the different parts of Inventory
   parts:
-    # This part searches for consistent intervals between inventory clicks, detecting simple chest stealer bots that
-    # don't randomize click delays.
-    # NOTE: Disable this part if you allow any inventory sorting mods.
+    # This part finds simple chest stealer bots by detecting regular intervals between inventory clicks.
+    # This part is slow and activates only every 16 clicks.
     #
-    # Please note that this check is slow and only activates every 16 clicks on items.
-    # This part adds 20-70 VL, based on mis-clicks and time between clicks.
-    # Therefore, rapid clicking, like at the start of Survival Games, is not penalized when many empty slots are clicked.
+    # NOTE: Disable this part if you allow any inventory sorting mods.
+    # Adds 20 to 70 VL
     AverageHeuristic:
       enabled: true
     # This part detects hitting while the inventory is open.

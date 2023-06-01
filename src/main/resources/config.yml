@@ -490,11 +490,11 @@ Sentinel:
       enabled: true
       # What is the page limit for books on your server?
       # Vanilla clients have a 100-page limit when writing with a book and quill.
-      # Increase this number if the server uses custom books with more pages.
+      # Increase this number if your server uses custom books with more pages.
       max_page_count: 100
-      # Should books with a ClickAction that open a local file on your PC be erased?
+      # Should books with a ClickAction that opens a local file on your PC be erased?
       disallow_open_file: true
-      # All Books with a ClickAction that executes a command listed below will be deleted.
+      # All books with a ClickAction that executes a command listed below will be deleted.
       disallowed_commands:
         - "op"
         - "deop"

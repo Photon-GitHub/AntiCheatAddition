@@ -138,9 +138,6 @@ AutoFish:
     # Adds 1 to 60 VL.
     inhuman_reaction:
       enabled: true
-      # How many milliseconds must elapse for a fishing action to count as legit?
-      # Beyond this limit, the VL increases linearly with faster, more inhuman reactions.
-      human_reaction_time: 145.0
     # The consistency part detects the constant reaction times of simple fishing bots.
     # Human players have at least a minor variation in their reaction times.
     # Adds 1 to 160 VL.
@@ -149,7 +146,7 @@ AutoFish:
       # How many unsuccessful attempts at fishing should a player have before they are exempt from the consistency part?
       # This prevents AFK fishing farm false positives.
       # Do not substantially reduce this value, or bots with a custom failure rate won't be detected.
-      # If you forbid AFK fishing farms on your server, set this to 0.
+      # If you forbid AFK fishing farms on your server, set this to 99999.
       maximum_fails: 12
   # Map of violation levels to commands.
   thresholds:
@@ -236,9 +233,6 @@ ImpossibleChat:
 # This check monitors inventory interactions of players.
 Inventory:
   enabled: true
-  # This check is only active if the server has the required minimum TPS.
-  # Low TPS cause an extreme amount of false positives.
-  min_tps: 19.0
   # If a player's ping surpasses this value, they will be exempted from some parts of the check.
   # Note: Most parts do not depend on ping and will ignore this value.
   # Set this to -1 to disable
@@ -268,12 +262,6 @@ Inventory:
       # The violation level at which AntiCheatAddition starts to cancel the movement.
       # Set this to 0 to never cancel movement.
       cancel_vl: 60
-      # The part will not check a player for this time after a teleport.
-      # Increase this to avoid false positives with high-ping players after teleports.
-      # Ender pearls, commands, and respawns are all forms of teleportation. (in milliseconds)
-      teleport_bypass_time: 900
-      # Analogous to the option above, this only applies to world changes, which require more time to process.
-      world_change_bypass_time: 2000
       # This provides more leeway on servers with players who have a high ping by extending the no-penalty time after
       # an inventory is opened. The default value already covers normal connections. (in milliseconds)
       lenience_millis: 0
@@ -292,12 +280,6 @@ Inventory:
     # Adds 1 VL.
     Rotation:
       enabled: true
-      # The part will not check a player for this time after a teleport.
-      # Increase this to avoid false positives with high-ping players after teleports.
-      # Ender pearls, commands, and respawns are all forms of teleportation. (in milliseconds)
-      teleport_bypass_time: 900
-      # Analogous to the option above, this only applies to world changes, which require more time to process.
-      world_change_bypass_time: 2000
     # This part detects inventory interactions while a player is sprinting or sneaking.
     # Adds 30 VL.
     Sprinting:

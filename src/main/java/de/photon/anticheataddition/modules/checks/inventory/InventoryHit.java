@@ -2,7 +2,6 @@ package de.photon.anticheataddition.modules.checks.inventory;
 
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -29,7 +28,7 @@ public final class InventoryHit extends ViolationModule implements Listener
         // Is a hit-attack
         if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK &&
             event.getDamager() instanceof Player player &&
-            TPSProvider.INSTANCE.atLeastTPS(Inventory.INSTANCE.getMinTps()))
+            Inventory.hasMinTPS())
         {
             final var user = User.getUser(player.getUniqueId());
             if (User.isUserInvalid(user, this)) return;

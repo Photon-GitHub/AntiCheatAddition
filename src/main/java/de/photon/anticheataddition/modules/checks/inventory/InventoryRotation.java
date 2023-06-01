@@ -2,7 +2,6 @@ package de.photon.anticheataddition.modules.checks.inventory;
 
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -14,9 +13,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 public final class InventoryRotation extends ViolationModule implements Listener
 {
     public static final InventoryRotation INSTANCE = new InventoryRotation();
-
-    private final int teleportTime = loadInt(".teleport_bypass_time", 900);
-    private final int worldChangeTime = loadInt(".world_change_bypass_time", 2000);
 
     private InventoryRotation()
     {
@@ -30,7 +26,7 @@ public final class InventoryRotation extends ViolationModule implements Listener
         if (User.isUserInvalid(user, this) || event.getTo() == null) return;
 
         // Not flying (may trigger some fps)
-        if (TPSProvider.INSTANCE.atLeastTPS(Inventory.INSTANCE.getMinTps()) &&
+        if (Inventory.hasMinTPS() &&
             !user.getPlayer().getAllowFlight() &&
             // Player is in an inventory
             user.hasOpenInventory() &&
@@ -38,8 +34,7 @@ public final class InventoryRotation extends ViolationModule implements Listener
             (event.getFrom().getYaw() != event.getTo().getYaw() ||
              event.getFrom().getPitch() != event.getTo().getPitch()) &&
             // No recently tp
-            !user.hasTeleportedRecently(teleportTime) &&
-            !user.hasChangedWorldsRecently(worldChangeTime) &&
+            !Inventory.teleportOrWorldChangeBypassed(user) &&
             // The player has opened his inventory for at least one second.
             user.notRecentlyOpenedInventory(1000))
         {

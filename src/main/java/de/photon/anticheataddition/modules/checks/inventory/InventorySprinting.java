@@ -5,7 +5,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
-import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -32,7 +31,7 @@ public final class InventorySprinting extends ViolationModule implements Listene
         if (User.isUserInvalid(user, this)) return;
 
         // Flight may trigger this
-        if (TPSProvider.INSTANCE.atLeastTPS(Inventory.INSTANCE.getMinTps()) &&
+        if (Inventory.hasMinTPS() &&
             !user.getPlayer().getAllowFlight() &&
             // Not using an Elytra
             !EntityUtil.INSTANCE.isFlyingWithElytra(user.getPlayer()) &&

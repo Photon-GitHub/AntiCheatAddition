@@ -37,9 +37,17 @@ public final class ViolationCounter
     /**
      * Checks if the counter is greater or equal to the threshold.
      */
-    public boolean compareThreshold()
+    public boolean greaterOrEqualToThreshold()
     {
         return this.counter.get() >= threshold;
+    }
+
+    /**
+     * Checks if the counter is smaller than the threshold.
+     */
+    public boolean smallerThanThreshold()
+    {
+        return this.counter.get() < threshold;
     }
 
     /**

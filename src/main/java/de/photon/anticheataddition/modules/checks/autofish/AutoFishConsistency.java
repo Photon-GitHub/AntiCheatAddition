@@ -38,7 +38,7 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
             case FISHING -> {
                 // Not too many failed attempts in between (afk fish farm false positives)
                 // Negative maximum_fails indicate not allowing afk fishing farms.
-                if (user.getData().counter.autofishFailed.compareThreshold() &&
+                if (user.getData().counter.autofishFailed.smallerThanThreshold() &&
                     // If the last attempt was a fail do not check (false positives)
                     user.getTimeMap().at(TimeKey.AUTOFISH_DETECTION).getTime() != 0)
                 {

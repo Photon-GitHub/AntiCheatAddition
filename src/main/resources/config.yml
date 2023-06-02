@@ -808,6 +808,7 @@ Sentinel:
 # "OFF" disables logging, "FINER" causes various debug messages be logged and "ALL" or "FINEST" enable spammy debug messages.
 Debug:
   # The logging level for the console.
+  # Please note that due to a spigot bug, this setting is currently not functional.
   console_level: "INFO"
   # The logging level for the log file.
   # For submitting bug reports, it is imperative that the file log level is at least "FINE".

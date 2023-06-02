@@ -101,6 +101,7 @@ LogBot:
 #                                              \___|_||_\___\__|_\_\/__/                                              #
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
+
 # This module detects AutoEat bots that automatically consume food.
 # AutoEat VL decreases only every 5 minutes to identify cheats, no matter how spaced out eating sessions are.
 # Adds 20 VL.
@@ -463,7 +464,6 @@ Tower:
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
-
 # Sentinel watches over your server detecting mods and sometimes certain cheat clients on join without false detections.
 # Also, it tries to identify various exploits and illegal items that are safe to ban.
 # It does so by listening for certain messages that clients and mods can send over channels invisible to the user.
@@ -788,6 +788,7 @@ Sentinel:
       # Automatic banning can be considered.
       commands:
         - "kick {player} Illegal Client Modifications"
+
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                               ___      _                                                            #
 #                                              |   \ ___| |__ _  _ __ _                                               #

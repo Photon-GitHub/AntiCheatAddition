@@ -502,9 +502,8 @@ Sentinel:
       commands:
         - "kick {player} Maliciously modified book."
 
-    # Even if you have command blocks disabled on your server (as you should), it might be good to know (and ban)
-    # players that used some exploit to get a command block. This will also delete any command blocks found in the
-    # player's inventory.
+    # Even if you have command blocks disabled on your server (as you should), it might be good to know (and ban) players
+    # that use exploits to get them nonetheless. Also deletes any command blocks found in the player's inventory.
     CommandBlock:
       enabled: true
       # What commands will be executed if the mod is detected?
@@ -538,7 +537,7 @@ Sentinel:
     # + Nausea for at least min_effect_time seconds
     #
     # Brewing these potions is not possible. Unless they are a necessary part of the server, players should not be able
-    # to access them, as this can lead to a poor gaming experience.
+    # to access them, as they can lead to a poor gaming experience.
     # This Sentinel detects the use of such potions, neutralizes their effects, and removes them from the inventory.
     TrollPotion:
       enabled: true
@@ -594,7 +593,7 @@ Sentinel:
       # Resolves an issue in Minecraft with quick head movements that causes the crosshair to lag slightly behind.
       # This can be seen as semi-cheat-like, as it grants a minor aiming advantage in fights.
       crosshair_sync: false
-      # This fixes some inventory bugs improving pot and soup refill.
+      # This fixes some inventory bugs, improving pot and soup refill.
       # Many consider this a form of cheating, as it gives a large reliability bonus.
       refill_fix: true
       # Purely aesthetic modifications to the GUI, including coordinates, orientation and the current time.
@@ -658,20 +657,17 @@ Sentinel:
       # Other options will be ignored if this is set to true.
       general: true
       # This disables future features of the mod not yet included in the server api.
-      # It is recommended to set this to true.
       future: true
       # This sets the chunk range to download from a player’s location.
-      # -1 indicates an infinite range. The ranges form is a square, not a circle.
-      # Only applicable if chunk caching is disabled.
+      # -1 indicates an infinite range. The range's form is a square, not a circle.
+      # If chunk_caching is set to false, this has no effect.
       save_radius: 0
-      # This disables chunk caching which allows the player to save all chunks he has moved through.
+      # This disables chunk caching which allows the player to save all chunks they have moved through.
       chunk_caching: true
-      # This disables saving entities.
+      # Should the player be able to save (tile) entities?
       entity_saving: true
-      # This disables saving tile entities.
       tile_entity_saving: true
-      # This disables saving containers and their inventories.
-      # If tile_entity_saving is disabled, this has no effect.
+      # If tile_entity_saving is set to true, this has no effect.
       container_saving: true
     # What commands will be executed if the mod is detected?
     commands:

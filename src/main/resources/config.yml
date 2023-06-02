@@ -29,10 +29,8 @@ BrandHider:
   # This is the replacement text for the brand.
   # You can use the character ‘&’ for color codes and all placeholders that are available in normal checks.
   brand: "Some Spigot"
-  # This updates the brand at regular intervals.
-  # Use this to display changing attributes, such as TPS, Ping, Time or Date.
-  # Set this to 0 to turn off refreshing if you only use static text or placeholders.
-  # Measured in ticks.
+  # Updates the brand at regular intervals for changing attributes, such as TPS, Ping, Time or Date.
+  # Set this to 0 to turn off refreshing if you only use static text or placeholders (in ticks).
   refresh_rate: 0
 
 # This module spoofs the health of all players on your server, thus rendering DamageIndicators, HealthTags, and other
@@ -57,14 +55,12 @@ EnchantmentHider:
     players: true
     others: false
 
-# ESP uses advanced mathematics to check player visibility.
-# If another player is not in view, ESP conceals their information on the packet-level.
+# If two players cannot see each other, ESP conceals their information on the packet-level.
 # ESP does not scan the entire distance between two players to increase performance.
-# Instead, heuristics are used to check the most relevant blocks.
 # As a result, ESP can sometimes show otherwise invisible players.
 #
 # MAIN FUNCTIONS:
-# - Sneaking-Hider:  Any sneaking player will be hidden from the other players if not seen directly.
+# - Sneaking-Hider:  Sneaking players will be hidden from other players if not seen directly.
 #                    This renders ESP, tracers, radar and related cheats ineffective in spotting sneaking players without line of sight.
 #
 # - Equipment-Hider: If a player is not visible to another player, ESP will hide any equipment they are wearing or have in their hands.

@@ -48,6 +48,7 @@ public final class ModernPlayerEquipmentHider extends PacketInformationHider
     @Override
     protected Set<ServerVersion> getSupportedVersions()
     {
+        // Only in 1.19 the new sendEquipmentChange methods were added.
         return ServerVersion.MC119.getSupVersionsFrom();
     }
 }

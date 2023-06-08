@@ -16,7 +16,7 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Add your server directory here for automatic deployment. -->
-        <testserver.dir>${user.home}\Desktop\1.19-Testserver\plugins</testserver.dir>
+        <testserver.dir>${user.home}\Desktop\Testserver\plugins</testserver.dir>
     </properties>
 
     <build>

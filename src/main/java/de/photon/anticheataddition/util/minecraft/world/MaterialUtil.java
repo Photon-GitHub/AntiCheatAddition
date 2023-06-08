@@ -81,7 +81,7 @@ public final class MaterialUtil
                 EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
 
                 SIGNS = ServerVersion.ACTIVE == ServerVersion.MC120 ?
-                        ofTags(Tag.ALL_SIGNS, Tag.ALL_HANGING_SIGNS) :
+                        ofTags(Tag.ALL_SIGNS) :
                         ofTags(Tag.SIGNS, Tag.STANDING_SIGNS, Tag.WALL_SIGNS);
 
                 SPAWNER_MATERIAL = Material.SPAWNER;

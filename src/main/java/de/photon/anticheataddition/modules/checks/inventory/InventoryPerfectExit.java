@@ -5,7 +5,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
-import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -33,7 +32,7 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
             // Creative-clear might trigger this.
             !user.inAdventureOrSurvivalMode() ||
             // Minimum TPS before the check is activated as of a huge amount of fps
-            !TPSProvider.INSTANCE.atLeastTPS(Inventory.INSTANCE.getMinTps()) ||
+            !Inventory.hasMinTPS() ||
             // The inventory has been completely cleared
             !InventoryUtil.isInventoryEmpty(event.getInventory())) return;
 

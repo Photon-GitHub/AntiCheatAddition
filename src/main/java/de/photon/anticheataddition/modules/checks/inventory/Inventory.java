@@ -20,9 +20,11 @@ import java.util.stream.Collectors;
 public class Inventory extends ViolationModule implements Listener
 {
     public static final Inventory INSTANCE = new Inventory();
+    public static final double MIN_TPS = 19.0D;
+    public static final int TELEPORT_BYPASS_TIME = 900;
+    public static final int WORLD_CHANGE_BYPASS_TIME = 2000;
 
     @Getter private final int maxPing = loadInt(".max_ping", 400);
-    @Getter private final double minTps = loadDouble(".min_tps", 19.0);
 
     protected Inventory()
     {
@@ -34,6 +36,17 @@ public class Inventory extends ViolationModule implements Listener
               InventoryRotation.INSTANCE,
               InventorySprinting.INSTANCE,
               InventoryStatistical.INSTANCE);
+    }
+
+    public static boolean teleportOrWorldChangeBypassed(User user)
+    {
+        return user.hasTeleportedRecently(TELEPORT_BYPASS_TIME) ||
+               user.hasChangedWorldsRecently(WORLD_CHANGE_BYPASS_TIME);
+    }
+
+    public static boolean hasMinTPS()
+    {
+        return TPSProvider.INSTANCE.atLeastTPS(MIN_TPS);
     }
 
     private static boolean supportedClickType(ClickType type)
@@ -55,7 +68,7 @@ public class Inventory extends ViolationModule implements Listener
             // Creative-clear might trigger this.
             user.inAdventureOrSurvivalMode() &&
             // Minimum TPS before the check is activated as of a huge amount of fps
-            TPSProvider.INSTANCE.atLeastTPS(minTps))
+            hasMinTPS())
         {
             if (event.getCurrentItem() == null || MaterialUtil.isAir(event.getCurrentItem().getType())) user.getData().counter.inventoryAverageHeuristicsMisclicks.increment();
                 // Shift - Double - Click shortcut will generate a lot of clicks.

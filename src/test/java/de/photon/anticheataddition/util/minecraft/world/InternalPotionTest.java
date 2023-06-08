@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.util.minecraft.world;
 
 import de.photon.anticheataddition.Dummy;
+import de.photon.anticheataddition.util.minecraft.entity.InternalPotion;
 import org.bukkit.potion.PotionEffectType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;

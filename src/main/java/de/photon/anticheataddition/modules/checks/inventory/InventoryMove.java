@@ -6,8 +6,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
-import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
-import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
+import de.photon.anticheataddition.util.minecraft.entity.InternalPotion;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -32,11 +31,8 @@ public final class InventoryMove extends ViolationModule implements Listener
 {
     public static final InventoryMove INSTANCE = new InventoryMove();
     public static final double STANDING_STILL_THRESHOLD = 0.005;
-
     private final int cancelVl = loadInt(".cancel_vl", 60);
     private final int lenienceMillis = loadInt(".lenience_millis", 0);
-    private final int teleportBypassTime = loadInt(".teleport_bypass_time", 900);
-    private final int worldChangeBypassTime = loadInt(".world_change_bypass_time", 2000);
 
     private InventoryMove()
     {
@@ -93,13 +89,12 @@ public final class InventoryMove extends ViolationModule implements Listener
             // After being hit a player moves due to knock-back, so recent hits can cause false positives.
             user.getPlayer().getNoDamageTicks() != 0 ||
             // Recent teleports can cause bugs
-            user.hasTeleportedRecently(teleportBypassTime) ||
-            user.hasChangedWorldsRecently(worldChangeBypassTime) ||
+            Inventory.teleportOrWorldChangeBypassed(user) ||
             // The player is currently not in a liquid (liquids push)
             // This would need to check for async chunk loads if done in packets (see history)
             user.isInLiquids() ||
             // Auto-Disable if TPS are too low
-            !TPSProvider.INSTANCE.atLeastTPS(Inventory.INSTANCE.getMinTps()))
+            !Inventory.hasMinTPS())
         {
             user.getData().bool.allowedToJump = true;
             return;

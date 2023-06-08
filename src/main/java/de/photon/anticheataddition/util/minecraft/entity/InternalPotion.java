@@ -1,4 +1,4 @@
-package de.photon.anticheataddition.util.minecraft.world;
+package de.photon.anticheataddition.util.minecraft.entity;
 
 import de.photon.anticheataddition.ServerVersion;
 import lombok.Getter;

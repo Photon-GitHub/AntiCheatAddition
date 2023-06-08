@@ -7,7 +7,7 @@
     <groupId>de.photon</groupId>
     <artifactId>AntiCheatAddition</artifactId>
 
-    <version>8.6.1</version>
+    <version>8.7.0</version>
 
     <name>AntiCheatAddition</name>
     <description>This plugin provides niche checks for cheats which are not covered by most anticheats.</description>
@@ -16,7 +16,7 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Add your server directory here for automatic deployment. -->
-        <testserver.dir>${user.home}\Desktop\1.19-Testserver\plugins</testserver.dir>
+        <testserver.dir>${user.home}\Desktop\Testserver\plugins</testserver.dir>
     </properties>
 
     <build>
@@ -170,7 +170,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.19.4-R0.1-SNAPSHOT</version>
+            <version>1.20-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

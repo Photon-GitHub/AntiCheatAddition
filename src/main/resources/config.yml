@@ -29,10 +29,8 @@ BrandHider:
   # This is the replacement text for the brand.
   # You can use the character ‘&’ for color codes and all placeholders that are available in normal checks.
   brand: "Some Spigot"
-  # This updates the brand at regular intervals.
-  # Use this to display changing attributes, such as TPS, Ping, Time or Date.
-  # Set this to 0 to turn off refreshing if you only use static text or placeholders.
-  # Measured in ticks.
+  # Updates the brand at regular intervals for changing attributes, such as TPS, Ping, Time or Date.
+  # Set this to 0 to turn off refreshing if you only use static text or placeholders (in ticks).
   refresh_rate: 0
 
 # This module spoofs the health of all players on your server, thus rendering DamageIndicators, HealthTags, and other
@@ -57,14 +55,12 @@ EnchantmentHider:
     players: true
     others: false
 
-# ESP uses advanced mathematics to check player visibility.
-# If another player is not in view, ESP conceals their information on the packet-level.
+# If two players cannot see each other, ESP conceals their information on the packet-level.
 # ESP does not scan the entire distance between two players to increase performance.
-# Instead, heuristics are used to check the most relevant blocks.
 # As a result, ESP can sometimes show otherwise invisible players.
 #
 # MAIN FUNCTIONS:
-# - Sneaking-Hider:  Any sneaking player will be hidden from the other players if not seen directly.
+# - Sneaking-Hider:  Sneaking players will be hidden from other players if not seen directly.
 #                    This renders ESP, tracers, radar and related cheats ineffective in spotting sneaking players without line of sight.
 #
 # - Equipment-Hider: If a player is not visible to another player, ESP will hide any equipment they are wearing or have in their hands.
@@ -98,6 +94,7 @@ LogBot:
   # Set to -1 to disable
   Server: 10
 
+
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                               ___ _           _                                                     #
 #                                              / __| |_  ___ __| |__ ___                                              #
@@ -105,6 +102,7 @@ LogBot:
 #                                              \___|_||_\___\__|_\_\/__/                                              #
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
+
 # This module detects AutoEat bots that automatically consume food.
 # AutoEat VL decreases only every 5 minutes to identify cheats, no matter how spaced out eating sessions are.
 # Adds 20 VL.
@@ -122,35 +120,26 @@ AutoEat:
     200: "kick {player} AutoEat"
 
 # AutoFish detects automatic fishing bots which can yield a lot of treasure and food for those who use them.
-#
 # If you have modified fishing time and/or behaviour, please test if this check is compatible with your setup.
 # This check automatically disables itself on Minecraft versions below 1.11 because of changes to the Spigot API.
 AutoFish:
   enabled: true
   # The violation level at which AntiCheatAddition starts to cancel fishing.
-  # Please think of potential luck. Therefore, I advise against setting this to a value smaller than 70.
   # Set this to 0 to never cancel fishing.
   cancel_vl: 100
   # Control the different parts of AutoFish.
   parts:
-    # The inhuman reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
-    # This might cause some false positives with experienced fishers.
+    # This part recognizes instantaneous reaction speeds to detect AutoFishing mods.
+    # False positives might occur among experienced fishers.
     # Adds 1 to 60 VL.
     inhuman_reaction:
       enabled: true
-      # How many milliseconds must elapse for a fishing action to count as legit?
-      # Beyond this limit, the VL increases linearly with faster, more inhuman reactions.
-      human_reaction_time: 145.0
     # The consistency part detects the constant reaction times of simple fishing bots.
-    # Human players have at least a minor variation in their reaction times.
-    # Adds 1 to 160 VL.
+    # Adds 1 to 130 VL.
     consistency:
       enabled: true
-      # How many unsuccessful attempts at fishing should a player have before they are exempt from the consistency part?
-      # This prevents AFK fishing farm false positives.
-      # Do not substantially reduce this value, or bots with a custom failure rate won't be detected.
-      # If you forbid AFK fishing farms on your server, set this to 0.
-      maximum_fails: 12
+      # Do you allow afk fishing farms on your server?
+      allow_afk_fishing_farms: true
   # Map of violation levels to commands.
   thresholds:
     90: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoFish"
@@ -173,12 +162,9 @@ AutoPotion:
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoPotion"
     200: "kick {player} AutoPotion"
 
-# Through heuristics, duping can pick out familiar behaviour patterns when duplicating items.
+# Duping can pick out familiar behaviour patterns when duplicating items.
 # Since this only recognizes patterns, it is not entirely precise and may overlook cases of duping.
-# However, it can often alert moderators to investigate any suspicions.
-#
-# To help with investigations, this check logs both the world and the exact location of any suspicious
-# behaviour in AntiCheatAddition’s log file.
+# To help with investigations, AntiCheatAddition records the location of any suspicious behavior in its log file.
 Duping:
   enabled: true
   # Control the different parts of Duping
@@ -201,7 +187,7 @@ Duping:
 
 # Fastswitch detects players switching their hotbar-selection too quickly.
 # This is a typical behaviour when cheaters simultaneously use Killaura and Scaffold.
-# The check will self-disable when the server has low TPS.
+# The check will auto-disable when the server has low TPS.
 # Adds 25 VL.
 Fastswitch:
   enabled: true
@@ -234,24 +220,20 @@ ImpossibleChat:
     200: "kick {player} ImpossibleChat"
 
 # This check monitors inventory interactions of players.
+# The check will auto-disable when the server has low TPS.
 Inventory:
   enabled: true
-  # This check is only active if the server has the required minimum TPS.
-  # Low TPS cause an extreme amount of false positives.
-  min_tps: 19.0
   # If a player's ping surpasses this value, they will be exempted from some parts of the check.
   # Note: Most parts do not depend on ping and will ignore this value.
   # Set this to -1 to disable
   max_ping: 400
   # Control the different parts of Inventory
   parts:
-    # This part searches for consistent intervals between inventory clicks, detecting simple chest stealer bots that
-    # don't randomize click delays.
-    # NOTE: Disable this part if you allow any inventory sorting mods.
+    # This part finds simple chest stealer bots by detecting regular intervals between inventory clicks.
+    # This part is slow and activates only every 16 clicks.
     #
-    # Please note that this check is slow and only activates every 16 clicks on items.
-    # This part adds 20-70 VL, based on mis-clicks and time between clicks.
-    # Therefore, rapid clicking, like at the start of Survival Games, is not penalized when many empty slots are clicked.
+    # NOTE: Disable this part if you allow any inventory sorting mods.
+    # Adds 20 to 70 VL
     AverageHeuristic:
       enabled: true
     # This part detects hitting while the inventory is open.
@@ -262,18 +244,12 @@ Inventory:
       # Set this to 0 to never cancel hits.
       cancel_vl: 60
     # The move part detects when a player moves while they are in their inventory.
-    # This part adds 5 VL for moving and 20 VL for jumping while in an inventory.
+    # Adds 5 (moving) to 20 (jumping) VL
     Move:
       enabled: true
       # The violation level at which AntiCheatAddition starts to cancel the movement.
       # Set this to 0 to never cancel movement.
       cancel_vl: 60
-      # The part will not check a player for this time after a teleport.
-      # Increase this to avoid false positives with high-ping players after teleports.
-      # Ender pearls, commands, and respawns are all forms of teleportation. (in milliseconds)
-      teleport_bypass_time: 900
-      # Analogous to the option above, this only applies to world changes, which require more time to process.
-      world_change_bypass_time: 2000
       # This provides more leeway on servers with players who have a high ping by extending the no-penalty time after
       # an inventory is opened. The default value already covers normal connections. (in milliseconds)
       lenience_millis: 0
@@ -284,7 +260,7 @@ Inventory:
       # The violation level at which AntiCheatAddition starts to cancel the inventory interactions.
       # Set this to 0 to never cancel interacts.
       cancel_vl: 25
-    # This part detects chest stealers, which automatically close empty inventories with perfect timing.
+    # This part detects chest stealers that close empty inventories with perfect timing.
     # Adds 20 to 40 VL.
     PerfectExit:
       enabled: true
@@ -292,12 +268,6 @@ Inventory:
     # Adds 1 VL.
     Rotation:
       enabled: true
-      # The part will not check a player for this time after a teleport.
-      # Increase this to avoid false positives with high-ping players after teleports.
-      # Ender pearls, commands, and respawns are all forms of teleportation. (in milliseconds)
-      teleport_bypass_time: 900
-      # Analogous to the option above, this only applies to world changes, which require more time to process.
-      world_change_bypass_time: 2000
     # This part detects inventory interactions while a player is sprinting or sneaking.
     # Adds 30 VL.
     Sprinting:
@@ -438,7 +408,7 @@ Skinblinker:
     Sprinting:
       enabled: true
     # The current protocol has an unutilized bit in the skin packet that Skinblinker cheats often toggle.
-    # Please note that false positives may occur with certain custom clients that use this bit for cosmetics.
+    # Please note that false positives may occur with custom clients that use this bit for cosmetics.
     UnusedBit:
       enabled: true
   # Map of violation levels to commands.
@@ -487,6 +457,7 @@ Tower:
     80: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Tower"
     200: "kick {player} Tower"
 
+
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                            ___          _   _          _                                            #
 #                                           / __| ___ _ _| |_(_)_ _  ___| |                                           #
@@ -494,7 +465,6 @@ Tower:
 #                                           |___/\___|_||_\__|_|_||_\___|_|                                           #
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
-
 
 # Sentinel watches over your server detecting mods and sometimes certain cheat clients on join without false detections.
 # Also, it tries to identify various exploits and illegal items that are safe to ban.
@@ -511,11 +481,11 @@ Sentinel:
       enabled: true
       # What is the page limit for books on your server?
       # Vanilla clients have a 100-page limit when writing with a book and quill.
-      # Increase this number if the server uses custom books with more pages.
+      # Increase this number if your server uses custom books with more pages.
       max_page_count: 100
-      # Should books with a ClickAction that open a local file on your PC be erased?
+      # Should books with a ClickAction that opens a local file on your PC be erased?
       disallow_open_file: true
-      # All Books with a ClickAction that executes a command listed below will be deleted.
+      # All books with a ClickAction that executes a command listed below will be deleted.
       disallowed_commands:
         - "op"
         - "deop"
@@ -529,9 +499,8 @@ Sentinel:
       commands:
         - "kick {player} Maliciously modified book."
 
-    # Even if you have command blocks disabled on your server (as you should), it might be good to know (and ban)
-    # players that used some exploit to get a command block. This will also delete any command blocks found in the
-    # player's inventory.
+    # Even if you have command blocks disabled on your server (as you should), it might be good to know (and ban) players
+    # that use exploits to get them nonetheless. Also deletes any command blocks found in the player's inventory.
     CommandBlock:
       enabled: true
       # What commands will be executed if the mod is detected?
@@ -565,7 +534,7 @@ Sentinel:
     # + Nausea for at least min_effect_time seconds
     #
     # Brewing these potions is not possible. Unless they are a necessary part of the server, players should not be able
-    # to access them, as this can lead to a poor gaming experience.
+    # to access them, as they can lead to a poor gaming experience.
     # This Sentinel detects the use of such potions, neutralizes their effects, and removes them from the inventory.
     TrollPotion:
       enabled: true
@@ -621,7 +590,7 @@ Sentinel:
       # Resolves an issue in Minecraft with quick head movements that causes the crosshair to lag slightly behind.
       # This can be seen as semi-cheat-like, as it grants a minor aiming advantage in fights.
       crosshair_sync: false
-      # This fixes some inventory bugs improving pot and soup refill.
+      # This fixes some inventory bugs, improving pot and soup refill.
       # Many consider this a form of cheating, as it gives a large reliability bonus.
       refill_fix: true
       # Purely aesthetic modifications to the GUI, including coordinates, orientation and the current time.
@@ -685,20 +654,17 @@ Sentinel:
       # Other options will be ignored if this is set to true.
       general: true
       # This disables future features of the mod not yet included in the server api.
-      # It is recommended to set this to true.
       future: true
       # This sets the chunk range to download from a player’s location.
-      # -1 indicates an infinite range. The ranges form is a square, not a circle.
-      # Only applicable if chunk caching is disabled.
+      # -1 indicates an infinite range. The range's form is a square, not a circle.
+      # If chunk_caching is set to false, this has no effect.
       save_radius: 0
-      # This disables chunk caching which allows the player to save all chunks he has moved through.
+      # This disables chunk caching which allows the player to save all chunks they have moved through.
       chunk_caching: true
-      # This disables saving entities.
+      # Should the player be able to save (tile) entities?
       entity_saving: true
-      # This disables saving tile entities.
       tile_entity_saving: true
-      # This disables saving containers and their inventories.
-      # If tile_entity_saving is disabled, this has no effect.
+      # If tile_entity_saving is set to true, this has no effect.
       container_saving: true
     # What commands will be executed if the mod is detected?
     commands:
@@ -824,6 +790,8 @@ Sentinel:
       # Automatic banning can be considered.
       commands:
         - "kick {player} Illegal Client Modifications"
+
+
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                               ___      _                                                            #
 #                                              |   \ ___| |__ _  _ __ _                                               #
@@ -839,6 +807,7 @@ Sentinel:
 # "OFF" disables logging, "FINER" causes various debug messages be logged and "ALL" or "FINEST" enable spammy debug messages.
 Debug:
   # The logging level for the console.
+  # Please note that due to a spigot bug, this setting is currently not functional.
   console_level: "INFO"
   # The logging level for the log file.
   # For submitting bug reports, it is imperative that the file log level is at least "FINE".

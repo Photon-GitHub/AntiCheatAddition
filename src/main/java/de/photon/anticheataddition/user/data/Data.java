@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,8 +58,6 @@ public final class Data
      */
     public static final class Counter
     {
-        public final ViolationCounter autofishFailed = new ViolationCounter("AutoFish.parts.consistency.maximum_fails");
-
         public final ViolationCounter inventoryAverageHeuristicsMisclicks = new ViolationCounter(0);
         public final ViolationCounter inventoryPerfectExitFails = new ViolationCounter(6);
 
@@ -74,7 +73,7 @@ public final class Data
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public static final class Object
     {
-        public final DoubleStatistics autoFishConsistencyData = new DoubleStatistics();
+        public final Map<TimeKey, DoubleStatistics> autoFishConsistencyData = Map.of(TimeKey.AUTOFISH_DETECTION, new DoubleStatistics(), TimeKey.AUTOFISH_AFK_DETECTION, new DoubleStatistics());
         public AutoPotion.AutoPotionState autoPotionState = AutoPotion.AutoPotionState.AWAIT_POTION_THROW;
 
         public Material dupingDoubleDroppedMaterial = Material.BEDROCK;

@@ -1,7 +1,6 @@
 package de.photon.anticheataddition.user.data;
 
 import com.google.common.base.Preconditions;
-import de.photon.anticheataddition.AntiCheatAddition;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongUnaryOperator;
@@ -19,13 +18,6 @@ public final class ViolationCounter
         this.threshold = threshold;
     }
 
-    public ViolationCounter(String configPath)
-    {
-        Preconditions.checkArgument(AntiCheatAddition.getInstance().getConfig().contains(configPath), "Tried to load ViolationCounter from nonexistent path " + configPath);
-        this.threshold = AntiCheatAddition.getInstance().getConfig().getLong(configPath);
-        Preconditions.checkArgument(threshold >= 0, "ViolationCounter threshold cannot be smaller than 0.");
-    }
-
     /**
      * Gets the current count
      */
@@ -37,9 +29,17 @@ public final class ViolationCounter
     /**
      * Checks if the counter is greater or equal to the threshold.
      */
-    public boolean compareThreshold()
+    public boolean greaterOrEqualToThreshold()
     {
         return this.counter.get() >= threshold;
+    }
+
+    /**
+     * Checks if the counter is smaller than the threshold.
+     */
+    public boolean smallerThanThreshold()
+    {
+        return this.counter.get() < threshold;
     }
 
     /**

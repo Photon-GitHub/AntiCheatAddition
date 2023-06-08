@@ -5,7 +5,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
-import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -47,7 +46,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
             // Creative-clear might trigger this.
             !user.inAdventureOrSurvivalMode() ||
             // Minimum TPS before the check is activated as of a huge amount of fps
-            !TPSProvider.INSTANCE.atLeastTPS(Inventory.INSTANCE.getMinTps()) ||
+            !Inventory.hasMinTPS() ||
             // Maximum ping
             !PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), Inventory.INSTANCE.getMaxPing()) ||
             // False positive: Click-spamming on the same slot

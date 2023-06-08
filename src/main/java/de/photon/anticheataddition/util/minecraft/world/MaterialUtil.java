@@ -74,12 +74,16 @@ public final class MaterialUtil
                 LIQUIDS = Sets.immutableEnumSet(WATER, LAVA, getMaterial("STATIONARY_WATER"), getMaterial("STATIONARY_LAVA"));
             }
 
-            case MC115, MC116, MC117, MC118, MC119 -> {
-                autoStepMaterials.addAll(ofTags(Tag.SLABS, Tag.WOODEN_SLABS, Tag.STAIRS, Tag.WOODEN_STAIRS));
+            case MC115, MC116, MC117, MC118, MC119, MC120 -> {
+                autoStepMaterials.addAll(ofTags(Tag.SLABS, Tag.STAIRS));
                 bounceMaterials.addAll(ofTags(Tag.BEDS));
                 freeSpaceContainers.addAll(ofTags(Tag.SHULKER_BOXES));
                 EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
-                SIGNS = ofTags(Tag.SIGNS, Tag.STANDING_SIGNS, Tag.WALL_SIGNS);
+
+                SIGNS = ServerVersion.ACTIVE == ServerVersion.MC120 ?
+                        ofTags(Tag.ALL_SIGNS, Tag.ALL_HANGING_SIGNS) :
+                        ofTags(Tag.SIGNS, Tag.STANDING_SIGNS, Tag.WALL_SIGNS);
+
                 SPAWNER_MATERIAL = Material.SPAWNER;
                 LIQUIDS = Sets.immutableEnumSet(WATER, LAVA);
             }

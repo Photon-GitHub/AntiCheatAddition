@@ -18,7 +18,8 @@ class ViolationCounterTest
     }
 
     @Test
-    void testIncrementDecrement() {
+    void testIncrementDecrement()
+    {
         final var counter = new ViolationCounter(3);
         assertEquals(0, counter.getCounter());
         counter.increment();
@@ -35,17 +36,23 @@ class ViolationCounterTest
     void testCompareThreshold()
     {
         final var counter = new ViolationCounter(5);
-        assertFalse(counter.compareThreshold());
+        assertFalse(counter.greaterOrEqualToThreshold());
+        assertTrue(counter.smallerThanThreshold());
         counter.increment();
-        assertFalse(counter.compareThreshold());
+        assertFalse(counter.greaterOrEqualToThreshold());
+        assertTrue(counter.smallerThanThreshold());
         counter.increment();
-        assertFalse(counter.compareThreshold());
+        assertFalse(counter.greaterOrEqualToThreshold());
+        assertTrue(counter.smallerThanThreshold());
         counter.increment();
-        assertFalse(counter.compareThreshold());
+        assertFalse(counter.greaterOrEqualToThreshold());
+        assertTrue(counter.smallerThanThreshold());
         counter.increment();
-        assertFalse(counter.compareThreshold());
+        assertFalse(counter.greaterOrEqualToThreshold());
+        assertTrue(counter.smallerThanThreshold());
         counter.increment();
-        assertTrue(counter.compareThreshold());
+        assertTrue(counter.greaterOrEqualToThreshold());
+        assertFalse(counter.smallerThanThreshold());
     }
 
     @Test

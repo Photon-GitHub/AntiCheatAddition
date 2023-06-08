@@ -17,11 +17,11 @@ import org.bukkit.event.player.PlayerFishEvent;
 public final class AutoFishInhumanReaction extends ViolationModule implements Listener
 {
     public static final AutoFishInhumanReaction INSTANCE = new AutoFishInhumanReaction();
+    private static final double HUMAN_REACTION_TIME = 145D;
 
     private static final Polynomial VL_CALCULATOR = new Polynomial(-60, 60);
     private final int cancelVl = AntiCheatAddition.getInstance().getConfig().getInt("AutoFish.cancel_vl");
 
-    private final double humanReactionTime = loadDouble(".human_reaction_time", 145);
 
     private AutoFishInhumanReaction()
     {
@@ -38,7 +38,7 @@ public final class AutoFishInhumanReaction extends ViolationModule implements Li
             case CAUGHT_FISH -> {
                 // Too few time has passed since the fish bit.
                 final long passedBiteTime = user.getTimeMap().at(TimeKey.FISH_BITE).passedTime();
-                final int vl = VL_CALCULATOR.apply(passedBiteTime / humanReactionTime).intValue();
+                final int vl = VL_CALCULATOR.apply(passedBiteTime / HUMAN_REACTION_TIME).intValue();
                 if (vl > 0) {
                     // Flag for vl = b + 1 because there would otherwise be a "0-vl"
                     this.getManagement().flag(Flag.of(user)

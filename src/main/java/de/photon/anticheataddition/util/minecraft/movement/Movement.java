@@ -70,4 +70,8 @@ public enum Movement
         }
         return motionY;
     }
+
+    public static MovementXZSimulator getSpeedSimulator() {
+        return MovementXZSimulator.INSTANCE;
+    }
 }

@@ -485,6 +485,9 @@ Sentinel:
       max_page_count: 100
       # Should books with a ClickAction that opens a local file on your PC be erased?
       disallow_open_file: true
+      # Should books with colors that are not part of the standard minecraft color codes be erased?
+      # These books can cause errors and lag your server if not handled properly.
+      disallow_custom_colors: true
       # All books with a ClickAction that executes a command listed below will be deleted.
       disallowed_commands:
         - "op"

@@ -449,7 +449,7 @@ Tower:
   enabled: true
   # The violation level at which AntiCheatAddition starts to cancel the block placements.
   # Set this to 0 to never cancel block placement.
-  cancel_vl: 6
+  cancel_vl: 60
   # A detection exceeding cancel_vl stops all block placements for this time (in milliseconds).
   timeout: 6000
   # Map of violation levels to commands.

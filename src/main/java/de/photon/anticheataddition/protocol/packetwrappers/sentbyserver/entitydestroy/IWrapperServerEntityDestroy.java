@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.entitydestroy;
 
 import com.comphenix.protocol.PacketType;
+import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayEntity;
 import org.bukkit.entity.Player;
@@ -19,6 +20,7 @@ public interface IWrapperServerEntityDestroy extends IWrapperPlayEntity
 
     static void sendDestroyEntities(Player player, List<Integer> entities)
     {
+        Preconditions.checkArgument(!entities.isEmpty(), "Cannot destroy zero entities.");
         final var wrapper = create();
         wrapper.setEntityIds(entities);
         wrapper.sendPacket(player);

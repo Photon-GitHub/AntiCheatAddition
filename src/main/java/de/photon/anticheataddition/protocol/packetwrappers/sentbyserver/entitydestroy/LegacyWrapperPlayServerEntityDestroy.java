@@ -23,17 +23,12 @@ public class LegacyWrapperPlayServerEntityDestroy extends AbstractPacket impleme
     {
         final int[] array = handle.getIntegerArrays().read(0);
         final List<Integer> list = new ArrayList<>();
-
         for (int i : array) list.add(i);
         return list;
     }
 
     public void setEntityIds(List<Integer> value)
     {
-        final int[] array = new int[value.size()];
-        int index = 0;
-        for (int i : value) array[index++] = i;
-
-        handle.getIntegerArrays().write(0, array);
+        handle.getIntegerArrays().write(0, value.stream().mapToInt(Integer::intValue).toArray());
     }
 }

@@ -449,12 +449,13 @@ Tower:
   enabled: true
   # The violation level at which AntiCheatAddition starts to cancel the block placements.
   # Set this to 0 to never cancel block placement.
-  cancel_vl: 6
+  cancel_vl: 60
   # A detection exceeding cancel_vl stops all block placements for this time (in milliseconds).
   timeout: 6000
   # Map of violation levels to commands.
   thresholds:
-    80: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Tower"
+    60: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Tower"
+    100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Tower"
     200: "kick {player} Tower"
 
 
@@ -485,6 +486,9 @@ Sentinel:
       max_page_count: 100
       # Should books with a ClickAction that opens a local file on your PC be erased?
       disallow_open_file: true
+      # Should books with colors that are not part of the standard minecraft color codes be erased?
+      # These books can cause errors and lag your server if not handled properly.
+      disallow_custom_colors: true
       # All books with a ClickAction that executes a command listed below will be deleted.
       disallowed_commands:
         - "op"

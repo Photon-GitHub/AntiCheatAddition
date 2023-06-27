@@ -65,8 +65,8 @@ final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBloc
             return (900 / (levitation.get().getAmplifier() + 1D)) * LEVITATION_LENIENCY;
         }
 
-        // No Jump Boost, tested value.
-        if (jumpBoost.isEmpty()) return 478.4D;
+        // No Jump Boost, tested value (jumping manually is faster than holding down the jump button)
+        if (jumpBoost.isEmpty()) return 440.2D;
         final int amplifier = jumpBoost.get().getAmplifier();
 
         // Negative Jump Boost -> Player is not allowed to place blocks -> Very high delay

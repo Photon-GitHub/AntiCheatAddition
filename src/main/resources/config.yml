@@ -454,7 +454,8 @@ Tower:
   timeout: 6000
   # Map of violation levels to commands.
   thresholds:
-    80: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Tower"
+    60: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Tower"
+    100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Tower"
     200: "kick {player} Tower"
 
 

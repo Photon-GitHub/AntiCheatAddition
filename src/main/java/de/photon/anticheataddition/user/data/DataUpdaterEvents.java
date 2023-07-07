@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.user.data;
 
 import de.photon.anticheataddition.AntiCheatAddition;
+import de.photon.anticheataddition.modules.sentinel.ParsedPluginMessageListener;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
@@ -8,6 +9,7 @@ import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -30,6 +32,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -38,7 +41,7 @@ import java.util.function.Consumer;
  * A singleton to update the data in {@link AntiCheatAddition}s internal data storage.
  */
 @SuppressWarnings("MethodMayBeStatic")
-public final class DataUpdaterEvents implements Listener
+public final class DataUpdaterEvents implements Listener, ParsedPluginMessageListener
 {
     public static final DataUpdaterEvents INSTANCE = new DataUpdaterEvents();
 
@@ -255,5 +258,15 @@ public final class DataUpdaterEvents implements Listener
     public void onWorldChange(final PlayerChangedWorldEvent event)
     {
         userUpdate(event.getPlayer().getUniqueId(), CLOSE_INVENTORY, TimeKey.TELEPORT, TimeKey.WORLD_CHANGE);
+    }
+
+    @Override
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull String message)
+    {
+        // Brand message updating.
+        final var user = User.getUser(player);
+        if (user == null) return;
+
+        user.getData().object.brandChannelMessages.add(message);
     }
 }

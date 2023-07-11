@@ -6,6 +6,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
+import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.HumanEntity;
@@ -50,11 +51,13 @@ public final class DataUpdaterEvents implements Listener, ParsedPluginMessageLis
     public void register()
     {
         AntiCheatAddition.getInstance().registerListener(this);
+        MessageChannel.MC_BRAND_CHANNEL.registerIncomingChannel(this);
     }
 
     public void unregister()
     {
         HandlerList.unregisterAll(this);
+        MessageChannel.MC_BRAND_CHANNEL.unregisterIncomingChannel(this);
     }
 
     private static final Consumer<User> CLOSE_INVENTORY = user -> user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();

@@ -6,6 +6,7 @@ import de.photon.anticheataddition.commands.InternalCommand;
 import de.photon.anticheataddition.commands.TabCompleteSupplier;
 import de.photon.anticheataddition.modules.ModuleManager;
 import de.photon.anticheataddition.modules.ViolationModule;
+import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,7 +37,13 @@ public class InfoCommand extends InternalCommand
                                            .sorted()
                                            .toList();
 
-        ChatMessage.sendMessage(sender, player.getName());
+        final var user = User.getUser(player);
+        if (user == null) {
+            ChatMessage.sendMessage(sender, "Unable to query brand messages.");
+        } else {
+            final var brandMessages = String.join(", ", user.getData().object.brandChannelMessages);
+            ChatMessage.sendMessage(sender, "The last brand channel messages: " + brandMessages);
+        }
 
         if (moduleVls.isEmpty()) ChatMessage.sendMessage(sender, "The player has no violations.");
         else moduleVls.forEach(moduleVl -> ChatMessage.sendMessage(sender, moduleVl.message));

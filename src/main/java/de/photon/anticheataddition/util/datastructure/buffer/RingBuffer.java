@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.util.datastructure.buffer;
 
 import de.photon.anticheataddition.util.mathematics.ModularInteger;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
@@ -21,6 +22,7 @@ import java.util.NoSuchElementException;
  */
 public class RingBuffer<T> extends AbstractCollection<T> implements Collection<T>
 {
+    @Getter
     private final int maxSize;
     private final T[] array;
 
@@ -49,11 +51,6 @@ public class RingBuffer<T> extends AbstractCollection<T> implements Collection<T
     {
         this(maxSize);
         Arrays.fill(array, defaultObject);
-    }
-
-    public int getMaxSize()
-    {
-        return this.maxSize;
     }
 
     @Override

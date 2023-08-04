@@ -47,11 +47,15 @@ public class AntiCheatAddition extends JavaPlugin
     public static final String ANTICHEAT_ADDITION_PREFIX = ChatColor.AQUA + "[AntiCheatAddition] " + ChatColor.GRAY;
 
     @Setter(AccessLevel.PROTECTED)
-    @Getter private static AntiCheatAddition instance;
+    @Getter
+    private static AntiCheatAddition instance;
 
-    @Getter(lazy = true) private final FileConfiguration config = generateConfig();
-    @Nullable private ViaAPI<?> viaAPI;
-    @Nullable private FloodgateApi floodgateApi;
+    @Getter(lazy = true)
+    private final FileConfiguration config = generateConfig();
+    @Nullable
+    private ViaAPI<?> viaAPI;
+    @Nullable
+    private FloodgateApi floodgateApi;
 
     private boolean bungeecord = false;
 
@@ -138,7 +142,13 @@ public class AntiCheatAddition extends JavaPlugin
             DataUpdaterEvents.INSTANCE.register();
 
             // Commands
-            this.getCommand(MainCommand.INSTANCE.getName()).setExecutor(MainCommand.INSTANCE);
+            final var command = this.getCommand(MainCommand.INSTANCE.getName());
+            if (command == null) {
+                getLogger().severe("Could not register command " + MainCommand.INSTANCE.getName());
+                return;
+            }
+            command.setExecutor(MainCommand.INSTANCE);
+            command.setTabCompleter(MainCommand.INSTANCE);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                           Enabled-Debug + API                                          //

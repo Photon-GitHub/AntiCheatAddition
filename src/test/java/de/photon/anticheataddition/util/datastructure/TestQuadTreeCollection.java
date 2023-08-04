@@ -37,7 +37,7 @@ class TestQuadTreeCollection
 
         Assertions.assertEquals(100, quad.size());
         quad.clear();
-        //noinspection ConstantConditions
+        //noinspection ConstantValue
         Assertions.assertEquals(0, quad.size());
         Assertions.assertTrue(quad.isEmpty());
     }
@@ -53,7 +53,7 @@ class TestQuadTreeCollection
 
         Assertions.assertEquals(100, quad.size());
         quad.clear();
-        //noinspection ConstantConditions
+        //noinspection ConstantValue
         Assertions.assertEquals(0, quad.size());
         Assertions.assertTrue(quad.isEmpty());
     }

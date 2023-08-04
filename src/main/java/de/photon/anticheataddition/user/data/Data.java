@@ -77,7 +77,7 @@ public final class Data
         public final Map<TimeKey, DoubleStatistics> autoFishConsistencyData = Map.of(TimeKey.AUTOFISH_DETECTION, new DoubleStatistics(), TimeKey.AUTOFISH_AFK_DETECTION, new DoubleStatistics());
         public AutoPotion.AutoPotionState autoPotionState = AutoPotion.AutoPotionState.AWAIT_POTION_THROW;
 
-        public RingBuffer<String> brandChannelMessages = new RingBuffer<>(10);
+        public final RingBuffer<String> brandChannelMessages = new RingBuffer<>(10);
 
         public Material dupingDoubleDroppedMaterial = Material.BEDROCK;
 

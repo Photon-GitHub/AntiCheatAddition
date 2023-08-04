@@ -36,8 +36,8 @@ public final class LookPacketData
 
         final long curTime = System.currentTimeMillis();
 
-        int rotationCount = 0;
-        int gapFillers = 0;
+        long rotationCount = 0;
+        long gapFillers = 0;
         double angleSum = 0;
         for (int i = 1; i < changes.length; ++i) {
             // Ignore rotation changes more than 1 second ago.

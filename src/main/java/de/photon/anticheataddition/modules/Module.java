@@ -1,26 +1,29 @@
 package de.photon.anticheataddition.modules;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSortedSet;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.InternalPermission;
 import de.photon.anticheataddition.util.messaging.Log;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 import java.util.Set;
+import java.util.SortedSet;
 
 @EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY, onlyExplicitlyIncluded = true)
 @ToString
-public abstract class Module implements ConfigLoading
+public abstract class Module implements ConfigLoading, Comparable<Module>
 {
     @Getter protected final String configString;
     @Getter @EqualsAndHashCode.Include private final String moduleId;
     @Getter private final String bypassPermission = (InternalPermission.BYPASS.getRealPermission() + '.') + this.getModuleId();
     @Getter(lazy = true) private final ModuleLoader moduleLoader = Preconditions.checkNotNull(createModuleLoader(), "Tried to create null ModuleLoader.");
     @Getter private boolean enabled = false;
-    @Getter private final Set<Module> children;
+    @Getter private final SortedSet<Module> children;
 
     private Module(String configString, Set<Module> children)
     {
@@ -32,7 +35,7 @@ public abstract class Module implements ConfigLoading
         }
         this.configString = configString;
         this.moduleId = "anticheataddition_" + configString.toLowerCase(Locale.ENGLISH);
-        this.children = Set.copyOf(children);
+        this.children = ImmutableSortedSet.copyOf(children);
     }
 
     protected Module(String configString)
@@ -62,6 +65,12 @@ public abstract class Module implements ConfigLoading
         for (Module child : children) child.deactivate();
         this.enabled = false;
         this.disable();
+    }
+
+    @Override
+    public int compareTo(@NotNull Module o)
+    {
+        return this.configString.compareTo(o.configString);
     }
 
     protected ModuleLoader createModuleLoader()

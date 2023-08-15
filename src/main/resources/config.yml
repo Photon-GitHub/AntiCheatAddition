@@ -98,28 +98,26 @@ LogBot:
 # ------------------------------------------------------------------------------------------------------------------- #
 
 # This module detects AutoEat bots that automatically consume food.
-# AutoEat VL decreases only every 5 minutes to identify cheats, no matter how spaced out eating sessions are.
+# AutoEat VL decreases only every 5 minutes to catch cheats no matter how spaced out eating sessions are.
 # Adds 20 VL.
 AutoEat:
   enabled: true
-  # The violation level at which AntiCheatAddition starts to cancel consume events.
-  # Set this to 0 to never cancel events.
+  # VL at which consumption events are cancelled. Set to 0 for no cancellations.
   cancel_vl: 80
   # A detection exceeding cancel_vl stops all eating for this time (in milliseconds).
   timeout: 5000
-  # Map of violation levels to commands.
+  # Commands to execute at specific violation levels.
   thresholds:
     60: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoEat"
     120: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoEat"
     200: "kick {player} AutoEat"
 
-# AutoFish detects automatic fishing bots which can yield a lot of treasure and food for those who use them.
+# AutoFish identifies automatic fishing bots.
 # If you have modified fishing time and/or behaviour, please test if this check is compatible with your setup.
 # This check automatically disables itself on Minecraft versions below 1.11 because of changes to the Spigot API.
 AutoFish:
   enabled: true
-  # The violation level at which AntiCheatAddition starts to cancel fishing.
-  # Set this to 0 to never cancel fishing.
+  # VL at which fishing is cancelled. Set to 0 for no cancellations.
   cancel_vl: 100
   parts:
     # This part recognizes instantaneous reaction speeds to detect AutoFishing mods.
@@ -133,23 +131,22 @@ AutoFish:
       enabled: true
       # Do you allow afk fishing farms on your server?
       allow_afk_fishing_farms: true
-  # Map of violation levels to commands.
+  # Commands to execute at specific violation levels.
   thresholds:
     90: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoFish"
     140: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoFish"
     200: "kick {player} AutoFish"
 
-# AutoPotion recognizes bots that throw potions at the player, such as when the player's health is running low.
+# AutoPotion identifies bots automatically throwing potions, e.g. when at low health.
 # This check automatically disables itself on Minecraft versions below 1.11 because of changes to the Spigot API.
 # Adds 50 VL.
 AutoPotion:
   enabled: true
-  # The violation level at which AntiCheatAddition starts to cancel potion throws.
-  # Set this to 0 to never cancel throwing potions.
+  # VL at which potion throws are cancelled. Set to 0 for no cancellations.
   cancel_vl: 100
   # A detection exceeding cancel_vl stops all potion throws for this time (in milliseconds).
   timeout: 1000
-  # Map of violation levels to commands.
+  # Commands to execute at specific violation levels.
   thresholds:
     50: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoPotion"
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoPotion"
@@ -168,10 +165,9 @@ Duping:
     # Duping players often create multiple secret caches at once to allow alt accounts to gather the items later on.
     SecretCache:
       enabled: true
-      # How much time should pass after a chest or shulker box is closed before AntiCheatAddition looks to see
-      # if it is a secret cache (in minutes)?
+      # Time after which a closed container is checked for being a secret cache (in minutes)
       check_delay: 10
-  # Map of violation levels to commands.
+  # Commands to execute at specific violation levels.
   thresholds:
     50: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} might be duping items."
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for duping items."
@@ -183,73 +179,62 @@ Duping:
 # Adds 25 VL.
 Fastswitch:
   enabled: true
-  # The violation level at which AntiCheatAddition starts to hotbar selections.
-  # Set this to 0 to never cancel hotbar selections.
+  # VL at which hotbar selections are cancelled. Set to 0 for no cancellations.
   cancel_vl: 50
-  # If a player's ping surpasses this value, they will be exempted from the check.
-  # Set this to -1 to disable
+  # Players with a higher ping are exempt from the check. Set to -1 to disable.
   max_ping: 400
-  # Map of violation levels to commands.
+  # Commands to execute at specific violation levels.
   thresholds:
     30: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Fastswitch"
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Fastswitch"
     200: "kick {player} Fastswitch"
 
-# ImpossibleChat detects sending chat messages while being in an inventory, blocking, sprinting and
-# other related situations.
+# ImpossibleChat detects chat messages sent during actions like being in an inventory, sprinting, dead etc.
 # Adds 25 VL.
 ImpossibleChat:
   # Disabled by default, as some servers allow auto-chat mods.
   # If you do not allow them, enable this.
   enabled: false
-  # The violation level at which AntiCheatAddition starts to cancel the messages.
-  # Set this to 0 to never cancel messages.
+  # VL threshold for canceling messages. Set to 0 for no cancellations.
   cancel_vl: 75
-  # Map of violation levels to commands.
+  # Commands to execute at specific violation levels.
   thresholds:
     50: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for ImpossibleChat"
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for ImpossibleChat"
     200: "kick {player} ImpossibleChat"
 
-# This check monitors inventory interactions of players.
-# The check will auto-disable when the server has low TPS.
+# Inventory monitors player's inventory actions. It will auto-disable during low server TPS.
 Inventory:
   enabled: true
-  # If a player's ping surpasses this value, they will be exempted from some parts of the check.
+  # Players with a higher ping are exempt from the check. Set to -1 to disable.
   # Note: Most parts do not depend on ping and will ignore this value.
-  # Set this to -1 to disable
   max_ping: 400
   parts:
-    # This part finds simple chest stealer bots by detecting regular intervals between inventory clicks.
-    # This part is slow and activates only every 16 clicks.
-    #
-    # NOTE: Disable this part if you allow any inventory sorting mods.
+    # Detects regular intervals between inventory clicks, typical of chest stealer bots.
+    # NOTE: Disable this part if you allow inventory sorting mods.
     # Adds 20 to 70 VL
     AverageHeuristic:
       enabled: true
-    # This part detects hitting while the inventory is open.
+    # This part detects attacking while the inventory is open.
     # Adds 20 VL.
     Hit:
       enabled: true
-      # The violation level at which AntiCheatAddition starts to cancel the hits.
-      # Set this to 0 to never cancel hits.
+      # VL threshold for canceling attacks. Set to 0 for no cancellations.
       cancel_vl: 60
     # The move part detects when a player moves while they are in their inventory.
     # Adds 5 (moving) to 20 (jumping) VL
     Move:
       enabled: true
-      # The violation level at which AntiCheatAddition starts to cancel the movement.
-      # Set this to 0 to never cancel movement.
+      # VL threshold for canceling movements. Set to 0 for no cancellations.
       cancel_vl: 60
-      # This provides more leeway on servers with players who have a high ping by extending the no-penalty time after
-      # an inventory is opened. The default value already covers normal connections. (in milliseconds)
-      lenience_millis: 0
+      # Reduces false positives for extremely high ping players, but will make the check less effective.
+      # Normal connections are covered by the default leniency.
+      extreme_ping_leniency: false
     # The MultiInteraction part prevents players from moving items too fast.
     # Adds 1 to 8 VL.
     MultiInteraction:
       enabled: true
-      # The violation level at which AntiCheatAddition starts to cancel the inventory interactions.
-      # Set this to 0 to never cancel interacts.
+      # VL threshold for canceling inventory interactions. Set to 0 for no cancellations.
       cancel_vl: 25
     # This part detects chest stealers that close empty inventories with perfect timing.
     # Adds 20 to 40 VL.
@@ -259,19 +244,17 @@ Inventory:
     # Adds 1 VL.
     Rotation:
       enabled: true
-    # This part detects inventory interactions while a player is sprinting or sneaking.
+    # Detects inventory interactions while sprinting/sneaking.
     # Adds 30 VL.
     Sprinting:
       enabled: true
-      # The violation level at which AntiCheatAddition starts to cancel the inventory interactions.
-      # Set this to 0 to never cancel inventory interactions.
+      # VL threshold for canceling inventory interactions. Set to 0 for no cancellations.
       cancel_vl: 110
-    # The Statistical part uses statistical tests to detect bot-like clicking behaviour even when the click delays
-    # are randomized.
+    # Uses statistical tests to detect some randomized bot click behaviors.
     # Adds 1 to 60 VL.
     Statistical:
       enabled: true
-  # Map of violation levels to commands.
+  # Commands to execute at specific violation levels.
   thresholds:
     110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for inventory cheats."
     160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for inventory cheats."
@@ -287,7 +270,7 @@ PacketAnalysis:
     # Adds 30 VL.
     Animation:
       enabled: true
-    # EqualRotation scans for invalid rotation packets, identical to the last rotation.
+    # EqualRotation scans for repeated rotation packets.
     # This catches some Scaffold, Tower, Killaura and Aimbot cheats.
     # Adds 5 VL.
     EqualRotation:
@@ -296,7 +279,7 @@ PacketAnalysis:
     # Adds 150 VL.
     IllegalPitch:
       enabled: true
-  # Map of violation levels to commands.
+  # Commands to execute at specific violation levels.
   thresholds:
     110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected by PacketAnalysis"
     160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected by PacketAnalysis"
@@ -305,8 +288,7 @@ PacketAnalysis:
 # Scaffold detects cheats that place blocks below the player to rapidly construct bridges.
 Scaffold:
   enabled: true
-  # The violation level at which AntiCheatAddition starts to cancel the block placements.
-  # Set this to 0 to never cancel block placement.
+  # VL threshold for canceling block placements. Set to 0 for no cancellations.
   cancel_vl: 110
   # A detection exceeding cancel_vl stops all block placements for this time (in milliseconds).
   timeout: 1000
@@ -328,8 +310,7 @@ Scaffold:
         sneaking_slow_addition: 110
         # This delay applies to diagonal building
         diagonal: 138
-    # This stops you from jumping while scaffolding, which, although it is possible, is very tricky to
-    # achieve without the help of a scaffold cheat.
+    # Detects jumping while scaffolding. It is possible for legit players, but very tricky to achieve without cheats.
     # Adds 20 VL.
     Jumping:
       enabled: true
@@ -364,22 +345,21 @@ Scaffold:
     # Adds 45 VL.
     Sprinting:
       enabled: true
-  # Map of violation levels to commands.
+  # Commands to execute at specific violation levels.
   thresholds:
     90: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Scaffold"
     130: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Scaffold"
     200: "kick {player} Scaffold"
 
 # Shield detects cheats that influence the interaction with a shield.
-# This check is only available in minecraft 1.15+
+# This check is only available in Minecraft 1.15+
 Shield:
   enabled: true
   parts:
     # This part detects when a player is attacking and blocking with a shield simultaneously.
     Hit:
       enabled: true
-      # The violation level at which AntiCheatAddition starts to cancel the hits.
-      # Set this to 0 to never cancel hits.
+      # VL threshold for canceling attacks. Set to 0 for no cancellations.
       cancel_vl: 60
   thresholds:
     110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Shield"
@@ -395,22 +375,20 @@ Skinblinker:
     Sprinting:
       enabled: true
     # The current protocol has an unutilized bit in the skin packet that Skinblinker cheats often toggle.
-    # Please note that false positives may occur with custom clients that use this bit for cosmetics.
+    # NOTE: False positives may occur with custom clients that use this bit for cosmetics.
     UnusedBit:
       enabled: true
-  # Map of violation levels to commands.
+  # Commands to execute at specific violation levels.
   thresholds:
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Skinblinker"
     200: "kick {player} Skinblinker"
 
-# This check tries to alert you of teamers.
-# This is safe to enable, just make sure that you configure this check for your own needs.
+# Teaming detects potentially teaming players.
 Teaming:
   enabled: false
-  # What is the maximum distance between players for them to be considered teaming? (in blocks)
+  # Maximum distance between players to be considered teaming? (in blocks)
   proximity_range: 4.5
-  # If you wish to limit teams to a certain amount of players, adjust this value accordingly.
-  # Setting this to 1 flags all teams.
+  # The maximum allowed team size (1 = no teaming allowed)
   allowed_size: 1
   # How much time must pass before not attacking a close player is regarded as teaming? (in milliseconds)
   no_pvp_time: 6000
@@ -423,23 +401,22 @@ Teaming:
   safe_zones:
     - "world -15 -15 15 15"
   # These VLs are cumulative for a team.
-  # That means that every team member gets (actual team size) - (allowed team size) VL per interval.
-  # Map of violation levels to commands.
+  # Every team member gets (actual team size) - (allowed team size) VL per interval.
+  # Commands to execute at specific violation levels.
   thresholds:
     4: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} may be Teaming"
     10: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} are suspected for Teaming"
     15: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} are highly suspected for Teaming"
 
-# Tower check detects cheats that allow for quick vertical construction.
+# Tower detects cheats that allow for quick vertical construction.
 # Adds 1 to 1000 VL (the latter being reserved for instant towers).
 Tower:
   enabled: true
-  # The violation level at which AntiCheatAddition starts to cancel the block placements.
-  # Set this to 0 to never cancel block placement.
+  # VL threshold for canceling block placements. Set to 0 for no cancellations.
   cancel_vl: 60
   # A detection exceeding cancel_vl stops all block placements for this time (in milliseconds).
   timeout: 6000
-  # Map of violation levels to commands.
+  # Commands to execute at specific violation levels.
   thresholds:
     60: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Tower"
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Tower"
@@ -473,7 +450,7 @@ Sentinel:
       max_page_count: 100
       # Should books with a ClickAction that opens a local file on your PC be erased?
       disallow_open_file: true
-      # Should books with colors that are not part of the standard minecraft color codes be erased?
+      # Should books with colors that are not part of the standard Minecraft color codes be erased?
       # These books can cause errors and lag your server if not handled properly.
       disallow_custom_colors: true
       # All books with a ClickAction that executes a command listed below will be deleted.
@@ -521,7 +498,7 @@ Sentinel:
     # This Sentinel detects potions with one of the following features:
     #
     # + Blindness for at least min_effect_time seconds
-    # + Darkness (on minecraft 1.19+) for at least min_effect_time seconds
+    # + Darkness (on Minecraft 1.19+) for at least min_effect_time seconds
     # + Nausea for at least min_effect_time seconds
     #
     # Brewing these potions is not possible. Unless they are a necessary part of the server, players should not be able
@@ -668,12 +645,12 @@ Sentinel:
   # A basic guide for creating your own check:
   # (1) Copy the section of PXMod
   # (2) Rename the section from PXMod to <NAME_OF_YOUR_CUSTOM_CHECK>
-  # (3) Add the channels you want to listen to in incoming channels (e.g. “minecraft:brand”).
+  # (3) Add the channels you want to listen to in incoming channels (e.g. “Minecraft:brand”).
   #     AntiCheatAddition automatically tries to generate the legacy channel names and listens to those as well
   #     (in this case, “MC|Brand”). If you know the legacy name, add it and AntiCheatAddition will choose the
   #     correct one for your server version.
   # (4) If needed, clarify what the message should include to trigger the check. E.g. if you are listening to
-  #     “minecraft:brand” and superspecialmod:version to detect a mod you could define containsAny as: [“SSM”, “ssm”].
+  #     “Minecraft:brand” and superspecialmod:version to detect a mod you could define containsAny as: [“SSM”, “ssm”].
   #     Note: This is a purely fictional example. Mods have different channels and messages.
   #     Many do not communicate, especially cheat clients.
   # (5) Define the commands you want to execute when the mod is detected. The commands are executed exactly once right
@@ -684,7 +661,7 @@ Sentinel:
       enabled: false
       # The channels AntiCheatAddition will listen to.
       incoming_channels:
-        - "minecraft:brand"
+        - "Minecraft:brand"
         - "MC|Brand"
       # The message must include all strings in the list to trigger a detection. [ ] is an empty list.
       # If the list is empty, all messages are accepted.
@@ -701,7 +678,7 @@ Sentinel:
       enabled: false
       # The channels AntiCheatAddition will listen to.
       incoming_channels:
-        - "minecraft:brand"
+        - "Minecraft:brand"
         - "MC|Brand"
       # The message must include all strings in the list to trigger a detection. [ ] is an empty list.
       # If the list is empty, all messages are accepted.
@@ -752,7 +729,7 @@ Sentinel:
       enabled: false
       # The channels AntiCheatAddition will listen to.
       incoming_channels:
-        - "minecraft:brand"
+        - "Minecraft:brand"
         - "MC|Brand"
       # The message must include all strings in the list to trigger a detection. [ ] is an empty list.
       # If the list is empty, all messages are accepted.

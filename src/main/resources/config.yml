@@ -127,7 +127,6 @@ AutoFish:
   # The violation level at which AntiCheatAddition starts to cancel fishing.
   # Set this to 0 to never cancel fishing.
   cancel_vl: 100
-  # Control the different parts of AutoFish.
   parts:
     # This part recognizes instantaneous reaction speeds to detect AutoFishing mods.
     # False positives might occur among experienced fishers.
@@ -167,7 +166,6 @@ AutoPotion:
 # To help with investigations, AntiCheatAddition records the location of any suspicious behavior in its log file.
 Duping:
   enabled: true
-  # Control the different parts of Duping
   parts:
     # The DoubleDropped part detects picking up exactly twice the item count one dropped.
     DoubleDropped:
@@ -227,7 +225,6 @@ Inventory:
   # Note: Most parts do not depend on ping and will ignore this value.
   # Set this to -1 to disable
   max_ping: 400
-  # Control the different parts of Inventory
   parts:
     # This part finds simple chest stealer bots by detecting regular intervals between inventory clicks.
     # This part is slow and activates only every 16 clicks.
@@ -290,7 +287,6 @@ Inventory:
 # such as Derp, Freecam, Killaura, Aimbot and other rotation-based cheats.
 PacketAnalysis:
   enabled: true
-  # Control the different parts of PacketAnalysis
   parts:
     # This part checks that the client sends an arm animation packet following an attack.
     # This only detects the worst Killauras.
@@ -320,7 +316,6 @@ Scaffold:
   cancel_vl: 110
   # A detection exceeding cancel_vl stops all block placements for this time (in milliseconds).
   timeout: 1000
-  # Control the different parts of Scaffold
   parts:
     # This part detects suspicious angles when the player places blocks.
     # Adds 15 VL.
@@ -385,7 +380,6 @@ Scaffold:
 # This check is only available in minecraft 1.15+
 Shield:
   enabled: true
-  # Control the different parts of Shield
   parts:
     # This part detects when a player is attacking and blocking with a shield simultaneously.
     Hit:
@@ -401,7 +395,6 @@ Shield:
 # Skinblinker detects cheats that alter skin parts while a player is sprinting or sneaking.
 Skinblinker:
   enabled: true
-  # Control the different parts of Skinblinker
   parts:
     # This part detects settings packets that are sent while sprinting or sneaking.
     # Adds 50 VL.

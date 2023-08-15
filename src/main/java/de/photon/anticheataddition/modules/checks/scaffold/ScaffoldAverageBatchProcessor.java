@@ -19,10 +19,29 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
 {
     private static final Polynomial VL_CALCULATOR = new Polynomial(1.1, 5);
 
-    public final double normalDelay = loadDouble(".parts.Average.delays.normal", 238);
-    public final double sneakingAddition = loadDouble(".parts.Average.delays.sneaking_addition", 90);
-    public final double sneakingSlowAddition = loadDouble(".parts.Average.delays.sneaking_slow_addition", 110);
-    public final double diagonalDelay = loadDouble(".parts.Average.delays.diagonal", 138);
+    /**
+     * Delay when building diagonally, as this allows for faster placing than a straight line.
+     * X            X
+     * X  X  or  X  X
+     * X      X
+     */
+    public static final double DIAGONAL_DELAY = 138;
+
+    /**
+     * Delay when building straight lines.
+     */
+    public static final double NORMAL_DELAY = 238;
+
+    /**
+     * Additional delay to account for the slower movement speed while sneaking.
+     */
+    public static final double SNEAKING_ADDITION = 90;
+
+    /**
+     * Additional delay as sneaking is fastest when facing the block in a 45° angle.
+     */
+    public static final double SNEAKING_SLOW_ADDITION = 110;
+
     private final int cancelVl = loadInt(".cancel_vl", 110);
 
     ScaffoldAverageBatchProcessor(ViolationModule module)
@@ -62,14 +81,18 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
         // X            X
         // X  X  or  X  X
         //    X      X
-        if (current.blockFace() != old.blockFace() && current.blockFace() != old.blockFace().getOppositeFace()) return diagonalDelay;
+        if (current.blockFace() != old.blockFace() && current.blockFace() != old.blockFace().getOppositeFace()) return DIAGONAL_DELAY;
 
         // If the player is not sneaking, the delay is the normal delay.
-        if (moonwalk || !current.sneaked() || !old.sneaked()) return normalDelay;
+        if (moonwalk || !current.sneaked() || !old.sneaked()) return NORMAL_DELAY;
 
-        // The player is sneaking.
-        // The sneakingSlowAddition is applied for not building perfectly diagonal. This is not to be confused with the diagonalDelay in which the blocks do not form a straight line.
-        return normalDelay + swiftSneakModifier(current.swiftSneakLevel()) * (sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2 * Math.toRadians(current.location().getYaw())))));
+        // The player is sneaking. The delay is the normal delay + the sneaking addition + the sneaking slow addition (which is dependent on the yaw).
+        return NORMAL_DELAY + swiftSneakModifier(current.swiftSneakLevel()) * (SNEAKING_ADDITION + getDiagonalSneakDelay(current.location().getYaw()));
+    }
+
+    private static double getDiagonalSneakDelay(double yaw)
+    {
+        return SNEAKING_SLOW_ADDITION * Math.abs(Math.cos(2 * Math.toRadians(yaw)));
     }
 
     private static double swiftSneakModifier(int level)

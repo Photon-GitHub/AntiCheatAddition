@@ -286,6 +286,7 @@ PacketAnalysis:
     200: "kick {player} Suspicious packets"
 
 # Scaffold detects cheats that place blocks below the player to rapidly construct bridges.
+# The always active Average core part adds 20 to 130 VLs.
 Scaffold:
   enabled: true
   # VL threshold for canceling block placements. Set to 0 for no cancellations.
@@ -297,19 +298,6 @@ Scaffold:
     # Adds 15 VL.
     Angle:
       enabled: true
-    # The core part of Scaffold preventing too fast Scaffolding.
-    # This part is always enabled, as it provides the basic framework.
-    # Adds 20 to 130 VLs.
-    Average:
-      # The minimum delays between block placements that are enforced by AntiCheatAddition (in milliseconds)
-      delays:
-        # This delay covers all straight building techniques.
-        normal: 238
-        # Delays used for building techniques which include sneaking
-        sneaking_addition: 90
-        sneaking_slow_addition: 110
-        # This delay applies to diagonal building
-        diagonal: 138
     # Detects jumping while scaffolding. It is possible for legit players, but very tricky to achieve without cheats.
     # Adds 20 VL.
     Jumping:

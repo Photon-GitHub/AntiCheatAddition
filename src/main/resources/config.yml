@@ -22,15 +22,15 @@
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
-# BrandHider allows you to modify the brand that is shown on Minecraft’s debug screen.
-# This can be useful for hiding your server software or creating a custom message.
+# BrandHider modifies the server brand on Minecraft’s debug screen.
+# Useful for custom messages or hiding your server software.
 BrandHider:
   enabled: false
   # This is the replacement text for the brand.
   # You can use the character ‘&’ for color codes and all placeholders that are available in normal checks.
   brand: "Some Spigot"
-  # Updates the brand at regular intervals for changing attributes, such as TPS, Ping, Time or Date.
-  # Set this to 0 to turn off refreshing if you only use static text or placeholders (in ticks).
+  # Refresh rate for dynamic placeholders like {time}, {date}, {ping}, etc.
+  # Set this to 0 if you only use static text or placeholders (in ticks).
   refresh_rate: 0
 
 # This module spoofs the health of all players on your server, thus rendering DamageIndicators, HealthTags, and other
@@ -38,19 +38,17 @@ BrandHider:
 # Other plugins can still get the accurate player health.
 DamageIndicator:
   enabled: true
-  # Spoof the health of the following entity categories.
+  # Entity categories to spoof health for.
   spoof:
     animals: false
     monsters: true
     players: true
 
-# Various resource packs and cheats display the type and level of enchantments, providing information a normal player cannot obtain.
-# EnchantmentHider obfuscates enchantments by replacing them on the packet level with the infinity enchantment.
-# Therefore, legit players can still see the enchantment's glow, but those using ESP or texture packs cannot gain any extra information.
+# EnchantmentHider obfuscates enchantments to prevent cheats from displaying the correct type and level.
+# Legit players will not see any difference.
 EnchantmentHider:
   enabled: true
-  # Spoof the health of the following entity categories.
-  # Please note that spoofing all enchantments might cause performance issues if you use a custom mob equipment system.
+  # Entity categories to spoof enchantments for. Spoofing all might impact performance with custom mob equipment systems.
   spoof:
     players: true
     others: false
@@ -71,27 +69,23 @@ EnchantmentHider:
 # Please RESTART your server after CREATING NEW WORLDS to activate ESP in them.
 Esp:
   enabled: false
-  # How many ticks shall separate two ESP cycles?
-  # Low values can cause performance issues, high values may cause players to be hidden for too long and pop up.
+  # Time between two ESP cycles.
+  # Low values decrease performance, high values may cause players to be hidden for too long and pop up. (in ticks)
   interval_ticks: 2
   # By default, only sneaking players are fully hidden from other players because nametags are visible through walls.
   # If you disable nametags or choose to ignore this vanilla behaviour, you can set this option to true which
   # causes all players to be fully hidden, even when not sneaking.
   only_full_hide: false
-  # Should Esp consider Minecraft’s 3rd person perspectives?
-  # Set this to false for a two-thirds reduction in block queries.
-  # This option is especially useful if you have games in which players are not supposed to use the third person mode.
+  # Should Esp consider Minecraft’s 3rd person perspectives? Enabling this reduces performance.
   calculate_third_person_modes: false
 
-# LogBot clears old log files from both AntiCheatAddition and the server.
-# Upon restarting, it activates automatically, and then follows a 12-hour pattern.
+# LogBot clears old log files for both the AntiCheatAddition and the server.
+# It runs every 12 hours and on server startup.
 LogBot:
   enabled: false
-  # After how many days should AntiCheatAddition logs be deleted?
-  # Set to -1 to disable
+  # Days to retain AntiCheatAddition logs. Set to -1 to keep indefinitely.
   AntiCheatAddition: 10
-  # After how many days should server logs be deleted?
-  # Set to -1 to disable
+  # Days to retain server logs. Set to -1 to keep indefinitely.
   Server: 10
 
 

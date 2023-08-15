@@ -25,10 +25,10 @@
 # BrandHider modifies the server brand on Minecraft’s debug screen.
 # Useful for custom messages or hiding your server software.
 BrandHider:
-  enabled: false
+  enabled: true
   # This is the replacement text for the brand.
   # You can use the character ‘&’ for color codes and all placeholders that are available in normal checks.
-  brand: "Some Spigot"
+  brand: "Server"
   # Refresh rate for dynamic placeholders like {time}, {date}, {ping}, etc.
   # Set this to 0 if you only use static text or placeholders (in ticks).
   refresh_rate: 0

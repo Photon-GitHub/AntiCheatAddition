@@ -279,6 +279,10 @@ PacketAnalysis:
     # Adds 150 VL.
     IllegalPitch:
       enabled: true
+    # PerfectRotation checks for very precise rotations that some cheats exhibit.
+    # Adds 10 VL.
+    PerfectRotation:
+      enabled: true
   # Commands to execute at specific violation levels.
   thresholds:
     110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected by PacketAnalysis"
@@ -308,7 +312,7 @@ Scaffold:
       enabled: true
     # This part analyzes the rotations of a player while scaffolding.
     Rotation:
-        enabled: true
+      enabled: true
     # This checks for behaviour associated with safe-walk
     Safewalk:
       # Adds 15 VL.

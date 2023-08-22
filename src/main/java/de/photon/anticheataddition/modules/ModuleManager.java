@@ -17,6 +17,7 @@ import de.photon.anticheataddition.modules.checks.inventory.Inventory;
 import de.photon.anticheataddition.modules.checks.packetanalysis.PacketAnalysisAnimation;
 import de.photon.anticheataddition.modules.checks.packetanalysis.PacketAnalysisEqualRotation;
 import de.photon.anticheataddition.modules.checks.packetanalysis.PacketAnalysisIllegalPitch;
+import de.photon.anticheataddition.modules.checks.packetanalysis.PacketAnalysisPerfectRotation;
 import de.photon.anticheataddition.modules.checks.scaffold.Scaffold;
 import de.photon.anticheataddition.modules.checks.shield.ShieldHit;
 import de.photon.anticheataddition.modules.checks.skinblinker.SkinBlinkerSprinting;
@@ -73,7 +74,7 @@ public final class ModuleManager
 
                 Inventory.INSTANCE,
 
-                ViolationModule.parentOf("PacketAnalysis", PacketAnalysisAnimation.INSTANCE, PacketAnalysisEqualRotation.INSTANCE, PacketAnalysisIllegalPitch.INSTANCE),
+                ViolationModule.parentOf("PacketAnalysis", PacketAnalysisAnimation.INSTANCE, PacketAnalysisEqualRotation.INSTANCE, PacketAnalysisIllegalPitch.INSTANCE, PacketAnalysisPerfectRotation.INSTANCE),
 
                 Scaffold.INSTANCE,
 

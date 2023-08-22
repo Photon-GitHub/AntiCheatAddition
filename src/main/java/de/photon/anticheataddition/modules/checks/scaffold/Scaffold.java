@@ -33,9 +33,7 @@ public final class Scaffold extends ViolationModule implements Listener
         super("Scaffold", ScaffoldAngle.INSTANCE,
               ScaffoldJumping.INSTANCE,
               ScaffoldPosition.INSTANCE,
-              ScaffoldRotationDerivative.INSTANCE,
-              ScaffoldRotationFastChange.INSTANCE,
-              ScaffoldRotationSecondDerivative.INSTANCE,
+              ScaffoldRotation.INSTANCE,
               ScaffoldSafewalkPosition.INSTANCE,
               ScaffoldSafewalkTiming.INSTANCE,
               ScaffoldSprinting.INSTANCE);
@@ -80,8 +78,7 @@ public final class Scaffold extends ViolationModule implements Listener
             // Only one block that is not a liquid is allowed (the one which the Block is placed against).
             WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1L &&
             // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
-            WorldUtil.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
-        {
+            WorldUtil.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst()))) {
 
             final var lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().block();
             // This checks if the block was placed against the expected block for scaffolding.
@@ -105,11 +102,7 @@ public final class Scaffold extends ViolationModule implements Listener
                 // Do not check jumping for new locations as of wall-building / jumping.
                 vl += ScaffoldJumping.INSTANCE.getVl(user, event);
 
-                final var angleInformation = user.getLookPacketData().getAngleInformation();
-
-                final var rotationVl = ScaffoldRotationFastChange.INSTANCE.getVl(user) +
-                                       ScaffoldRotationDerivative.INSTANCE.getVl(user, angleInformation) +
-                                       ScaffoldRotationSecondDerivative.INSTANCE.getVl(user, angleInformation);
+                final var rotationVl = ScaffoldRotation.INSTANCE.getVl(user);
 
                 if (user.getData().counter.scaffoldRotationFails.conditionallyIncDec(rotationVl > 0)) vl += rotationVl;
 

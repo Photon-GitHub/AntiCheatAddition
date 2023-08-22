@@ -308,18 +308,6 @@ Scaffold:
       enabled: true
     # This part analyzes the rotations of a player while scaffolding.
     Rotation:
-      # This part checks the player's rotation's derivative.
-      # Adds 10 VL.
-      Derivative:
-        enabled: true
-      # FastChange tracks sudden changes in a player's looking direction.
-      # This provides a swift detection of Killaura and Scaffold combinations.
-      # Adds 15 VL.
-      FastChange:
-        enabled: true
-      # This part checks the player's rotation's second derivative.
-      # Adds 5 VL.
-      SecondDerivative:
         enabled: true
     # This checks for behaviour associated with safe-walk
     Safewalk:
@@ -349,6 +337,7 @@ Shield:
       enabled: true
       # VL threshold for canceling attacks. Set to 0 for no cancellations.
       cancel_vl: 60
+  # Commands to execute at specific violation levels.
   thresholds:
     110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Shield"
     160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Shield"

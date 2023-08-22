@@ -293,6 +293,10 @@ PacketAnalysis:
 # The always active Average core part adds 20 to 130 VLs.
 Scaffold:
   enabled: true
+  # This is the main delay Scaffold enforces if a player builds too fast.
+  # This covers all common building techniques and players. Still, you might need to adjust this value if you have
+  # very strong players with absurd building techniques on your server (in milliseconds).
+  placement_delay: 238
   # VL threshold for canceling block placements. Set to 0 for no cancellations.
   cancel_vl: 110
   # A detection exceeding cancel_vl stops all block placements for this time (in milliseconds).

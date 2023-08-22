@@ -27,6 +27,7 @@ public final class Scaffold extends ViolationModule implements Listener
 
     private final int cancelVl = loadInt(".cancel_vl", 110);
     private final int timeout = loadInt(".timeout", 1000);
+    private final int placementDelay = loadInt(".placement_delay", 238);
 
     private Scaffold()
     {

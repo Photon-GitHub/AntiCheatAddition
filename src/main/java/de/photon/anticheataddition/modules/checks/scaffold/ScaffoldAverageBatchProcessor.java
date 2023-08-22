@@ -28,11 +28,6 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
     public static final double DIAGONAL_DELAY = 138;
 
     /**
-     * Delay when building straight lines.
-     */
-    public static final double NORMAL_DELAY = 238;
-
-    /**
      * Additional delay to account for the slower movement speed while sneaking.
      */
     public static final double SNEAKING_ADDITION = 90;
@@ -84,10 +79,10 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
         if (current.blockFace() != old.blockFace() && current.blockFace() != old.blockFace().getOppositeFace()) return DIAGONAL_DELAY;
 
         // If the player is not sneaking, the delay is the normal delay.
-        if (moonwalk || !current.sneaked() || !old.sneaked()) return NORMAL_DELAY;
+        if (moonwalk || !current.sneaked() || !old.sneaked()) return Scaffold.INSTANCE.getPlacementDelay();
 
         // The player is sneaking. The delay is the normal delay + the sneaking addition + the sneaking slow addition (which is dependent on the yaw).
-        return NORMAL_DELAY + swiftSneakModifier(current.swiftSneakLevel()) * (SNEAKING_ADDITION + getDiagonalSneakDelay(current.location().getYaw()));
+        return Scaffold.INSTANCE.getPlacementDelay() + swiftSneakModifier(current.swiftSneakLevel()) * (SNEAKING_ADDITION + getDiagonalSneakDelay(current.location().getYaw()));
     }
 
     private static double getDiagonalSneakDelay(double yaw)

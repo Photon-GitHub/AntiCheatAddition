@@ -63,7 +63,7 @@ public final class LookPacketData
         // If there's no rotation or gaps, return default values to avoid division by zero
         if (rotationCount == 0 && gapFillers == 0) return new ScaffoldAngleInfo(0, 0);
 
-        // Compute the difference of angleSum and normalized angleSum
+        // Compute the difference of angleSum and angleSum per rotation (also accounting for merged rotations with gaps)
         return new ScaffoldAngleInfo(angleSum, MathUtil.absDiff((angleSum / (rotationCount + gapFillers)) * rotationCount, angleSum));
     }
 

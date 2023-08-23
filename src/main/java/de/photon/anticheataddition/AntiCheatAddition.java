@@ -7,6 +7,7 @@ import de.photon.anticheataddition.commands.MainCommand;
 import de.photon.anticheataddition.modules.ModuleManager;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataUpdaterEvents;
+import de.photon.anticheataddition.user.data.subdata.BrandChannelData;
 import de.photon.anticheataddition.util.config.Configs;
 import de.photon.anticheataddition.util.messaging.Log;
 import lombok.AccessLevel;
@@ -139,6 +140,7 @@ public class AntiCheatAddition extends JavaPlugin
             ModuleManager.getModuleMap();
 
             // Data storage
+            BrandChannelData.BrandChannelMessageListener.INSTANCE.register();
             DataUpdaterEvents.INSTANCE.register();
 
             // Commands
@@ -172,6 +174,7 @@ public class AntiCheatAddition extends JavaPlugin
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);
         HandlerList.unregisterAll(this);
 
+        BrandChannelData.BrandChannelMessageListener.INSTANCE.unregister();
         DataUpdaterEvents.INSTANCE.unregister();
 
         getLogger().info("AntiCheatAddition disabled.");

@@ -12,6 +12,7 @@ import de.photon.anticheataddition.user.data.TimestampMap;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
 import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
 import de.photon.anticheataddition.user.data.batch.TowerBatch;
+import de.photon.anticheataddition.user.data.subdata.BrandChannelData;
 import de.photon.anticheataddition.user.data.subdata.LookPacketData;
 import de.photon.anticheataddition.util.mathematics.Hitbox;
 import lombok.EqualsAndHashCode;
@@ -55,6 +56,7 @@ public final class User implements Permissible
     private final ScaffoldBatch scaffoldBatch = new ScaffoldBatch(this);
     private final TowerBatch towerBatch = new TowerBatch(this);
 
+    private final BrandChannelData brandChannelData = new BrandChannelData();
     private final LookPacketData lookPacketData = new LookPacketData();
 
     /**
@@ -75,8 +77,7 @@ public final class User implements Permissible
         USERS.put(player.getUniqueId(), this);
 
         final var floodgateApi = AntiCheatAddition.getInstance().getFloodgateApi();
-        if (floodgateApi != null && floodgateApi.isFloodgateId(player.getUniqueId()))
-        {
+        if (floodgateApi != null && floodgateApi.isFloodgateId(player.getUniqueId())) {
             FLOODGATE_USERS.add(this);
         }
 

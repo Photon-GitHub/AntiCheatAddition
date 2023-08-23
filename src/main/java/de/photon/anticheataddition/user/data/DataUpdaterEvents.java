@@ -1,16 +1,13 @@
 package de.photon.anticheataddition.user.data;
 
 import de.photon.anticheataddition.AntiCheatAddition;
-import de.photon.anticheataddition.modules.sentinel.ParsedPluginMessageListener;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
-import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -23,17 +20,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
-import org.bukkit.event.player.PlayerToggleSprintEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -42,7 +30,7 @@ import java.util.function.Consumer;
  * A singleton to update the data in {@link AntiCheatAddition}s internal data storage.
  */
 @SuppressWarnings("MethodMayBeStatic")
-public final class DataUpdaterEvents implements Listener, ParsedPluginMessageListener
+public final class DataUpdaterEvents implements Listener
 {
     public static final DataUpdaterEvents INSTANCE = new DataUpdaterEvents();
 
@@ -51,17 +39,25 @@ public final class DataUpdaterEvents implements Listener, ParsedPluginMessageLis
     public void register()
     {
         AntiCheatAddition.getInstance().registerListener(this);
-        MessageChannel.MC_BRAND_CHANNEL.registerIncomingChannel(this);
     }
 
     public void unregister()
     {
         HandlerList.unregisterAll(this);
-        MessageChannel.MC_BRAND_CHANNEL.unregisterIncomingChannel(this);
     }
 
-    private static final Consumer<User> CLOSE_INVENTORY = user -> user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
-    private static final Consumer<User> NOTHING = user -> {};
+    private static void closeInternalInventory(User user)
+    {
+        user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
+    }
+
+    public static void userUpdate(UUID uuid, TimeKey... update)
+    {
+        final var user = User.getUser(uuid);
+        if (user == null) return;
+
+        for (TimeKey key : update) user.getTimeMap().at(key).update();
+    }
 
     private static void userUpdate(UUID uuid, Consumer<User> userAction, TimeKey... update)
     {
@@ -83,23 +79,23 @@ public final class DataUpdaterEvents implements Listener, ParsedPluginMessageLis
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDeath(final PlayerDeathEvent event)
     {
-        userUpdate(event.getEntity().getUniqueId(), CLOSE_INVENTORY);
+        userUpdate(event.getEntity().getUniqueId(), DataUpdaterEvents::closeInternalInventory);
     }
 
     @EventHandler
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent event)
     {
         // Was hit
-        if (event.getEntity() instanceof HumanEntity) userUpdate(event.getEntity().getUniqueId(), NOTHING, TimeKey.COMBAT);
+        if (event.getEntity() instanceof HumanEntity) userUpdate(event.getEntity().getUniqueId(), TimeKey.COMBAT);
 
         // Hit somebody else
-        if (event.getDamager() instanceof HumanEntity) userUpdate(event.getDamager().getUniqueId(), NOTHING, TimeKey.COMBAT);
+        if (event.getDamager() instanceof HumanEntity) userUpdate(event.getDamager().getUniqueId(), TimeKey.COMBAT);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onFoodLevelChange(FoodLevelChangeEvent event)
     {
-        userUpdate(event.getEntity().getUniqueId(), NOTHING, TimeKey.FOOD_LEVEL_CHANGE);
+        userUpdate(event.getEntity().getUniqueId(), TimeKey.FOOD_LEVEL_CHANGE);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -144,19 +140,19 @@ public final class DataUpdaterEvents implements Listener, ParsedPluginMessageLis
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInventoryClose(final InventoryCloseEvent event)
     {
-        userUpdate(event.getPlayer().getUniqueId(), CLOSE_INVENTORY);
+        userUpdate(event.getPlayer().getUniqueId(), DataUpdaterEvents::closeInternalInventory);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onInventoryOpen(final InventoryOpenEvent event)
     {
-        userUpdate(event.getPlayer().getUniqueId(), NOTHING, TimeKey.INVENTORY_OPENED);
+        userUpdate(event.getPlayer().getUniqueId(), TimeKey.INVENTORY_OPENED);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onItemHeld(PlayerItemHeldEvent event)
     {
-        userUpdate(event.getPlayer().getUniqueId(), NOTHING, TimeKey.HOTBAR_SWITCH);
+        userUpdate(event.getPlayer().getUniqueId(), TimeKey.HOTBAR_SWITCH);
     }
 
     @EventHandler
@@ -196,8 +192,7 @@ public final class DataUpdaterEvents implements Listener, ParsedPluginMessageLis
             // The player wasn't hurt and got velocity for that.
             if (user.getPlayer().getNoDamageTicks() == 0
                 // Recent teleports can cause bugs
-                && !user.hasTeleportedRecently(1000))
-            {
+                && !user.hasTeleportedRecently(1000)) {
                 final boolean movingUpwards = event.getFrom().getY() < event.getTo().getY();
 
                 if (movingUpwards != user.getData().bool.movingUpwards) {
@@ -218,13 +213,13 @@ public final class DataUpdaterEvents implements Listener, ParsedPluginMessageLis
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRespawn(final PlayerRespawnEvent event)
     {
-        userUpdate(event.getPlayer().getUniqueId(), CLOSE_INVENTORY, TimeKey.TELEPORT, TimeKey.RESPAWN);
+        userUpdate(event.getPlayer().getUniqueId(), DataUpdaterEvents::closeInternalInventory, TimeKey.TELEPORT, TimeKey.RESPAWN);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTeleport(final PlayerTeleportEvent event)
     {
-        userUpdate(event.getPlayer().getUniqueId(), CLOSE_INVENTORY, TimeKey.TELEPORT);
+        userUpdate(event.getPlayer().getUniqueId(), DataUpdaterEvents::closeInternalInventory, TimeKey.TELEPORT);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -260,16 +255,6 @@ public final class DataUpdaterEvents implements Listener, ParsedPluginMessageLis
     @EventHandler
     public void onWorldChange(final PlayerChangedWorldEvent event)
     {
-        userUpdate(event.getPlayer().getUniqueId(), CLOSE_INVENTORY, TimeKey.TELEPORT, TimeKey.WORLD_CHANGE);
-    }
-
-    @Override
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull String message)
-    {
-        // Brand message updating.
-        final var user = User.getUser(player);
-        if (user == null) return;
-
-        user.getData().object.brandChannelMessages.add(message);
+        userUpdate(event.getPlayer().getUniqueId(), DataUpdaterEvents::closeInternalInventory, TimeKey.TELEPORT, TimeKey.WORLD_CHANGE);
     }
 }

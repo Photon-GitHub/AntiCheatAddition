@@ -142,13 +142,14 @@ public class AntiCheatAddition extends JavaPlugin
             DataUpdaterEvents.INSTANCE.register();
 
             // Commands
-            final var command = this.getCommand(MainCommand.INSTANCE.getName());
-            if (command == null) {
-                getLogger().severe("Could not register command " + MainCommand.INSTANCE.getName());
+            final var mainCommand = new MainCommand(this.getDescription().getVersion());
+            final var commandToRegister = this.getCommand(mainCommand.getName());
+            if (commandToRegister == null) {
+                getLogger().severe("Could not register command " + mainCommand.getName());
                 return;
             }
-            command.setExecutor(MainCommand.INSTANCE);
-            command.setTabCompleter(MainCommand.INSTANCE);
+            commandToRegister.setExecutor(mainCommand);
+            commandToRegister.setTabCompleter(mainCommand);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                           Enabled-Debug + API                                          //
@@ -169,7 +170,7 @@ public class AntiCheatAddition extends JavaPlugin
     {
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);
-        HandlerList.unregisterAll(AntiCheatAddition.getInstance());
+        HandlerList.unregisterAll(this);
 
         DataUpdaterEvents.INSTANCE.unregister();
 

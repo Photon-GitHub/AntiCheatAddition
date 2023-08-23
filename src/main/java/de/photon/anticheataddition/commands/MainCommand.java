@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.commands;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.commands.subcommands.DebugCommand;
 import de.photon.anticheataddition.commands.subcommands.InfoCommand;
 import de.photon.anticheataddition.commands.subcommands.InternalTestCommand;
@@ -12,17 +11,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Queue;
+import java.util.*;
 
 public class MainCommand extends InternalCommand implements CommandExecutor, TabCompleter
 {
-    public static final MainCommand INSTANCE = new MainCommand();
+    private final String acaVersion;
 
-    public MainCommand()
+    public MainCommand(String acaVersion)
     {
         super("anticheataddition", CommandAttributes.builder()
                                                     .addCommandHelp("The main command of AntiCheatAddition", "To use a subcommands simply add it to the parent command:", "/anticheataddition <subcommand>")
@@ -31,6 +26,7 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
                                                                       new InternalTestCommand(),
                                                                       new SetVlCommand())
                                                     .build(), TabCompleteSupplier.builder());
+        this.acaVersion = acaVersion;
     }
 
     @Override
@@ -58,6 +54,6 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        ChatMessage.sendMessage(sender, "Version: " + AntiCheatAddition.getInstance().getDescription().getVersion());
+        ChatMessage.sendMessage(sender, "Version: " + this.acaVersion);
     }
 }

@@ -320,7 +320,7 @@ Scaffold:
     # This checks for behaviour associated with safe-walk
     Safewalk:
       # Adds 15 VL.
-      Position:
+      Edge:
         enabled: true
       # Adds 20 VL.
       Timing:

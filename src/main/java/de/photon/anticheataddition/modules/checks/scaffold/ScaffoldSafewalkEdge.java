@@ -11,15 +11,15 @@ import org.bukkit.event.block.BlockPlaceEvent;
  * This pattern detects suspicious stops right before the edges
  * of {@link org.bukkit.block.Block}s.
  */
-final class ScaffoldSafewalkPosition extends Module
+final class ScaffoldSafewalkEdge extends Module
 {
-    public static final ScaffoldSafewalkPosition INSTANCE = new ScaffoldSafewalkPosition();
+    public static final ScaffoldSafewalkEdge INSTANCE = new ScaffoldSafewalkEdge();
 
     private static final int MIN_SNEAK_BYPASS_MILLIS = 148;
 
-    private ScaffoldSafewalkPosition()
+    private ScaffoldSafewalkEdge()
     {
-        super("Scaffold.parts.Safewalk.Position");
+        super("Scaffold.parts.Safewalk.Edge");
     }
 
     public int getVl(User user, BlockPlaceEvent event)

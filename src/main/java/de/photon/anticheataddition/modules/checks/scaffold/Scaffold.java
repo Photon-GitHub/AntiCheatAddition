@@ -35,7 +35,7 @@ public final class Scaffold extends ViolationModule implements Listener
               ScaffoldJumping.INSTANCE,
               ScaffoldPosition.INSTANCE,
               ScaffoldRotation.INSTANCE,
-              ScaffoldSafewalkPosition.INSTANCE,
+              ScaffoldSafewalkEdge.INSTANCE,
               ScaffoldSafewalkTiming.INSTANCE,
               ScaffoldSprinting.INSTANCE);
     }
@@ -107,7 +107,7 @@ public final class Scaffold extends ViolationModule implements Listener
 
                 if (user.getData().counter.scaffoldRotationFails.conditionallyIncDec(rotationVl > 0)) vl += rotationVl;
 
-                vl += ScaffoldSafewalkPosition.INSTANCE.getVl(user, event);
+                vl += ScaffoldSafewalkEdge.INSTANCE.getVl(user, event);
                 vl += ScaffoldSafewalkTiming.INSTANCE.getVl(user);
                 vl += ScaffoldSprinting.INSTANCE.getVl(user);
             }

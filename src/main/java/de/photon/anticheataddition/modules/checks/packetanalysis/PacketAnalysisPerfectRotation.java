@@ -64,7 +64,7 @@ public class PacketAnalysisPerfectRotation extends ViolationModule implements Li
                 final double potentialMultiple = d / pattern;
 
                 if (isEqual(potentialMultiple, Math.rint(potentialMultiple)))
-                    getManagement().flag(Flag.of(user).setAddedVl(10).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotation diffs (" + Arrays.toString(diffs) + ")."));
+                    getManagement().flag(Flag.of(user).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotation diffs (" + Arrays.toString(diffs) + ")."));
             }
         }
     }
@@ -75,6 +75,6 @@ public class PacketAnalysisPerfectRotation extends ViolationModule implements Li
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(200, 1).build();
+                                       .withDecay(100, 1).build();
     }
 }

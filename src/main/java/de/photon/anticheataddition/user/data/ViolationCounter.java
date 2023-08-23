@@ -51,6 +51,14 @@ public final class ViolationCounter
     }
 
     /**
+     * Checks if the counter, incremented by amount, is greater or equal to the threshold.
+     */
+    public boolean incrementCompareThreshold(int amount)
+    {
+        return this.counter.addAndGet(amount) >= threshold;
+    }
+
+    /**
      * This method calls {@link #incrementCompareThreshold()} if the condition is true, else {@link #decrementAboveZero()}.
      *
      * @return true if the condition is true and {@link #incrementCompareThreshold()} also returns true, else false.

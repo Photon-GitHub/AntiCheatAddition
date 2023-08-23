@@ -3,12 +3,15 @@ package de.photon.anticheataddition.modules.checks.packetanalysis;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+
+import java.util.Arrays;
 
 public class PacketAnalysisPerfectRotation extends ViolationModule implements Listener
 {
@@ -19,8 +22,13 @@ public class PacketAnalysisPerfectRotation extends ViolationModule implements Li
         super("PacketAnalysis.parts.PerfectRotation");
     }
 
-    private static final double EQUALITY_EPSILON = 0.00001;
+    private static final double EQUALITY_EPSILON = 0.000000001;
     private static final double[] MULTIPLE_PATTERNS = {0.1, 0.25};
+
+    private static boolean isEqual(double reference, double d)
+    {
+        return MathUtil.absDiff(reference, d) <= EQUALITY_EPSILON;
+    }
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent event)
@@ -32,20 +40,23 @@ public class PacketAnalysisPerfectRotation extends ViolationModule implements Li
                                 MathUtil.absDiff(event.getTo().getPitch(), event.getFrom().getPitch())};
 
         for (double d : diffs) {
-            if (MathUtil.absDiff(d, 0) <= EQUALITY_EPSILON) continue;
+            if (isEqual(0, d) || isEqual(360, d)) continue;
 
             if (Double.isInfinite(d) || Double.isNaN(d))
                 getManagement().flag(Flag.of(user).setAddedVl(10).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent infinite rotation diffs."));
+
+            Log.finest(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent rotation diffs: " + Arrays.toString(diffs));
 
             // Check if the angle change is a multiple of any pattern like 0.1 or 0.25.
             for (double pattern : MULTIPLE_PATTERNS) {
                 final double potentialMultiple = d / pattern;
 
-                if (MathUtil.absDiff(potentialMultiple, Math.rint(potentialMultiple)) <= EQUALITY_EPSILON)
-                    getManagement().flag(Flag.of(user).setAddedVl(10).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotation diffs (multiple of " + pattern + ")."));
+                if(isEqual(potentialMultiple, Math.rint(potentialMultiple)))
+                    getManagement().flag(Flag.of(user).setAddedVl(10).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotation diffs (" + Arrays.toString(diffs) + ")."));
             }
         }
     }
+
 
     @Override
     protected ViolationManagement createViolationManagement()

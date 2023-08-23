@@ -22,12 +22,22 @@ public class PacketAnalysisPerfectRotation extends ViolationModule implements Li
         super("PacketAnalysis.parts.PerfectRotation");
     }
 
-    private static final double EQUALITY_EPSILON = 0.000000001;
+    private static final double EQUALITY_EPSILON = 0.0000000001;
     private static final double[] MULTIPLE_PATTERNS = {0.1, 0.25};
 
     private static boolean isEqual(double reference, double d)
     {
         return MathUtil.absDiff(reference, d) <= EQUALITY_EPSILON;
+    }
+
+    private static boolean noRotation(double d)
+    {
+        // 0 degree change is no rotation
+        if (isEqual(0, d)) return true;
+
+        // One or multiple full circles are no rotation
+        final double circle = d / 360;
+        return isEqual(circle, Math.rint(circle));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -41,7 +51,7 @@ public class PacketAnalysisPerfectRotation extends ViolationModule implements Li
 
         for (double d : diffs) {
             // Ignore 0 and 360 degrees as they represent no change in rotation.
-            if (isEqual(0, d) || isEqual(360, d)) continue;
+            if (noRotation(d)) continue;
 
             // Check if the angle change is valid (not infinite or NaN).
             if (Double.isInfinite(d) || Double.isNaN(d))

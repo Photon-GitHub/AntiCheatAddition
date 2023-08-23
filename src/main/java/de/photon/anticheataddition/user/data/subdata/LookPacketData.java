@@ -39,7 +39,7 @@ public final class LookPacketData
 
         final long curTime = System.currentTimeMillis();
 
-        long gapFillers = 0;
+        long gapCount = 0;
         double angleSum = 0;
         for (int i = 1; i < changes.length; ++i) {
             // Ignore rotation changes more than 1 second ago.
@@ -50,14 +50,14 @@ public final class LookPacketData
             final long ticks = changes[i - 1].tickOffset(changes[i]);
 
             // If there's a gap of more than one tick, accumulate the number of gaps
-            if (ticks > 1) gapFillers += (ticks - 1);
+            if (ticks > 1) gapCount += (ticks - 1);
 
             // Accumulate the angle change
             angleSum += changes[i - 1].angle(changes[i]);
         }
 
-        // Return the accumulated sum of angle changes and the computed difference
-        return new ScaffoldAngleInfo(angleSum, gapFillers);
+        // Return the accumulated sum of angle changes and the gaps
+        return new ScaffoldAngleInfo(angleSum, gapCount);
     }
 
     @Value

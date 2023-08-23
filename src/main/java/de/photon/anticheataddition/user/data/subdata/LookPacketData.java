@@ -16,6 +16,9 @@ import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
+/**
+ * Represents a data structure that stores and processes look packets for users.
+ */
 public final class LookPacketData
 {
     static {
@@ -43,22 +46,24 @@ public final class LookPacketData
             // Ignore rotation changes more than 1 second ago.
             if ((curTime - changes[i].getTime()) > 1000) continue;
 
+            // Calculate the number of ticks (time units) between consecutive changes
             // Using -1 for the last element is fine as there is always the last element.
             final long ticks = changes[i - 1].tickOffset(changes[i]);
 
-            if (ticks >= 2) gapFillers += (ticks - 1);
+            // If there's a gap of more than one tick, accumulate the number of gaps
+            if (ticks > 1) gapFillers += (ticks - 1);
 
-            // This is a rotation.
+            // Increment rotation count for each rotation change
             ++rotationCount;
 
-            // Angle change sum
+            // Accumulate the angle change
             angleSum += changes[i - 1].angle(changes[i]);
         }
 
-        // Just immediately return the [0,0] array here to avoid dividing by 0.
+        // If there's no rotation or gaps, return default values to avoid division by zero
         if (rotationCount == 0 && gapFillers == 0) return new ScaffoldAngleInfo(0, 0);
 
-        // Compute the difference of angleSum and angleSum * (rotationCount / (rotationCount + gapFillers))
+        // Compute the difference of angleSum and normalized angleSum
         return new ScaffoldAngleInfo(angleSum, MathUtil.absDiff((angleSum / (rotationCount + gapFillers)) * rotationCount, angleSum));
     }
 
@@ -98,7 +103,8 @@ public final class LookPacketData
     }
 
     /**
-     * A singleton class to reduce the required {@link com.comphenix.protocol.events.PacketListener}s to a minimum.
+     * Singleton class responsible for updating the {@link LookPacketData} based on received packets.
+     * Reduces the number of required packet listeners.
      */
     private static final class LookPacketDataUpdater extends PacketAdapter
     {
@@ -119,7 +125,7 @@ public final class LookPacketData
             final var rotationQueue = user.getLookPacketData().rotationChangeQueue;
 
             // Same tick -> merge
-            synchronized (user.getLookPacketData().rotationChangeQueue) {
+            synchronized (rotationQueue) {
                 if (rotationChange.timeOffset(rotationQueue.tail()) < 55) rotationQueue.tail().merge(rotationChange);
                 else rotationQueue.add(rotationChange);
             }
@@ -127,8 +133,7 @@ public final class LookPacketData
             // Huge angle change
             // Use the map values here to because the other ones are already updated.
             if (RotationUtil.getDirection(user.getData().floating.lastPacketYaw, user.getData().floating.lastPacketPitch)
-                            .angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
-            {
+                            .angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35) {
                 user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).update();
             }
 

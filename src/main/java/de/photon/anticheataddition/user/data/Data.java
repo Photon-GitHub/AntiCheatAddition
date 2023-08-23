@@ -62,6 +62,8 @@ public final class Data
         public final ViolationCounter inventoryAverageHeuristicsMisclicks = new ViolationCounter(0);
         public final ViolationCounter inventoryPerfectExitFails = new ViolationCounter(6);
 
+        public final ViolationCounter packetAnalysisPerfectRotationFails = new ViolationCounter(3);
+
         public final ViolationCounter scaffoldAngleFails = new ViolationCounter(4);
         public final ViolationCounter scaffoldJumpingFails = new ViolationCounter(5);
         public final ViolationCounter scaffoldJumpingLegit = new ViolationCounter(20);

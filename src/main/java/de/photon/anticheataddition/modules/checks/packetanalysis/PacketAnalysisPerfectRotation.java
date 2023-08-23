@@ -30,14 +30,19 @@ public class PacketAnalysisPerfectRotation extends ViolationModule implements Li
         return MathUtil.absDiff(reference, d) <= EQUALITY_EPSILON;
     }
 
+    private static boolean isIntegerMultiple(double reference, double d)
+    {
+        final double potentialMultiple = d / reference;
+        return isEqual(potentialMultiple, Math.rint(potentialMultiple));
+    }
+
     private static boolean noRotation(double d)
     {
         // 0 degree change is no rotation
         if (isEqual(0, d)) return true;
 
         // One or multiple full circles are no rotation
-        final double circle = d / 360;
-        return isEqual(circle, Math.rint(circle));
+        return isIntegerMultiple(360, d);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -60,12 +65,15 @@ public class PacketAnalysisPerfectRotation extends ViolationModule implements Li
             Log.finest(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent rotation diffs: " + Arrays.toString(diffs));
 
             // Check if the angle change is a multiple of any pattern like 0.1 or 0.25.
+            boolean flag = false;
             for (double pattern : MULTIPLE_PATTERNS) {
-                final double potentialMultiple = d / pattern;
-
-                if (isEqual(potentialMultiple, Math.rint(potentialMultiple)))
-                    getManagement().flag(Flag.of(user).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotation diffs (" + Arrays.toString(diffs) + ")."));
+                if (isIntegerMultiple(pattern, d) && user.getData().counter.packetAnalysisPerfectRotationFails.incrementCompareThreshold()) {
+                    flag = true;
+                    getManagement().flag(Flag.of(user).setAddedVl(5).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotation diffs (" + Arrays.toString(diffs) + ")."));
+                }
             }
+
+            if (!flag) user.getData().counter.packetAnalysisPerfectRotationFails.decrementAboveZero();
         }
     }
 

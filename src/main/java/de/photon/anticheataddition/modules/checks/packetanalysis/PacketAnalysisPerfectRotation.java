@@ -40,8 +40,10 @@ public class PacketAnalysisPerfectRotation extends ViolationModule implements Li
                                 MathUtil.absDiff(event.getTo().getPitch(), event.getFrom().getPitch())};
 
         for (double d : diffs) {
+            // Ignore 0 and 360 degrees as they represent no change in rotation.
             if (isEqual(0, d) || isEqual(360, d)) continue;
 
+            // Check if the angle change is valid (not infinite or NaN).
             if (Double.isInfinite(d) || Double.isNaN(d))
                 getManagement().flag(Flag.of(user).setAddedVl(10).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent infinite rotation diffs."));
 
@@ -51,7 +53,7 @@ public class PacketAnalysisPerfectRotation extends ViolationModule implements Li
             for (double pattern : MULTIPLE_PATTERNS) {
                 final double potentialMultiple = d / pattern;
 
-                if(isEqual(potentialMultiple, Math.rint(potentialMultiple)))
+                if (isEqual(potentialMultiple, Math.rint(potentialMultiple)))
                     getManagement().flag(Flag.of(user).setAddedVl(10).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotation diffs (" + Arrays.toString(diffs) + ")."));
             }
         }

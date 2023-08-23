@@ -13,7 +13,7 @@ public class ScaffoldRotation extends Module
     public static final ScaffoldRotation INSTANCE = new ScaffoldRotation();
 
     private static final double ANGLE_CHANGE_SUM_THRESHOLD = 7D;
-    private static final double ANGLE_OFFSET_SUM_THRESHOLD = 5.2D;
+    private static final long ROTATION_GAP_THRESHOLD = 5;
 
     private ScaffoldRotation()
     {
@@ -39,8 +39,9 @@ public class ScaffoldRotation extends Module
             vl += 10;
         }
 
-        // This detects some very random rotations that some scaffold cheats might use.
-        if (scaffoldAngleInfo.offsetSum() > ANGLE_OFFSET_SUM_THRESHOLD) {
+        // Multiple changes in rotations in a single tick cause gaps and are suspicious.
+        // However, this can also be caused by connection issues and thus a threshold is needed.
+        if (scaffoldAngleInfo.gapFillers() > ROTATION_GAP_THRESHOLD) {
             Log.fine(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent suspiciously random rotations.");
             vl += 5;
         }

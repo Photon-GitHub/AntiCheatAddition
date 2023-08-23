@@ -27,7 +27,7 @@ public final class LookPacketData
 
     private final RingBuffer<RotationChange> rotationChangeQueue = new RingBuffer<>(20, new RotationChange(0, 0));
 
-    public record ScaffoldAngleInfo(double changeSum, double offsetSum) {}
+    public record ScaffoldAngleInfo(double changeSum, long gapFillers) {}
 
     public ScaffoldAngleInfo getAngleInformation()
     {
@@ -39,7 +39,6 @@ public final class LookPacketData
 
         final long curTime = System.currentTimeMillis();
 
-        long rotationCount = 0;
         long gapFillers = 0;
         double angleSum = 0;
         for (int i = 1; i < changes.length; ++i) {
@@ -53,18 +52,12 @@ public final class LookPacketData
             // If there's a gap of more than one tick, accumulate the number of gaps
             if (ticks > 1) gapFillers += (ticks - 1);
 
-            // Increment rotation count for each rotation change
-            ++rotationCount;
-
             // Accumulate the angle change
             angleSum += changes[i - 1].angle(changes[i]);
         }
 
-        // If there's no rotation or gaps, return default values to avoid division by zero
-        if (rotationCount == 0 && gapFillers == 0) return new ScaffoldAngleInfo(0, 0);
-
-        // Compute the difference of angleSum and angleSum per rotation (also accounting for merged rotations with gaps)
-        return new ScaffoldAngleInfo(angleSum, MathUtil.absDiff((angleSum / (rotationCount + gapFillers)) * rotationCount, angleSum));
+        // Return the accumulated sum of angle changes and the computed difference
+        return new ScaffoldAngleInfo(angleSum, gapFillers);
     }
 
     @Value

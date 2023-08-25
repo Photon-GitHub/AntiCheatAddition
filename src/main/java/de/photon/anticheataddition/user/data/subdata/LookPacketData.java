@@ -27,9 +27,7 @@ public final class LookPacketData
 
     private final RingBuffer<RotationChange> rotationChangeQueue = new RingBuffer<>(20, new RotationChange(0, 0));
 
-    public record ScaffoldAngleInfo(double changeSum, long gapFillers) {}
-
-    public ScaffoldAngleInfo getAngleInformation()
+    public double getRecentTotalAngleChange()
     {
         final RotationChange[] changes;
 
@@ -39,25 +37,17 @@ public final class LookPacketData
 
         final long curTime = System.currentTimeMillis();
 
-        long gapCount = 0;
         double angleSum = 0;
         for (int i = 1; i < changes.length; ++i) {
             // Ignore rotation changes more than 1 second ago.
             if ((curTime - changes[i].getTime()) > 1000) continue;
-
-            // Calculate the number of ticks (time units) between consecutive changes
-            // Using -1 for the last element is fine as there is always the last element.
-            final long ticks = changes[i - 1].tickOffset(changes[i]);
-
-            // If there's a gap of more than one tick, accumulate the number of gaps
-            if (ticks > 1) gapCount += (ticks - 1);
 
             // Accumulate the angle change
             angleSum += changes[i - 1].angle(changes[i]);
         }
 
         // Return the accumulated sum of angle changes and the gaps
-        return new ScaffoldAngleInfo(angleSum, gapCount);
+        return angleSum;
     }
 
     @Value

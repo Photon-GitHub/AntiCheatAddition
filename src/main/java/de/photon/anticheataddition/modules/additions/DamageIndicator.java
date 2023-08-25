@@ -10,7 +10,7 @@ import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.MetadataPacket;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerEntityMetadata;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerNamedEntitySpawn;
-import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
+import de.photon.anticheataddition.util.minecraft.world.entity.EntityUtil;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;

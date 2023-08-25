@@ -3,7 +3,7 @@ package de.photon.anticheataddition.user.data;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
-import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
+import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -164,12 +164,12 @@ public final class DataUpdaterEvents implements Listener
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
             user.getTimeMap().at(TimeKey.RIGHT_CLICK_EVENT).update();
 
-            if (!MaterialUtil.isAir(event.getMaterial())) {
+            if (!MaterialUtil.INSTANCE.isAir(event.getMaterial())) {
                 user.getTimeMap().at(TimeKey.RIGHT_CLICK_ITEM_EVENT).update();
                 if (event.getMaterial().isEdible()) user.getTimeMap().at(TimeKey.RIGHT_CLICK_CONSUMABLE_ITEM_EVENT).update();
             }
 
-            if (event.getItem() != null && event.getItem().getType() == MaterialUtil.EXPERIENCE_BOTTLE) user.getTimeMap().at(TimeKey.EXPERIENCE_BOTTLE_THROWN).update();
+            if (event.getItem() != null && event.getItem().getType() == MaterialUtil.INSTANCE.getExpBottle()) user.getTimeMap().at(TimeKey.EXPERIENCE_BOTTLE_THROWN).update();
         }
     }
 
@@ -203,7 +203,7 @@ public final class DataUpdaterEvents implements Listener
         }
 
         // Slime / Bed block -> Tower bounce jump
-        if (event.getFrom().getY() < event.getTo().getY() && MaterialUtil.BOUNCE_MATERIALS.contains(event.getFrom().getBlock().getRelative(BlockFace.DOWN).getType())) {
+        if (event.getFrom().getY() < event.getTo().getY() && MaterialUtil.INSTANCE.getBounceMaterials().contains(event.getFrom().getBlock().getRelative(BlockFace.DOWN).getType())) {
             // Custom formula fitted from test data. Capped to make sure that cheat clients cannot give themselves infinite protection millis.
             // 2000 is already unreasonable, even for very fast block placing.
             user.getTimeMap().at(TimeKey.TOWER_BOUNCE).setToFuture(Math.min((long) (550 * (event.getTo().getY() - event.getFrom().getY()) + 75), 2000L));

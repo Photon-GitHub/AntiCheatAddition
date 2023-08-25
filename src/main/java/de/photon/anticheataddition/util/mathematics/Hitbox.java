@@ -2,7 +2,7 @@ package de.photon.anticheataddition.util.mathematics;
 
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
-import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
+import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
@@ -111,11 +111,11 @@ public enum Hitbox
         }
 
         /**
-         * Checks whether any {@link Block}s that are partially inside this {@link HitboxLocation} are liquids as defined in {@link MaterialUtil#LIQUIDS}
+         * Checks whether any {@link Block}s that are partially inside this {@link HitboxLocation} are liquids as defined in {@link MaterialUtil#getLiquids()}
          */
         public boolean isInLiquids()
         {
-            return SetUtil.containsAny(MaterialUtil.LIQUIDS, getPartiallyIncludedMaterials());
+            return SetUtil.containsAny(MaterialUtil.INSTANCE.getLiquids(), getPartiallyIncludedMaterials());
         }
 
         /**

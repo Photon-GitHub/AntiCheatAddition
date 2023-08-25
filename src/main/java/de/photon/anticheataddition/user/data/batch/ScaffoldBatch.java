@@ -5,7 +5,7 @@ import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.datastructure.batch.Batch;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
-import de.photon.anticheataddition.util.minecraft.entity.InternalPotion;
+import de.photon.anticheataddition.util.minecraft.world.entity.InternalPotion;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;

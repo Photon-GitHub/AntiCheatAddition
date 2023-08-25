@@ -1,4 +1,4 @@
-package de.photon.anticheataddition.util.minecraft.entity;
+package de.photon.anticheataddition.util.minecraft.world.entity;
 
 import com.google.common.base.Preconditions;
 import org.bukkit.attribute.Attribute;

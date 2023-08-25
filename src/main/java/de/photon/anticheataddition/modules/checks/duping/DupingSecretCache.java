@@ -6,7 +6,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.messaging.Log;
-import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
+import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 public final class DupingSecretCache extends ViolationModule implements Listener
 {
     public static final DupingSecretCache INSTANCE = new DupingSecretCache();
-    private static final Set<Material> IGNORED_AROUND_INVENTORY = Stream.of(MaterialUtil.LIQUIDS, MaterialUtil.FREE_SPACE_CONTAINERS)
+    private static final Set<Material> IGNORED_AROUND_INVENTORY = Stream.of(MaterialUtil.INSTANCE.getLiquids(), MaterialUtil.INSTANCE.getFreeSpaceContainers())
                                                                         .flatMap(Set::stream)
                                                                         .collect(SetUtil.toImmutableEnumSet());
     private final long secretCacheCheckDelayTicks = TimeUtil.toTicks(loadLong(".check_delay", 10), TimeUnit.MINUTES);

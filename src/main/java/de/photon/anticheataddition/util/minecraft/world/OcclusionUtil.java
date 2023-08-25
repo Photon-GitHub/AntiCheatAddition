@@ -8,6 +8,7 @@ import de.photon.anticheataddition.modules.additions.esp.Esp;
 import de.photon.anticheataddition.util.mathematics.ResetLocation;
 import de.photon.anticheataddition.util.mathematics.ResetVector;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
+import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -31,7 +32,7 @@ public final class OcclusionUtil
                 public @NotNull Boolean load(@NotNull Location key)
                 {
                     final Block block = key.getBlock();
-                    return block != null && !block.isEmpty() && MaterialUtil.isReallyOccluding(block.getType());
+                    return block != null && !block.isEmpty() && MaterialUtil.INSTANCE.isReallyOccluding(block.getType());
                 }
             });
 

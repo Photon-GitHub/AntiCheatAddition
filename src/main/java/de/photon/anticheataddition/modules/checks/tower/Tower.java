@@ -6,7 +6,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.batch.TowerBatch;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
-import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
+import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -57,10 +57,9 @@ public final class Tower extends ViolationModule implements Listener
             user.getTimeMap().at(TimeKey.TOWER_BOUNCE).passedTime() > 0 &&
             // Check if the block is placed against only one block (face).
             // Only one block that is not a liquid is allowed (the one which the Block is placed against).
-            WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1 &&
+            WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.INSTANCE.getLiquids()) == 1 &&
             // User is not in water which can cause false positives due to faster swimming on newer versions.
-            !user.isInLiquids())
-        {
+            !user.isInLiquids()) {
             // Make sure that the player is still towering in the same position.
             if (!event.getBlockAgainst().getLocation().equals(user.getTowerBatch().peekLastAdded().locationOfBlock())) user.getTowerBatch().clear();
 

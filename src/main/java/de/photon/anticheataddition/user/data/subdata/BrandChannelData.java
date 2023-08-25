@@ -15,11 +15,6 @@ public class BrandChannelData
     // Use a RingBuffer here as a malicious client could spam the brand channel with messages.
     private final RingBuffer<String> brandChannelMessages = new RingBuffer<>(10);
 
-    public BrandChannelData()
-    {
-        BrandChannelMessageListener.INSTANCE.register();
-    }
-
     // This method is private as only the listener below is supposed to add messages.
     private void addBrandChannelMessage(String message)
     {

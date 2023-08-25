@@ -315,6 +315,7 @@ Scaffold:
     Position:
       enabled: true
     # This part analyzes the rotations of a player while scaffolding.
+    # Adds 5 to 30 VL
     Rotation:
       enabled: true
     # This checks for behaviour associated with safe-walk

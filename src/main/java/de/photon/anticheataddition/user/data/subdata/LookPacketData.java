@@ -10,11 +10,16 @@ import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapper
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.buffer.RingBuffer;
+import de.photon.anticheataddition.util.mathematics.DataUtil;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.RotationUtil;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.Value;
 import lombok.experimental.NonFinal;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a data structure that stores and processes look packets for users.
@@ -27,7 +32,10 @@ public final class LookPacketData
 
     private final RingBuffer<RotationChange> rotationChangeQueue = new RingBuffer<>(20, new RotationChange(0, 0));
 
-    public double getRecentTotalAngleChange()
+
+    public record ScaffoldAngleInfo(double changeSum, double variance) {}
+
+    public ScaffoldAngleInfo getAngleInformation()
     {
         final RotationChange[] changes;
 
@@ -36,18 +44,24 @@ public final class LookPacketData
         }
 
         final long curTime = System.currentTimeMillis();
+        final List<Float> angles = new ArrayList<>();
 
-        double angleSum = 0;
         for (int i = 1; i < changes.length; ++i) {
             // Ignore rotation changes more than 1 second ago.
             if ((curTime - changes[i].getTime()) > 1000) continue;
 
             // Accumulate the angle change
-            angleSum += changes[i - 1].angle(changes[i]);
+            angles.add(changes[i - 1].angle(changes[i]));
         }
 
+        final double[] angleArray = angles.stream().mapToDouble(Float::doubleValue).toArray();
+        final double angleSum = DataUtil.sum(angleArray);
+        final double angleVariance = DataUtil.variance(angleSum / angleArray.length, angleArray);
+
+        Log.finer(() -> "Scaffold-Debug | AngleSum: %.3f | AngleVariance: %.3f | Mean: %.3f".formatted(angleSum, angleVariance, angleSum / angleArray.length));
+
         // Return the accumulated sum of angle changes and the gaps
-        return angleSum;
+        return new ScaffoldAngleInfo(angleSum, angleVariance);
     }
 
     @Value

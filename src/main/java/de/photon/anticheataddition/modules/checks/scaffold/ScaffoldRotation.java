@@ -12,7 +12,9 @@ public class ScaffoldRotation extends Module
 {
     public static final ScaffoldRotation INSTANCE = new ScaffoldRotation();
 
-    private static final double ANGLE_CHANGE_SUM_THRESHOLD = 7D;
+    // Two full circles.
+    private static final double ANGLE_CHANGE_SUM_THRESHOLD = 2 * Math.PI;
+    private static final double ANGLE_VARIANCE_THRESHOLD = 0.3D;
 
     private ScaffoldRotation()
     {
@@ -24,7 +26,7 @@ public class ScaffoldRotation extends Module
         if (!this.isEnabled()) return 0;
         int vl = 0;
 
-        final double angleChangeSum = user.getLookPacketData().getRecentTotalAngleChange();
+        final var scaffoldAngleInfo = user.getLookPacketData().getAngleInformation();
 
         // Detect sudden changes in the last two ticks.
         if (user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).recentlyUpdated(125)) {
@@ -33,11 +35,17 @@ public class ScaffoldRotation extends Module
         }
 
         // Detects an excessive amount of large rotation changes in general.
-        if (angleChangeSum > ANGLE_CHANGE_SUM_THRESHOLD) {
-            Log.fine(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotation changes.");
+        if (scaffoldAngleInfo.changeSum() > ANGLE_CHANGE_SUM_THRESHOLD) {
+            Log.fine(() -> "Scaffold-Debug | Player: %s sent high rotation changes (%.3f).".formatted(user.getPlayer().getName(), scaffoldAngleInfo.changeSum()));
             vl += 10;
         }
 
-        return vl;
+        // A high variance can mean that the player is sending random rotations or is perfectly aiming at blocks.
+        if (scaffoldAngleInfo.variance() > ANGLE_VARIANCE_THRESHOLD) {
+            Log.fine(() -> "Scaffold-Debug | Player: %s sent rotations with very high variance (%.3f).".formatted(user.getPlayer().getName(), scaffoldAngleInfo.variance()));
+            vl += 5;
+        }
+
+        return user.getData().counter.scaffoldRotationFails.conditionallyIncDec(vl > 0) ? vl : 0;
     }
 }

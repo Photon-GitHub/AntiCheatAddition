@@ -44,7 +44,7 @@ public final class DataUtil
     /**
      * Shortcut for calculating the squared error of a certain value.
      */
-    public static double squaredError(final double reference, final double value)
+    public static double variance(final double reference, final double value)
     {
         final double error = value - reference;
         return error * error;
@@ -53,30 +53,30 @@ public final class DataUtil
     /**
      * Calculates the summed square error from the reference value.
      */
-    public static double squaredError(double reference, int... data)
+    public static double variance(double reference, int... data)
     {
         double sum = 0;
-        for (int datum : data) sum += squaredError(reference, datum);
+        for (int datum : data) sum += variance(reference, datum);
         return sum;
     }
 
     /**
      * Calculates the summed square error from the reference value.
      */
-    public static double squaredError(double reference, long... data)
+    public static double variance(double reference, long... data)
     {
         double sum = 0;
-        for (long datum : data) sum += squaredError(reference, datum);
+        for (long datum : data) sum += variance(reference, datum);
         return sum;
     }
 
     /**
      * Calculates the summed square error from the reference value.
      */
-    public static double squaredError(double reference, double... data)
+    public static double variance(double reference, double... data)
     {
         double sum = 0;
-        for (double datum : data) sum += squaredError(reference, datum);
+        for (double datum : data) sum += variance(reference, datum);
         return sum;
     }
 

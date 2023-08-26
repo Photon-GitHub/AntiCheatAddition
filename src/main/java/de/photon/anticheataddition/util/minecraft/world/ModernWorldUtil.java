@@ -181,7 +181,7 @@ final class ModernWorldUtil implements WorldUtil
         if (!(block.getState() instanceof InventoryHolder)) return false;
 
         // Chiseled Bookshelf false positive fix.
-        if (MaterialUtil.INSTANCE.getChiseledBookshelf().isPresent() && block.getType() == MaterialUtil.INSTANCE.getChiseledBookshelf().get()) return false;
+        if (block.getType() == MaterialUtil.INSTANCE.getChiseledBookshelf().orElse(Material.AIR)) return false;
 
         // Additional checks for cats and occluding blocks necessary?
         if (MaterialUtil.INSTANCE.getFreeSpaceContainers().contains(block.getType())) {

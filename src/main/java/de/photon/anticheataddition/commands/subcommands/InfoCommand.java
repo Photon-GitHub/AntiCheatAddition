@@ -41,7 +41,7 @@ public class InfoCommand extends InternalCommand
         if (user == null) {
             ChatMessage.sendMessage(sender, "Unable to query brand messages.");
         } else {
-            final var brandMessages = String.join(", ", user.getData().object.brandChannelMessages);
+            final var brandMessages = user.getBrandChannelData().listBrandChannelMessages();
             ChatMessage.sendMessage(sender, "The last brand channel messages: " + brandMessages);
         }
 

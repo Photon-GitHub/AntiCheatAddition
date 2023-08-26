@@ -9,7 +9,7 @@ import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
-import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
+import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -56,12 +56,11 @@ public final class PacketAnalysisEqualRotation extends ViolationModule
                         user.getTimeMap().at(TimeKey.RIGHT_CLICK_ITEM_EVENT).notRecentlyUpdated(400) &&
                         PacketAdapterBuilder.checkSync(10, TimeUnit.SECONDS,
                                                        // False positive when jumping from great heights into a pool with slime blocks / beds on the bottom.
-                                                       () -> !(user.isInLiquids() && MaterialUtil.BOUNCE_MATERIALS.contains(user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) &&
+                                                       () -> !(user.isInLiquids() && MaterialUtil.INSTANCE.getBounceMaterials().contains(user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) &&
                                                              // Fixes false positives on versions 1.9+ because of changed hitboxes
                                                              !(ServerVersion.is18() &&
                                                                user.getClientVersion() != ServerVersion.MC18 &&
-                                                               SetUtil.containsAny(user.getHitboxLocation().getPartiallyIncludedMaterials(), MaterialUtil.CHANGED_HITBOX_MATERIALS))))
-                    {
+                                                               SetUtil.containsAny(user.getHitboxLocation().getPartiallyIncludedMaterials(), MaterialUtil.INSTANCE.getChangedHitboxMaterials())))) {
                         // Cancelled packets may cause problems.
                         if (user.getData().bool.packetAnalysisEqualRotationExpected) {
                             user.getData().bool.packetAnalysisEqualRotationExpected = false;

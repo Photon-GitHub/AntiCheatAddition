@@ -1,4 +1,4 @@
-package de.photon.anticheataddition.util.minecraft.entity;
+package de.photon.anticheataddition.util.minecraft.world.entity;
 
 import de.photon.anticheataddition.ServerVersion;
 import org.bukkit.entity.Entity;

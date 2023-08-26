@@ -6,7 +6,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
-import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
+import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -77,7 +77,7 @@ public final class Scaffold extends ViolationModule implements Listener
             event.getBlockPlaced().getType() != Material.LADDER && event.getBlockPlaced().getType() != Material.VINE &&
             // Check if the block is placed against one block face only, also implies no blocks above and below.
             // Only one block that is not a liquid is allowed (the one which the Block is placed against).
-            WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1L &&
+            WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.INSTANCE.getLiquids()) == 1L &&
             // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
             WorldUtil.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst()))) {
 
@@ -102,11 +102,7 @@ public final class Scaffold extends ViolationModule implements Listener
             if (!newScaffoldLocation) {
                 // Do not check jumping for new locations as of wall-building / jumping.
                 vl += ScaffoldJumping.INSTANCE.getVl(user, event);
-
-                final var rotationVl = ScaffoldRotation.INSTANCE.getVl(user);
-
-                if (user.getData().counter.scaffoldRotationFails.conditionallyIncDec(rotationVl > 0)) vl += rotationVl;
-
+                vl += ScaffoldRotation.INSTANCE.getVl(user);
                 vl += ScaffoldSafewalkEdge.INSTANCE.getVl(user, event);
                 vl += ScaffoldSafewalkTiming.INSTANCE.getVl(user);
                 vl += ScaffoldSprinting.INSTANCE.getVl(user);

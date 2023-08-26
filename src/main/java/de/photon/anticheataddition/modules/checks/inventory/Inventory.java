@@ -4,7 +4,7 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
-import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
+import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.ViolationAggregation;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
@@ -68,9 +68,8 @@ public class Inventory extends ViolationModule implements Listener
             // Creative-clear might trigger this.
             user.inAdventureOrSurvivalMode() &&
             // Minimum TPS before the check is activated as of a huge amount of fps
-            hasMinTPS())
-        {
-            if (event.getCurrentItem() == null || MaterialUtil.isAir(event.getCurrentItem().getType())) user.getData().counter.inventoryAverageHeuristicsMisclicks.increment();
+            hasMinTPS()) {
+            if (event.getCurrentItem() == null || MaterialUtil.INSTANCE.isAir(event.getCurrentItem().getType())) user.getData().counter.inventoryAverageHeuristicsMisclicks.increment();
                 // Shift - Double - Click shortcut will generate a lot of clicks.
             else if (user.getData().object.lastMaterialClicked != event.getCurrentItem().getType())
                 user.getInventoryBatch().addDataPoint(InventoryBatch.InventoryClick.fromClickEvent(event));

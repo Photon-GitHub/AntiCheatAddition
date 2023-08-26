@@ -10,12 +10,20 @@ import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapper
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.buffer.RingBuffer;
+import de.photon.anticheataddition.util.mathematics.DataUtil;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.RotationUtil;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Represents a data structure that stores and processes look packets for users.
+ */
 public final class LookPacketData
 {
     static {
@@ -24,7 +32,8 @@ public final class LookPacketData
 
     private final RingBuffer<RotationChange> rotationChangeQueue = new RingBuffer<>(20, new RotationChange(0, 0));
 
-    public record ScaffoldAngleInfo(double changeSum, double offsetSum) {}
+
+    public record ScaffoldAngleInfo(double changeSum, double variance) {}
 
     public ScaffoldAngleInfo getAngleInformation()
     {
@@ -35,31 +44,24 @@ public final class LookPacketData
         }
 
         final long curTime = System.currentTimeMillis();
+        final List<Float> angles = new ArrayList<>();
 
-        long rotationCount = 0;
-        long gapFillers = 0;
-        double angleSum = 0;
         for (int i = 1; i < changes.length; ++i) {
             // Ignore rotation changes more than 1 second ago.
             if ((curTime - changes[i].getTime()) > 1000) continue;
 
-            // Using -1 for the last element is fine as there is always the last element.
-            final long ticks = changes[i - 1].tickOffset(changes[i]);
-
-            if (ticks >= 2) gapFillers += (ticks - 1);
-
-            // This is a rotation.
-            ++rotationCount;
-
-            // Angle change sum
-            angleSum += changes[i - 1].angle(changes[i]);
+            // Accumulate the angle change
+            angles.add(changes[i - 1].angle(changes[i]));
         }
 
-        // Just immediately return the [0,0] array here to avoid dividing by 0.
-        if (rotationCount == 0 && gapFillers == 0) return new ScaffoldAngleInfo(0, 0);
+        final double[] angleArray = angles.stream().mapToDouble(Float::doubleValue).toArray();
+        final double angleSum = DataUtil.sum(angleArray);
+        final double angleVariance = DataUtil.variance(angleSum / angleArray.length, angleArray);
 
-        // Compute the difference of angleSum and angleSum * (rotationCount / (rotationCount + gapFillers))
-        return new ScaffoldAngleInfo(angleSum, MathUtil.absDiff((angleSum / (rotationCount + gapFillers)) * rotationCount, angleSum));
+        Log.finer(() -> "Scaffold-Debug | AngleSum: %.3f | AngleVariance: %.3f | Mean: %.3f".formatted(angleSum, angleVariance, angleSum / angleArray.length));
+
+        // Return the accumulated sum of angle changes and the gaps
+        return new ScaffoldAngleInfo(angleSum, angleVariance);
     }
 
     @Value
@@ -98,7 +100,8 @@ public final class LookPacketData
     }
 
     /**
-     * A singleton class to reduce the required {@link com.comphenix.protocol.events.PacketListener}s to a minimum.
+     * Singleton class responsible for updating the {@link LookPacketData} based on received packets.
+     * Reduces the number of required packet listeners.
      */
     private static final class LookPacketDataUpdater extends PacketAdapter
     {
@@ -119,7 +122,7 @@ public final class LookPacketData
             final var rotationQueue = user.getLookPacketData().rotationChangeQueue;
 
             // Same tick -> merge
-            synchronized (user.getLookPacketData().rotationChangeQueue) {
+            synchronized (rotationQueue) {
                 if (rotationChange.timeOffset(rotationQueue.tail()) < 55) rotationQueue.tail().merge(rotationChange);
                 else rotationQueue.add(rotationChange);
             }
@@ -127,8 +130,7 @@ public final class LookPacketData
             // Huge angle change
             // Use the map values here to because the other ones are already updated.
             if (RotationUtil.getDirection(user.getData().floating.lastPacketYaw, user.getData().floating.lastPacketPitch)
-                            .angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
-            {
+                            .angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35) {
                 user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).update();
             }
 

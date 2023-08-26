@@ -45,7 +45,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
     private void varianceTest(User user, long[] timeOffsets, ViolationCounter misClickCounter)
     {
         final double averageMillis = DataUtil.average(timeOffsets);
-        final double variance = DataUtil.squaredError(averageMillis, timeOffsets);
+        final double variance = DataUtil.variance(averageMillis, timeOffsets);
 
         // One time 2 ticks offset and 2 times 1 tick offset * 15 minimum vl = 168750
         // 2500 error sum is legit achievable.

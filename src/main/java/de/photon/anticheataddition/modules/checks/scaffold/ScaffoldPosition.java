@@ -3,7 +3,7 @@ package de.photon.anticheataddition.modules.checks.scaffold;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.messaging.Log;
-import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
+import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
@@ -22,7 +22,7 @@ final class ScaffoldPosition extends Module
     {
         if (!this.isEnabled()) return 0;
 
-        if (MaterialUtil.isAir(event.getBlockAgainst().getType()) || MaterialUtil.LIQUIDS.contains(event.getBlockAgainst().getType())) {
+        if (MaterialUtil.INSTANCE.isAir(event.getBlockAgainst().getType()) || MaterialUtil.INSTANCE.getLiquids().contains(event.getBlockAgainst().getType())) {
             Log.fine(() -> "Scaffold-Debug | Player: " + event.getPlayer().getName() + " placed against air or liquid.");
             return 30;
         }

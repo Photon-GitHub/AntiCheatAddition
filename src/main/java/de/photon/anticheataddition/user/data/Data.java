@@ -1,7 +1,6 @@
 package de.photon.anticheataddition.user.data;
 
 import de.photon.anticheataddition.modules.checks.autopotion.AutoPotion;
-import de.photon.anticheataddition.util.datastructure.buffer.RingBuffer;
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -79,8 +78,6 @@ public final class Data
     {
         public final Map<TimeKey, DoubleStatistics> autoFishConsistencyData = Map.of(TimeKey.AUTOFISH_DETECTION, new DoubleStatistics(), TimeKey.AUTOFISH_AFK_DETECTION, new DoubleStatistics());
         public AutoPotion.AutoPotionState autoPotionState = AutoPotion.AutoPotionState.AWAIT_POTION_THROW;
-
-        public final RingBuffer<String> brandChannelMessages = new RingBuffer<>(10);
 
         public Material dupingDoubleDroppedMaterial = Material.BEDROCK;
 

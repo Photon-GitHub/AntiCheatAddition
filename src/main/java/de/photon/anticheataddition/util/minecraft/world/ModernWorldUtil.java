@@ -3,6 +3,7 @@ package de.photon.anticheataddition.util.minecraft.world;
 import com.google.common.base.Preconditions;
 import com.google.common.math.DoubleMath;
 import de.photon.anticheataddition.ServerVersion;
+import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -179,8 +180,11 @@ final class ModernWorldUtil implements WorldUtil
         // The block is actually holding an inventory (and therefore is not e.g. dirt)
         if (!(block.getState() instanceof InventoryHolder)) return false;
 
+        // Chiseled Bookshelf false positive fix.
+        if (block.getType() == MaterialUtil.INSTANCE.getChiseledBookshelf().orElse(Material.AIR)) return false;
+
         // Additional checks for cats and occluding blocks necessary?
-        if (MaterialUtil.FREE_SPACE_CONTAINERS.contains(block.getType())) {
+        if (MaterialUtil.INSTANCE.getFreeSpaceContainers().contains(block.getType())) {
             final Block aboveBlock = block.getRelative(BlockFace.UP);
 
             if (ServerVersion.MC112.activeIsEarlierOrEqual()) {

@@ -3,7 +3,6 @@ package de.photon.anticheataddition.user.data.subdata;
 import de.photon.anticheataddition.modules.sentinel.ParsedPluginMessageListener;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.datastructure.buffer.RingBuffer;
-import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,18 +35,6 @@ public class BrandChannelData
      */
     public static class BrandChannelMessageListener implements ParsedPluginMessageListener
     {
-        public static final BrandChannelMessageListener INSTANCE = new BrandChannelMessageListener();
-
-        public void register()
-        {
-            MessageChannel.MC_BRAND_CHANNEL.registerIncomingChannel(this);
-        }
-
-        public void unregister()
-        {
-            MessageChannel.MC_BRAND_CHANNEL.unregisterIncomingChannel(this);
-        }
-
         @Override
         public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull String message)
         {

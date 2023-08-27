@@ -3,14 +3,13 @@ package de.photon.anticheataddition.user.data;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
-import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
+import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -35,16 +34,6 @@ public final class DataUpdaterEvents implements Listener
     public static final DataUpdaterEvents INSTANCE = new DataUpdaterEvents();
 
     private DataUpdaterEvents() {}
-
-    public void register()
-    {
-        AntiCheatAddition.getInstance().registerListener(this);
-    }
-
-    public void unregister()
-    {
-        HandlerList.unregisterAll(this);
-    }
 
     private static void closeInternalInventory(User user)
     {

@@ -119,6 +119,6 @@ public final class PacketAnalysisEqualRotation extends ViolationModule implement
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(100, 3).build();
+                                       .withDecay(100, 5).build();
     }
 }

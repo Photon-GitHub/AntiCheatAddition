@@ -29,7 +29,6 @@ public final class LabyModSentinel extends SentinelModule implements Listener, P
     {
         final var byteBuf = Unpooled.wrappedBuffer(message);
         final var key = ByteBufUtil.readString(byteBuf);
-        //val json = ByteBufUtil.readString(byteBuf);
 
         // LabyMod user joins the server
         if ("INFO".equals(key)) {

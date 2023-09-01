@@ -88,7 +88,7 @@ public class PacketAnalysisPerfectRotation extends ViolationModule implements Li
     {
         final var user = User.getUser(event.getPlayer());
         // Ignore invalid users and players in vehicles (boat false positive).
-        if (User.isUserInvalid(user, this) || event.getTo() == null || user.getPlayer().getVehicle() != null) return;
+        if (User.isUserInvalid(user, this) || event.getTo() == null || user.getPlayer().isInsideVehicle()) return;
 
         final double yawDiff = MathUtil.absDiff(event.getTo().getYaw(), event.getFrom().getYaw());
         final double pitchDiff = MathUtil.absDiff(event.getTo().getPitch(), event.getFrom().getPitch());

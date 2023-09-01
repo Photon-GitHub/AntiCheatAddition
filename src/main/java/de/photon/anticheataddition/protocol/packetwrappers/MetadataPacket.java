@@ -36,7 +36,7 @@ public abstract class MetadataPacket extends AbstractPacket
      *
      * @return the {@link WrappedWatchableObject} wrapped in an {@link Optional} or {@link Optional#empty()} if the index was not found.
      */
-    public Optional<? extends AbstractWrapper> getMetadataIndex(final int index)
+    public Optional<AbstractWrapper> getMetadataIndex(final int index)
     {
         if (ServerVersion.MC119.activeIsLaterOrEqual()) {
             for (WrappedDataValue watch : getMetadata()) {

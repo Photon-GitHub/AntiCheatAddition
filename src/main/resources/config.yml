@@ -615,12 +615,12 @@ Sentinel:
   # A basic guide for creating your own check:
   # (1) Copy the section of PXMod
   # (2) Rename the section from PXMod to <NAME_OF_YOUR_CUSTOM_CHECK>
-  # (3) Add the channels you want to listen to in incoming channels (e.g. “Minecraft:brand”).
+  # (3) Add the channels you want to listen to in incoming channels (e.g. “minecraft:brand”).
   #     AntiCheatAddition automatically tries to generate the legacy channel names and listens to those as well
   #     (in this case, “MC|Brand”). If you know the legacy name, add it and AntiCheatAddition will choose the
   #     correct one for your server version.
   # (4) If needed, clarify what the message should include to trigger the check. E.g. if you are listening to
-  #     “Minecraft:brand” and superspecialmod:version to detect a mod you could define containsAny as: [“SSM”, “ssm”].
+  #     “minecraft:brand” and superspecialmod:version to detect a mod you could define containsAny as: [“SSM”, “ssm”].
   #     Note: This is a purely fictional example. Mods have different channels and messages.
   #     Many do not communicate, especially cheat clients.
   # (5) Define the commands you want to execute when the mod is detected. The commands are executed exactly once right
@@ -631,7 +631,7 @@ Sentinel:
       enabled: false
       # The channels AntiCheatAddition will listen to.
       incoming_channels:
-        - "Minecraft:brand"
+        - "minecraft:brand"
         - "MC|Brand"
       # The message must include all strings in the list to trigger a detection. [ ] is an empty list.
       # If the list is empty, all messages are accepted.
@@ -648,7 +648,7 @@ Sentinel:
       enabled: false
       # The channels AntiCheatAddition will listen to.
       incoming_channels:
-        - "Minecraft:brand"
+        - "minecraft:brand"
         - "MC|Brand"
       # The message must include all strings in the list to trigger a detection. [ ] is an empty list.
       # If the list is empty, all messages are accepted.
@@ -699,7 +699,7 @@ Sentinel:
       enabled: false
       # The channels AntiCheatAddition will listen to.
       incoming_channels:
-        - "Minecraft:brand"
+        - "minecraft:brand"
         - "MC|Brand"
       # The message must include all strings in the list to trigger a detection. [ ] is an empty list.
       # If the list is empty, all messages are accepted.

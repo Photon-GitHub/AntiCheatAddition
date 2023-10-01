@@ -31,7 +31,7 @@ public enum ServerVersion
     MC117("1.17.1", true, 755, 756),
     MC118("1.18.2", true, 757, 758),
     MC119("1.19", true, 759, 760, 761, 762),
-    MC120("1.20", true, 763);
+    MC120("1.20", true, 763, 764);
 
     private static final Map<Integer, ServerVersion> PROTOCOL_VERSION_MAP = Arrays.stream(ServerVersion.values())
                                                                                   // Map each protocol version number to the ServerVersion.

@@ -2,20 +2,16 @@ package de.photon.anticheataddition.modules.additions;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
-import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.protocol.EntityMetadataIndex;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.MetadataPacket;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerEntityMetadata;
-import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerNamedEntitySpawn;
 import de.photon.anticheataddition.util.minecraft.world.entity.EntityUtil;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
-
-import java.util.Set;
 
 public final class DamageIndicator extends Module
 {
@@ -33,13 +29,8 @@ public final class DamageIndicator extends Module
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        final var packetTypes = ServerVersion.is18() ?
-                                // Only register NAMED_ENTITY_SPAWN on 1.8 as it doesn't work on newer versions.
-                                Set.of(PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.NAMED_ENTITY_SPAWN) :
-                                Set.of(PacketType.Play.Server.ENTITY_METADATA);
-
         return ModuleLoader.of(this, PacketAdapterBuilder
-                .of(this, packetTypes)
+                .of(this, PacketType.Play.Server.ENTITY_METADATA)
                 .priority(ListenerPriority.HIGH)
                 .onSending((event, user) -> {
                     final var entity = event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0);
@@ -64,19 +55,14 @@ public final class DamageIndicator extends Module
                         event.getPlayer().getEntityId() == entity.getEntityId() ||
 
                         // Entity has no passengers.
-                        EntityUtil.INSTANCE.hasPassengers(entity))
-                    {
+                        EntityUtil.INSTANCE.hasPassengers(entity)) {
                         return;
                     }
 
                     // Clone the packet to prevent a serversided connection of the health.
                     event.setPacket(event.getPacket().deepClone());
 
-                    final MetadataPacket metadata;
-
-                    if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) metadata = new WrapperPlayServerEntityMetadata(event.getPacket());
-                    else if (event.getPacketType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) metadata = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
-                    else throw new IllegalStateException("Unregistered packet type.");
+                    final MetadataPacket metadata = new WrapperPlayServerEntityMetadata(event.getPacket());
 
                     // Only set it if the entity is not yet dead to prevent problems on the clientside.
                     // Set the health to 1.0F as that is the default value.

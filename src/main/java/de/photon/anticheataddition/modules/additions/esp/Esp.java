@@ -126,7 +126,7 @@ public final class Esp extends Module
                     // Less than 1 block distance (removes the player themselves and any very close player)
                     || observerNode.distanceSquared(playerNode) < 1
                     || watched.isDead()
-                    || CanSee.INSTANCE.canSee(observer, watched))
+                    || CanSee.canSee(observer, watched))
                 {
                     // No hiding case
                     fullHiddenPlayers.remove(watched);

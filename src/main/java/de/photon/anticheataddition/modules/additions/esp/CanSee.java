@@ -10,7 +10,7 @@ public interface CanSee
     double BLINDNESS_DISTANCE = 5.5 * 5.5;
     double DARKNESS_DISTANCE = 15.5 * 15.5;
 
-    default boolean canSee(Player observer, Player watched)
+    static boolean canSee(Player observer, Player watched)
     {
         if (InternalPotion.GLOWING.hasPotionEffect(watched)) return true;
 

@@ -1,6 +1,8 @@
 package de.photon.anticheataddition.modules.checks.duping;
 
 import de.photon.anticheataddition.AntiCheatAddition;
+import de.photon.anticheataddition.ServerVersion;
+import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
@@ -81,6 +83,14 @@ public final class DupingSecretCache extends ViolationModule implements Listener
     private DupingSecretCache()
     {
         super("Duping.parts.SecretCache");
+    }
+
+    @Override
+    protected ModuleLoader createModuleLoader()
+    {
+        return ModuleLoader.builder(this)
+                           .setAllowedServerVersions(ServerVersion.NON_188_VERSIONS)
+                           .build();
     }
 
     @Override

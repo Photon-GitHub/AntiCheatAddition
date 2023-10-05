@@ -6,8 +6,8 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
-import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
+import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -101,7 +101,7 @@ public final class Scaffold extends ViolationModule implements Listener
             // All these checks may have false positives in new situations.
             if (!newScaffoldLocation) {
                 // Do not check jumping for new locations as of wall-building / jumping.
-                vl += ScaffoldJumping.INSTANCE.getVl(user, event);
+                vl += ScaffoldJumping.INSTANCE.getVl(user, event, lastScaffoldBlock);
                 vl += ScaffoldRotation.INSTANCE.getVl(user);
                 vl += ScaffoldSafewalkEdge.INSTANCE.getVl(user, event);
                 vl += ScaffoldSafewalkTiming.INSTANCE.getVl(user);

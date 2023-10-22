@@ -101,11 +101,13 @@ public final class Scaffold extends ViolationModule implements Listener
             // All these checks may have false positives in new situations.
             if (!newScaffoldLocation) {
                 // Do not check jumping for new locations as of wall-building / jumping.
-                vl += ScaffoldJumping.INSTANCE.getVl(user, event, lastScaffoldBlock);
+                vl += ScaffoldJumping.INSTANCE.getVl(user, event);
                 vl += ScaffoldRotation.INSTANCE.getVl(user);
                 vl += ScaffoldSafewalkEdge.INSTANCE.getVl(user, event);
                 vl += ScaffoldSafewalkTiming.INSTANCE.getVl(user);
                 vl += ScaffoldSprinting.INSTANCE.getVl(user);
+            } else {
+                ScaffoldJumping.INSTANCE.newScaffoldLocation(user, event, lastScaffoldBlock);
             }
 
             if (vl > 0) {

@@ -26,14 +26,17 @@ final class ScaffoldJumping extends Module
 
         final var failCounter = user.getData().counter.scaffoldJumpingFails;
 
-        boolean flag = user.hasMovedRecently(TimeKey.XZ_MOVEMENT, 500)
-                       && user.hasJumpedRecently(1000);
-
         // Ignore stair scaffolding.
         // Stair scaffolding would cause the last block to have a lower y value than the current block. The other parts of scaffold still work fine.
-        if (lastPlacement != null && lastPlacement.getY() < event.getBlockPlaced().getY()) flag = false;
+        if (lastPlacement != null && lastPlacement.getY() < event.getBlockPlaced().getY()) {
+            // Ignore for a short time as stair scaffolding has one block placement that is lower than the previous one, and then one that is of equal height.
+            user.getTimeMap().at(TimeKey.SCAFFOLD_JUMPING_STAIR).update();
+        }
 
-        if (flag) {
+        if (user.hasMovedRecently(TimeKey.XZ_MOVEMENT, 500)
+            && user.hasJumpedRecently(1000)
+            // Ignore stair scaffolding.
+            && user.getTimeMap().at(TimeKey.SCAFFOLD_JUMPING_STAIR).notRecentlyUpdated(1000)) {
             if (failCounter.incrementCompareThreshold()) {
                 Log.fine(() -> "Scaffold-Debug | Player: " + event.getPlayer().getName() + " jumped while scaffolding.");
                 return 20;

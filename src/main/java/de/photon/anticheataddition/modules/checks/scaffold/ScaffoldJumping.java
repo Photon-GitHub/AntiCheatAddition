@@ -52,7 +52,7 @@ final class ScaffoldJumping extends Module
     {
         if (!this.isEnabled()) return;
 
-        Log.finer(() -> "Last placement for " + user.getPlayer().getName() + ": " + lastPlacement.getY() + " Current placement: " + event.getBlockPlaced().getY());
+        Log.finer(() -> "Last placement for " + user.getPlayer().getName() + ": " + (lastPlacement == null ? " null " : lastPlacement.getY()) + " Current placement: " + event.getBlockPlaced().getY());
 
         // Ignore stair scaffolding.
         // Stair scaffolding would cause the last block to have a lower y value than the current block. The other parts of scaffold still work fine.

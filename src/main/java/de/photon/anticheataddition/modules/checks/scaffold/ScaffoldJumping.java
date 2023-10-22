@@ -37,7 +37,7 @@ final class ScaffoldJumping extends Module
                 return 20;
             }
         } else {
-            // Decrease only every 20 blocks to make sure one cannot easily bypass this check by jumping only every other block.
+            // Decrease only every 18 blocks to make sure one cannot easily bypass this check by jumping only every other block.
             final var legitCounter = user.getData().counter.scaffoldJumpingLegit;
             if (legitCounter.incrementCompareThreshold()) {
                 failCounter.decrementAboveZero();

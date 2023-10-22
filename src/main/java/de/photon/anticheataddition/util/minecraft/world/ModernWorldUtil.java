@@ -180,8 +180,8 @@ final class ModernWorldUtil implements WorldUtil
         // The block is actually holding an inventory (and therefore is not e.g. dirt)
         if (!(block.getState() instanceof InventoryHolder)) return false;
 
-        // Chiseled Bookshelf false positive fix.
-        if (block.getType() == MaterialUtil.INSTANCE.getChiseledBookshelf().orElse(Material.AIR)) return false;
+        // Chiseled Bookshelf and decorated pot false positive fix.
+        if (MaterialUtil.INSTANCE.getNonOpenableInventories().contains(block.getType())) return false;
 
         // Additional checks for cats and occluding blocks necessary?
         if (MaterialUtil.INSTANCE.getFreeSpaceContainers().contains(block.getType())) {

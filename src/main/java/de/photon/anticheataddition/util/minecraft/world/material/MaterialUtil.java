@@ -32,8 +32,7 @@ public interface MaterialUtil
     Set<Material> getLiquids();
 
     Set<Material> getSigns();
-
-    Optional<Material> getChiseledBookshelf();
+    Set<Material> getNonOpenableInventories();
 
     default Material getExpBottle()
     {

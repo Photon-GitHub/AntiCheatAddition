@@ -58,7 +58,7 @@ public final class Esp extends Module
             // Does the world exist?
             final var world = Bukkit.getWorld(key);
             if (world == null || !worlds.contains(key + ENTITY_TRACKING_RANGE_PLAYERS)) {
-                Log.severe(() -> "ESP | World " + key + " player tracking range could not be loaded, using default tracking range.");
+                Log.warning(() -> "ESP | World " + key + " player tracking range could not be loaded, using default tracking range.");
                 continue;
             }
 
@@ -126,7 +126,7 @@ public final class Esp extends Module
                     // Less than 1 block distance (removes the player themselves and any very close player)
                     || observerNode.distanceSquared(playerNode) < 1
                     || watched.isDead()
-                    || CanSee.INSTANCE.canSee(observer, watched))
+                    || CanSee.canSee(observer, watched))
                 {
                     // No hiding case
                     fullHiddenPlayers.remove(watched);

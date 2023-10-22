@@ -6,8 +6,8 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
-import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
+import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -106,6 +106,8 @@ public final class Scaffold extends ViolationModule implements Listener
                 vl += ScaffoldSafewalkEdge.INSTANCE.getVl(user, event);
                 vl += ScaffoldSafewalkTiming.INSTANCE.getVl(user);
                 vl += ScaffoldSprinting.INSTANCE.getVl(user);
+            } else {
+                ScaffoldJumping.INSTANCE.newScaffoldLocation(user, event, lastScaffoldBlock);
             }
 
             if (vl > 0) {

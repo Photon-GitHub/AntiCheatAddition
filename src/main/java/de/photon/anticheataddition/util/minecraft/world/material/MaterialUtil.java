@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.Tag;
 
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.bukkit.Material.*;

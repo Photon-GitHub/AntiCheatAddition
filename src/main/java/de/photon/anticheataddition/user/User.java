@@ -77,7 +77,7 @@ public final class User implements Permissible
         USERS.put(player.getUniqueId(), this);
 
         final var floodgateApi = AntiCheatAddition.getInstance().getFloodgateApi();
-        if (floodgateApi != null && floodgateApi.isFloodgateId(player.getUniqueId())) {
+        if (floodgateApi != null && floodgateApi.isFloodgatePlayer(player.getUniqueId())) {
             FLOODGATE_USERS.add(this);
         }
 

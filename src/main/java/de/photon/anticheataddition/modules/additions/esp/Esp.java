@@ -4,8 +4,7 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.config.Configs;
-import de.photon.anticheataddition.util.datastructure.kdtree.Entity2DTree;
-import de.photon.anticheataddition.util.datastructure.kdtree.EntityPointMap;
+import de.photon.anticheataddition.util.datastructure.quadtree.QuadTreeQueue;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.visibility.PlayerVisibility;
 import org.bukkit.Bukkit;
@@ -101,34 +100,34 @@ public final class Esp extends Module
                                               .map(User::getPlayer)
                                               .collect(Collectors.toUnmodifiableSet());
 
-                final var player2DTree = new Entity2DTree<Player>();
-                for (Player player : worldPlayers) player2DTree.add(player);
+                final var playerQuadTree = new QuadTreeQueue<Player>();
+                for (Player player : worldPlayers) playerQuadTree.add(player.getLocation().getX(), player.getLocation().getZ(), player);
 
-                processWorldQuadTree(playerTrackingRange, worldPlayers, player2DTree);
+                processWorldQuadTree(playerTrackingRange, worldPlayers, playerQuadTree);
             }
         }, 100, ESP_INTERVAL_TICKS);
     }
 
-    private static void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, EntityPointMap<Player> playerTree)
+    private static void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, QuadTreeQueue<Player> playerQuadTree)
     {
-        for (final var observerNode : playerTree) {
+        for (final var observerNode : playerQuadTree) {
             final Set<Player> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
             final Set<Player> fullHiddenPlayers = new HashSet<>(worldPlayers);
-            final Player observer = observerNode.value();
+            final Player observer = observerNode.element();
 
-            final var it = playerTree.searchInRadius(observer, playerTrackingRange);
-            while (it.hasNext()) {
-                var watchedNode = it.next();
-
-                final Player watched = watchedNode.value();
+            for (final var playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
+                final Player watched = playerNode.element();
 
                 // Different worlds (might be possible if the player changed world in just the right moment)
                 if (!observer.getWorld().getUID().equals(watched.getWorld().getUID())
                     // Either of the two players is not in adventure or survival mode
                     || !User.inAdventureOrSurvivalMode(observer)
                     || !User.inAdventureOrSurvivalMode(watched)
+                    // Less than 1 block distance (removes the player themselves and any very close player)
+                    || observerNode.distanceSquared(playerNode) < 1
                     || watched.isDead()
-                    || CanSee.canSee(observer, watched)) {
+                    || CanSee.canSee(observer, watched))
+                {
                     // No hiding case
                     fullHiddenPlayers.remove(watched);
                 } else if (!ONLY_FULL_HIDE && !watched.isSneaking()) {
@@ -137,14 +136,13 @@ public final class Esp extends Module
                     equipHiddenPlayers.add(watched);
                 }
                 // Full hiding (due to the default adding to fullHiddenPlayers.)
-
-
-                Log.finest(() -> "ESP | Observer: " + observer.getName() +
-                                 " | FULL: " + fullHiddenPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")) +
-                                 " | EQUIP: " + equipHiddenPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")));
-
-                Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> PlayerVisibility.INSTANCE.setHidden(observer, fullHiddenPlayers, equipHiddenPlayers));
             }
+
+            Log.finest(() -> "ESP | Observer: " + observerNode.element().getName() +
+                             " | FULL: " + fullHiddenPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")) +
+                             " | EQUIP: " + equipHiddenPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")));
+
+            Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> PlayerVisibility.INSTANCE.setHidden(observerNode.element(), fullHiddenPlayers, equipHiddenPlayers));
         }
     }
 }

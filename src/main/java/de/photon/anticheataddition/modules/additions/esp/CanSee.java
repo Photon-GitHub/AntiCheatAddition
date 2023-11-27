@@ -14,11 +14,8 @@ public interface CanSee
     {
         if (InternalPotion.GLOWING.hasPotionEffect(watched)) return true;
 
-        final double distanceSquared = observer.getLocation().distanceSquared(watched.getLocation());
-
-        if (distanceSquared < 1) return true;
-        if (InternalPotion.BLINDNESS.hasPotionEffect(observer) && distanceSquared > BLINDNESS_DISTANCE) return false;
-        if (InternalPotion.DARKNESS.hasPotionEffect(observer) && distanceSquared > DARKNESS_DISTANCE) return false;
+        if (InternalPotion.BLINDNESS.hasPotionEffect(observer) && observer.getLocation().distanceSquared(watched.getLocation()) > BLINDNESS_DISTANCE) return false;
+        if (InternalPotion.DARKNESS.hasPotionEffect(observer) && observer.getLocation().distanceSquared(watched.getLocation()) > DARKNESS_DISTANCE) return false;
 
         return INSTANCE.canSeeTracing(observer, watched);
     }

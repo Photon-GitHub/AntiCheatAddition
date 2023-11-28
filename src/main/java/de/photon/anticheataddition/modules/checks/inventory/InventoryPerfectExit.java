@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.ItemStack;
 
 public final class InventoryPerfectExit extends ViolationModule implements Listener
 {
@@ -34,7 +35,7 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
             // Minimum TPS before the check is activated as of a huge amount of fps
             !Inventory.hasMinTPS() ||
             // The inventory has been completely cleared
-            !InventoryUtil.isInventoryEmpty(event.getInventory())) return;
+            !isInventoryEmpty(event.getInventory())) return;
 
         final long passedTime = user.getTimeMap().at(TimeKey.INVENTORY_CLICK_ON_ITEM).passedTime();
         if (user.getData().counter.inventoryPerfectExitFails.conditionallyIncDec(passedTime <= 70)) {
@@ -42,6 +43,18 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
                                           .setAddedVl(VL_CALCULATOR.apply(passedTime).intValue())
                                           .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " exits inventories in a bot-like way (D: " + passedTime + ')'));
         }
+    }
+
+    /**
+     * Checks if an {@link org.bukkit.inventory.Inventory} is empty.
+     */
+
+    static boolean isInventoryEmpty(org.bukkit.inventory.Inventory inventory)
+    {
+        for (ItemStack content : inventory.getContents()) {
+            if (content != null) return false;
+        }
+        return true;
     }
 
     @Override

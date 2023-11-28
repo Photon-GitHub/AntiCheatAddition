@@ -67,9 +67,9 @@ public final class DoubleStatistics implements DoubleConsumer
     private void sumWithCompensation(double value)
     {
         double tmp = value - sumCompensation;
-        double velvel = sum + tmp; // Little wolf of rounding error
-        sumCompensation = (velvel - sum) - tmp;
-        sum = velvel;
+        double updatedSum = sum + tmp; // Little wolf of rounding error
+        sumCompensation = (updatedSum - sum) - tmp;
+        sum = updatedSum;
     }
 
     /**

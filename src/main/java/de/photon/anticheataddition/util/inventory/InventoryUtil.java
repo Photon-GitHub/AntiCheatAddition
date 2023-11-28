@@ -38,17 +38,6 @@ public sealed interface InventoryUtil permits LegacyInventoryUtil, ModernInvento
     }
 
     /**
-     * Checks if an {@link Inventory} is empty.
-     */
-    static boolean isInventoryEmpty(Inventory inventory)
-    {
-        for (ItemStack content : inventory.getContents()) {
-            if (content != null) return false;
-        }
-        return true;
-    }
-
-    /**
      * This schedules an {@link Inventory} update to be executed synchronously in the next server tick
      *
      * @param player the {@link Player} who's {@link Inventory} should be updated.

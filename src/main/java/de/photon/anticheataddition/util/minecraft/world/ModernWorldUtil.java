@@ -132,40 +132,59 @@ final class ModernWorldUtil implements WorldUtil
         // The last chunk is important due to the modifier (inner loop) that checks any border behaviour and can have 2 chunks checked multiple times.
         int lastChunkX = toChunkCoordinate(workingX);
         int lastChunkZ = toChunkCoordinate(workingZ);
-        int lastLastChunkX = lastChunkX;
-        int lastLastChunkZ = lastChunkZ;
+
 
         for (int i = 0; i < steps; ++i) {
             workingX += xStep;
             workingZ += zStep;
 
             // Modifier to make sure that border behaviour of BlockIterator is covered.
-            for (int modifier = -1; modifier <= 1; ++modifier) {
-                workingModifiedX = workingX;
-                workingModifiedZ = workingZ;
-
-                if (modifyX) workingModifiedX += modifier;
-                else workingModifiedZ += modifier;
-
-                chunkX = toChunkCoordinate(workingModifiedX);
-                chunkZ = toChunkCoordinate(workingModifiedZ);
-
-                // If we have already checked the chunk, skip it, as we know it is loaded.
-                if (lastChunkX == chunkX && lastChunkZ == chunkZ ||
-                    lastLastChunkX == chunkX && lastLastChunkZ == chunkZ) continue;
-
-                // A new chunk, check if it is loaded.
-                if (!world.isChunkLoaded(chunkX, chunkZ)) return false;
-
-                lastLastChunkX = lastChunkX;
-                lastLastChunkZ = lastChunkZ;
-                lastChunkX = chunkX;
-                lastChunkZ = chunkZ;
+            // Modifier to make sure that border behaviour of BlockIterator is covered.
+            if(!checkModifiers(one, modifyX, world, lastChunkX ,lastChunkZ )){
+                return false;
             }
         }
 
         return true;
     }
+
+    double workingModifiedX;
+    double workingModifiedZ;
+
+    // Cache the last and current chunk for faster processing.
+    // The last chunk is important due to the modifier (inner loop) that checks any border behaviour and can have 2 chunks checked multiple times.
+    int prevChunkX ;
+    int prevChunkZ;
+    int chunkX;
+    int chunkZ;
+
+    public boolean checkModifiers(Location one,boolean modifyX, World world,int lastChunkX, int lastChunkZ)
+    {
+        for (int modifier = -1; modifier <= 1; ++modifier) {
+            workingModifiedX = one.getX();
+            workingModifiedZ = one.getZ();
+
+            if (modifyX) workingModifiedX += modifier;
+            else workingModifiedZ += modifier;
+
+            chunkX = toChunkCoordinate(workingModifiedX);
+            chunkZ = toChunkCoordinate(workingModifiedZ);
+
+            // If we have already checked the chunk, skip it, as we know it is loaded.
+            if (lastChunkX == chunkX && lastChunkZ == chunkZ ||
+                    prevChunkX == chunkX && prevChunkZ == chunkZ) continue;
+
+            // A new chunk, check if it is loaded.
+            if (!world.isChunkLoaded(chunkX, chunkZ)) return false;
+
+            prevChunkX = lastChunkX;
+            prevChunkZ = lastChunkZ;
+            lastChunkX = chunkX;
+            lastChunkZ = chunkZ;
+        }
+        return true;
+    }
+
 
     @Override
     public boolean areLocationsInRange(Location firstLocation, Location secondLocation, double distance)

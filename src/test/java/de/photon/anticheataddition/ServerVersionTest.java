@@ -22,6 +22,7 @@ class ServerVersionTest
     void serverVersionTest()
     {
         Assertions.assertEquals(ServerVersion.MC119, ServerVersion.ACTIVE);
+        Assertions.assertTrue(ServerVersion.ACTIVE.isSupported());
     }
 
     @Test

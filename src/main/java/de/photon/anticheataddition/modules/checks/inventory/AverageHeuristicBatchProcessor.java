@@ -50,6 +50,21 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
         // One time 2 ticks offset and 2 times 1 tick offset * 15 minimum vl = 168750
         // 2500 error sum is legit achievable.
         // +1 to avoid division by 0
+        final int vl = getVl(misClickCounter, variance, averageMillis);
+
+        // Too low vl.
+        if (vl < 10) return;
+
+        final int finalVl = Math.min(vl, 70);
+        this.getModule().getManagement().flag(Flag.of(user)
+                                                  .setAddedVl(finalVl)
+                                                  .setDebug(() -> "Inventory-Debug | Player: %s has constant click delays. (VAR: %f | AVG: %f | MISS: %d | VL: %d)".formatted(user.getPlayer().getName(), variance, averageMillis, misClickCounter.getCounter(), finalVl)));
+
+        misClickCounter.setToZero();
+    }
+
+    private static int getVl(ViolationCounter misClickCounter, double variance, double averageMillis)
+    {
         double vl = 40000 / (variance + 1);
 
         // Average below 1 tick is considered inhuman and increases vl.
@@ -61,15 +76,6 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
 
         // Mitigation for possibly better players.
         vl -= 10;
-
-        // Too low vl.
-        if (vl < 10) return;
-
-        final int finalVl = (int) Math.min(vl, 70);
-        this.getModule().getManagement().flag(Flag.of(user)
-                                                  .setAddedVl(finalVl)
-                                                  .setDebug(() -> "Inventory-Debug | Player: %s has constant click delays. (VAR: %f | AVG: %f | MISS: %d | VL: %d)".formatted(user.getPlayer().getName(), variance, averageMillis, misClickCounter.getCounter(), finalVl)));
-
-        misClickCounter.setToZero();
+        return (int) vl;
     }
 }

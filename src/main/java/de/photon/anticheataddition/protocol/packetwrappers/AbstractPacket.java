@@ -3,7 +3,9 @@ package de.photon.anticheataddition.protocol.packetwrappers;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.base.Objects;
+import lombok.Getter;
 
+@Getter
 public abstract class AbstractPacket implements IWrapperPlay
 {
     // The packet we will be modifying
@@ -22,10 +24,5 @@ public abstract class AbstractPacket implements IWrapperPlay
         if (handle == null) throw new NullPointerException("Packet handle cannot be NULL.");
         if (!Objects.equal(handle.getType(), type)) throw new IllegalArgumentException(handle.getHandle() + " is not a packet of type " + type);
         this.handle = handle;
-    }
-
-    public PacketContainer getHandle()
-    {
-        return handle;
     }
 }

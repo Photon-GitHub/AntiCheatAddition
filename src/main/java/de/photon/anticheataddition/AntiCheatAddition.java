@@ -1,6 +1,7 @@
 package de.photon.anticheataddition;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.github.retrooper.packetevents.PacketEvents;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.ViaAPI;
 import de.photon.anticheataddition.commands.MainCommand;
@@ -11,6 +12,7 @@ import de.photon.anticheataddition.user.data.subdata.BrandChannelData;
 import de.photon.anticheataddition.util.config.Configs;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -87,6 +89,17 @@ public class AntiCheatAddition extends JavaPlugin
     }
 
     @Override
+    public void onLoad()
+    {
+        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
+        //Are all listeners read only?
+        PacketEvents.getAPI().getSettings().reEncodeByDefault(false)
+                    .checkForUpdates(true)
+                    .bStats(true);
+        PacketEvents.getAPI().load();
+    }
+
+    @Override
     public void onEnable()
     {
         try {
@@ -154,6 +167,9 @@ public class AntiCheatAddition extends JavaPlugin
             commandToRegister.setExecutor(mainCommand);
             commandToRegister.setTabCompleter(mainCommand);
 
+            // PacketEvents
+            PacketEvents.getAPI().init();
+
             // ------------------------------------------------------------------------------------------------------ //
             //                                           Enabled-Debug + API                                          //
             // ------------------------------------------------------------------------------------------------------ //
@@ -173,6 +189,7 @@ public class AntiCheatAddition extends JavaPlugin
     {
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);
+        PacketEvents.getAPI().terminate();
         HandlerList.unregisterAll(this);
 
         // Unregister all plugin channels

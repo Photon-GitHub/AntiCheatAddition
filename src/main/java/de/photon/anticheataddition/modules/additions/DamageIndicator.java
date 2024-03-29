@@ -33,7 +33,7 @@ public final class DamageIndicator extends Module
                 .priority(PacketListenerPriority.HIGH)
                 .onSending((event, user) -> {
                     if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) {
-                        com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata wrapper = new WrapperPlayServerEntityMetadata(event);
+                        final var wrapper = new WrapperPlayServerEntityMetadata(event);
 
                         final Player player = (Player) event.getPlayer();
                         final int entityId = wrapper.getEntityId();

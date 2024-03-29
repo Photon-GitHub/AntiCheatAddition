@@ -1,18 +1,19 @@
 package de.photon.anticheataddition.modules.additions;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.wrappers.Pair;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.protocol.item.enchantment.Enchantment;
+import com.github.retrooper.packetevents.protocol.item.enchantment.type.EnchantmentTypes;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.protocol.player.ClientVersion;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityEquipment;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
-import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.equipment.IWrapperPlayEquipment;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
+import java.util.List;
 
 public final class EnchantmentHider extends Module
 {
@@ -26,46 +27,35 @@ public final class EnchantmentHider extends Module
         super("EnchantmentHider");
     }
 
-    private static void obfuscateEnchantments(IWrapperPlayEquipment wrapper)
-    {
-        for (final var pair : wrapper.getSlotStackPairs()) {
-            final ItemStack stack = pair.getSecond();
-            final Map<Enchantment, Integer> enchantments = stack.getEnchantments();
-
-            if (enchantments.isEmpty()) continue;
-
-            // Remove all enchantments.
-            // The enchantments are an immutable map -> forEach.
-            for (Enchantment enchantment : enchantments.keySet()) stack.removeEnchantment(enchantment);
-
-            // Add dummy enchantment.
-            stack.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
-            wrapper.setSlotStackPair(pair.getFirst(), stack);
-        }
-    }
-
     @Override
     protected ModuleLoader createModuleLoader()
     {
         final var adapter = PacketAdapterBuilder
                 .of(this, PacketType.Play.Server.ENTITY_EQUIPMENT)
-                .priority(ListenerPriority.HIGH)
+                .priority(PacketListenerPriority.HIGH)
                 .onSending((event, user) -> {
-                    final var wrapper = IWrapperPlayEquipment.of(event.getPacket());
-                    final var entity = wrapper.getEntity(event);
+                    final var wrapper = new WrapperPlayServerEntityEquipment(event);
+                    final int entityId = wrapper.getEntityId();
 
-                    // Do not modify the players' own enchantments.
-                    if (entity == null || entity.getEntityId() == user.getPlayer().getEntityId()) return;
+                    // Do not modify the player's own equipment.
+                    if (user.getPlayer().getEntityId() == entityId) return;
+
+                    final ClientVersion version = PacketEvents.getAPI().getPlayerManager().getClientVersion(user.getPlayer());
 
                     // Only modify the packets if they originate from a player.
-                    if (entity.getType() == EntityType.PLAYER ? spoofPlayers : spoofOthers) {
-                        // If all items do not have any enchantments, skip.
-                        if (wrapper.getSlotStackPairs().stream().map(Pair::getSecond).map(ItemStack::getEnchantments).allMatch(Map::isEmpty)) return;
+                    if (wrapper.getEntityId().getType() == EntityType.PLAYER ? spoofPlayers : spoofOthers) {
+                        for (var equip : wrapper.getEquipment()) {
+                            final var item = equip.getItem();
 
-                        // Clone the packet to prevent a serversided connection of the equipment.
-                        event.setPacket(event.getPacket().deepClone());
-                        // The cloned packet needs a new wrapper!
-                        obfuscateEnchantments(IWrapperPlayEquipment.of(event.getPacket()));
+                            // Check if the item has enchantments
+                            final List<Enchantment> enchantments = item.getEnchantments(version);
+                            if (enchantments.isEmpty()) continue;
+
+                            // If it has, clear them and add a dummy enchantment.
+                            enchantments.clear();
+                            enchantments.add(Enchantment.builder().type(EnchantmentTypes.INFINITY_ARROWS).level(1).build());
+                            item.setEnchantments(enchantments, version);
+                        }
                     }
                 }).build();
 

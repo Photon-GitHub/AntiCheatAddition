@@ -1,9 +1,7 @@
 package de.photon.anticheataddition.protocol;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
+import com.github.retrooper.packetevents.event.*;
+import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
@@ -26,11 +24,11 @@ import java.util.function.BiConsumer;
 public final class PacketAdapterBuilder
 {
     @NotNull private final Module module;
-    @NotNull private final Set<PacketType> types;
+    @NotNull private final Set<PacketTypeCommon> types;
 
-    private ListenerPriority priority = ListenerPriority.NORMAL;
-    private BiConsumer<PacketEvent, User> onReceiving = null;
-    private BiConsumer<PacketEvent, User> onSending = null;
+    private PacketListenerPriority priority = PacketListenerPriority.NORMAL;
+    private BiConsumer<PacketReceiveEvent, User> onReceiving = null;
+    private BiConsumer<PacketSendEvent, User> onSending = null;
 
     public static boolean checkSync(@NotNull Callable<Boolean> task)
     {
@@ -63,78 +61,88 @@ public final class PacketAdapterBuilder
         return false;
     }
 
-    public static PacketAdapterBuilder of(@NotNull Module module, @NotNull PacketType... types)
+    public static PacketAdapterBuilder of(@NotNull Module module, @NotNull PacketTypeCommon... types)
     {
         return of(module, Set.of(types));
     }
 
-    public static PacketAdapterBuilder of(@NotNull Module module, @NotNull Set<PacketType> types)
+    public static PacketAdapterBuilder of(@NotNull Module module, @NotNull Set<PacketTypeCommon> types)
     {
         Preconditions.checkNotNull(types, "Tried to create PacketAdapterBuilder with null types.");
         Preconditions.checkArgument(!types.isEmpty(), "Tried to create PacketAdapterBuilder without types.");
         return new PacketAdapterBuilder(module, types);
     }
 
-    public PacketAdapterBuilder priority(ListenerPriority priority)
+    public PacketAdapterBuilder priority(PacketListenerPriority priority)
     {
         Preconditions.checkNotNull(priority, "Tried to set PacketAdapterBuilder ListenerPriority to null.");
         this.priority = priority;
         return this;
     }
 
-    public PacketAdapterBuilder onReceiving(BiConsumer<PacketEvent, User> onReceiving)
+    public PacketAdapterBuilder onReceiving(BiConsumer<PacketReceiveEvent, User> onReceiving)
     {
         this.onReceiving = onReceiving;
         return this;
     }
 
-    public PacketAdapterBuilder onSending(BiConsumer<PacketEvent, User> onSending)
+    public PacketAdapterBuilder onSending(BiConsumer<PacketSendEvent, User> onSending)
     {
         this.onSending = onSending;
         return this;
     }
 
-    private void runPacketEventBiConsumer(PacketEvent event, BiConsumer<PacketEvent, User> biConsumer)
+    private void runPacketReceiveEventBiConsumer(PacketReceiveEvent event, BiConsumer<PacketReceiveEvent, User> biConsumer)
     {
         final User user = User.safeGetUserFromPacketEvent(event);
         if (!User.isUserInvalid(user, module)) biConsumer.accept(event, user);
     }
 
-    public PacketAdapter build()
+    private void runPacketSendEventBiConsumer(PacketSendEvent event, BiConsumer<PacketSendEvent, User> biConsumer)
+    {
+        final User user = User.safeGetUserFromPacketEvent(event);
+        if (!User.isUserInvalid(user, module)) biConsumer.accept(event, user);
+    }
+
+    public PacketListenerCommon build()
     {
         Preconditions.checkArgument(this.onReceiving != null || this.onSending != null, "Tried to create PacketAdapter without receiving or sending actions.");
 
         if (this.onReceiving != null && this.onSending != null) {
-            return new PacketAdapter(AntiCheatAddition.getInstance(), this.priority, this.types)
+            return new PacketListenerAbstract(this.priority)
             {
                 @Override
-                public void onPacketReceiving(PacketEvent event)
+                public void onPacketReceive(PacketReceiveEvent event)
                 {
-                    runPacketEventBiConsumer(event, onReceiving);
+                    if (types.contains(event.getPacketType()))
+                        runPacketReceiveEventBiConsumer(event, onReceiving);
                 }
 
                 @Override
-                public void onPacketSending(PacketEvent event)
+                public void onPacketSend(PacketSendEvent event)
                 {
-                    runPacketEventBiConsumer(event, onSending);
+                    if (types.contains(event.getPacketType()))
+                        runPacketSendEventBiConsumer(event, onSending);
                 }
             };
         } else if (onReceiving != null) {
-            return new PacketAdapter(AntiCheatAddition.getInstance(), this.priority, this.types)
+            return new PacketListenerAbstract(this.priority)
             {
                 @Override
-                public void onPacketReceiving(PacketEvent event)
+                public void onPacketReceive(PacketReceiveEvent event)
                 {
-                    runPacketEventBiConsumer(event, onReceiving);
+                    if (types.contains(event.getPacketType()))
+                        runPacketReceiveEventBiConsumer(event, onReceiving);
                 }
             };
         } else {
-            return new PacketAdapter(AntiCheatAddition.getInstance(), this.priority, this.types)
+            return new PacketListenerAbstract(this.priority)
             {
                 @Override
-                public void onPacketSending(PacketEvent event)
+                public void onPacketSend(PacketSendEvent event)
                 {
-                    runPacketEventBiConsumer(event, onSending);
+                    if (types.contains(event.getPacketType()))
+                        runPacketSendEventBiConsumer(event, onSending);
                 }
             };
         }

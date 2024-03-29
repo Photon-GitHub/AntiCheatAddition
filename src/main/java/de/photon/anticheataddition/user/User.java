@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.user;
 
 import com.comphenix.protocol.events.PacketEvent;
+import com.github.retrooper.packetevents.event.PacketEvent;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.InternalPermission;
@@ -98,6 +99,7 @@ public final class User implements Permissible
     public static User safeGetUserFromPacketEvent(PacketEvent event)
     {
         // Special handling here as a player could potentially log out after this and therefore cause a NPE.
+        if (PlayerEvent)
         if (event.isCancelled() || event.isPlayerTemporary()) return null;
         final Player player = event.getPlayer();
         return player == null ? null : getUser(player);

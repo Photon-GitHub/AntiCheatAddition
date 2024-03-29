@@ -1,6 +1,5 @@
 package de.photon.anticheataddition;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.ViaAPI;
@@ -188,7 +187,6 @@ public class AntiCheatAddition extends JavaPlugin
     public void onDisable()
     {
         // Remove all the Listeners, PacketListeners
-        ProtocolLibrary.getProtocolManager().removePacketListeners(this);
         PacketEvents.getAPI().terminate();
         HandlerList.unregisterAll(this);
 

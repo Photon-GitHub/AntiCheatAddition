@@ -1,17 +1,16 @@
 package de.photon.anticheataddition.modules.additions;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerPriority;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.protocol.EntityMetadataIndex;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
-import de.photon.anticheataddition.protocol.packetwrappers.MetadataPacket;
-import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerEntityMetadata;
 import de.photon.anticheataddition.util.minecraft.world.entity.EntityUtil;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Monster;
+import io.github.retrooper.packetevents.util.SpigotReflectionUtil;
+import org.bukkit.entity.*;
 
 public final class DamageIndicator extends Module
 {
@@ -30,43 +29,48 @@ public final class DamageIndicator extends Module
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.of(this, PacketAdapterBuilder
-                .of(this, PacketType.Play.Server.ENTITY_METADATA)
-                .priority(ListenerPriority.HIGH)
+                .of(this, PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.UPDATE_HEALTH)
+                .priority(PacketListenerPriority.HIGH)
                 .onSending((event, user) -> {
-                    final var entity = event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0);
-                    // Clientside entities will be null in the world's entity list.
-                    if (entity == null) return;
+                    if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) {
+                        com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata wrapper = new WrapperPlayServerEntityMetadata(event);
 
-                    final var entityType = entity.getType();
+                        final Player player = (Player) event.getPlayer();
+                        final int entityId = wrapper.getEntityId();
 
-                    // Entity has health to begin with.
-                    if (!entityType.isAlive() ||
-                        // Bossbar problems
-                        // Cannot use Boss interface as that doesn't exist on 1.8.8
-                        entityType == EntityType.ENDER_DRAGON ||
-                        entityType == EntityType.WITHER ||
+                        // Player can get their own metadata.
+                        if (player.getEntityId() == entityId) return;
 
-                        entityType == EntityType.PLAYER && !spoofPlayers ||
-                        entity instanceof Monster && !spoofMonsters ||
-                        entity instanceof Animals && !spoofAnimals ||
+                        // This is automatically cached.
+                        final Entity entity = SpigotReflectionUtil.getEntityById(wrapper.getEntityId());
+                        // Lookup failed.
+                        if (entity == null) return;
 
-                        // Not the player himself.
-                        // Offline mode servers have name-based UUIDs, so that should be no problem.
-                        event.getPlayer().getEntityId() == entity.getEntityId() ||
+                        final EntityType entityType = entity.getType();
 
-                        // Entity has no passengers.
-                        EntityUtil.INSTANCE.hasPassengers(entity)) {
-                        return;
+                        // Entity has health to begin with.
+                        if (!entityType.isAlive() ||
+                            // Bossbar problems
+                            // Cannot use Boss interface as that doesn't exist on 1.8.8
+                            entityType == EntityType.ENDER_DRAGON ||
+                            entityType == EntityType.WITHER ||
+                            entityType == EntityType.PLAYER && !spoofPlayers ||
+
+                            entity instanceof Monster && !spoofMonsters ||
+                            entity instanceof Animals && !spoofAnimals ||
+
+                            // Entity has no passengers.
+                            EntityUtil.INSTANCE.hasPassengers(entity)) return;
+
+                        for (EntityData data : wrapper.getEntityMetadata()) {
+                            // Search for health.
+                            if (data.getIndex() == EntityMetadataIndex.HEALTH
+                                // Only modify alive entities (health > 0).
+                                && ((Float) data.getValue() > 0)) {
+                                data.setValue(0.5F);
+                            }
+                        }
                     }
-
-                    // Clone the packet to prevent a serversided connection of the health.
-                    event.setPacket(event.getPacket().deepClone());
-
-                    final MetadataPacket metadata = new WrapperPlayServerEntityMetadata(event.getPacket());
-
-                    // Only set it if the entity is not yet dead to prevent problems on the clientside.
-                    // Set the health to 1.0F as that is the default value.
-                    metadata.modifyMetadataIndex(EntityMetadataIndex.HEALTH, health -> (Float) health > 0.0F ? 1.0F : 0.0F);
                 }).build());
     }
 }

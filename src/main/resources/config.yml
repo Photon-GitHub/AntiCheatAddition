@@ -48,10 +48,6 @@ DamageIndicator:
 # Legit players will not see any difference.
 EnchantmentHider:
   enabled: true
-  # Entity categories to spoof enchantments for. Spoofing all might impact performance with custom mob equipment systems.
-  spoof:
-    players: true
-    others: false
 
 # If two players cannot see each other, ESP conceals their information on the packet-level.
 # ESP does not scan the entire distance between two players to increase performance.

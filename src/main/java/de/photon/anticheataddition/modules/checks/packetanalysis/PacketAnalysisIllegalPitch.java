@@ -1,11 +1,11 @@
 package de.photon.anticheataddition.modules.checks.packetanalysis;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerPriority;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
-import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
+import de.photon.anticheataddition.protocol.PacketEventUtils;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -32,11 +32,12 @@ public final class PacketAnalysisIllegalPitch extends ViolationModule
     protected ModuleLoader createModuleLoader()
     {
         final var packetAdapter = PacketAdapterBuilder
-                .of(this, PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK)
-                .priority(ListenerPriority.LOW)
+                .of(this, PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION, PacketType.Play.Client.PLAYER_ROTATION)
+                .priority(PacketListenerPriority.LOW)
                 .onReceiving((event, user) -> {
-                    final IWrapperPlayClientLook lookWrapper = event::getPacket;
-                    if (!MathUtil.inRange(-90, 90, lookWrapper.getPitch())) {
+                    final PacketEventUtils.Rotation rotation = PacketEventUtils.getRotationFromEvent(event);
+
+                    if (!MathUtil.inRange(-90, 90, rotation.pitch())) {
                         getManagement().flag(Flag.of(user).setAddedVl(150).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent illegal pitch value."));
                     }
                 }).build();

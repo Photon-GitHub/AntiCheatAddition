@@ -29,7 +29,7 @@ public final class DamageIndicator extends Module
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.of(this, PacketAdapterBuilder
-                .of(this, PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.UPDATE_HEALTH)
+                .of(this, PacketType.Play.Server.ENTITY_METADATA)
                 .priority(PacketListenerPriority.HIGH)
                 .onSending((event, user) -> {
                     if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) {

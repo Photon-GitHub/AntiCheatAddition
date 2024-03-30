@@ -11,16 +11,12 @@ import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
-import org.bukkit.entity.EntityType;
 
 import java.util.List;
 
 public final class EnchantmentHider extends Module
 {
     public static final EnchantmentHider INSTANCE = new EnchantmentHider();
-
-    private final boolean spoofPlayers = loadBoolean(".spoof.players", true);
-    private final boolean spoofOthers = loadBoolean(".spoof.others", false);
 
     private EnchantmentHider()
     {
@@ -42,20 +38,17 @@ public final class EnchantmentHider extends Module
 
                     final ClientVersion version = PacketEvents.getAPI().getPlayerManager().getClientVersion(user.getPlayer());
 
-                    // Only modify the packets if they originate from a player.
-                    if (wrapper.getEntityId().getType() == EntityType.PLAYER ? spoofPlayers : spoofOthers) {
-                        for (var equip : wrapper.getEquipment()) {
-                            final var item = equip.getItem();
+                    for (var equip : wrapper.getEquipment()) {
+                        final var item = equip.getItem();
 
-                            // Check if the item has enchantments
-                            final List<Enchantment> enchantments = item.getEnchantments(version);
-                            if (enchantments.isEmpty()) continue;
+                        // Check if the item has enchantments
+                        final List<Enchantment> enchantments = item.getEnchantments(version);
+                        if (enchantments.isEmpty()) continue;
 
-                            // If it has, clear them and add a dummy enchantment.
-                            enchantments.clear();
-                            enchantments.add(Enchantment.builder().type(EnchantmentTypes.INFINITY_ARROWS).level(1).build());
-                            item.setEnchantments(enchantments, version);
-                        }
+                        // If it has, clear them and add a dummy enchantment.
+                        enchantments.clear();
+                        enchantments.add(Enchantment.builder().type(EnchantmentTypes.INFINITY_ARROWS).level(1).build());
+                        item.setEnchantments(enchantments, version);
                     }
                 }).build();
 

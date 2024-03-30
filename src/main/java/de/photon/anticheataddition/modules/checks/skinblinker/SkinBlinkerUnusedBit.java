@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.modules.checks.skinblinker;
 
-import com.comphenix.protocol.PacketType;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientSettings;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
@@ -23,15 +24,16 @@ public final class SkinBlinkerUnusedBit extends ViolationModule
     {
         return ModuleLoader.builder(this)
                            .setAllowedServerVersions(ServerVersion.MC119.getSupVersionsTo())
-                           .addPacketListeners(PacketAdapterBuilder.of(this, PacketType.Play.Client.SETTINGS).onReceiving((event, user) -> {
+                           .addPacketListeners(PacketAdapterBuilder.of(this, PacketType.Play.Client.CLIENT_SETTINGS).onReceiving((event, user) -> {
                                /*
                                 * Check for the special 0x80 bit in the skin packet that is officially unused by the protocol and set to 0 in vanilla clients.
                                 * Some custom clients like LabyMod use that bit for their cosmetics.
                                 */
-                               final int newSkinComponents = event.getPacket().getIntegers().readSafely(1);
+                               final WrapperPlayClientSettings settings = new WrapperPlayClientSettings(event);
+                               final byte skinMask = settings.getVisibleSkinSectionMask();
 
                                // Unused skin bit used (detection)
-                               if ((newSkinComponents & 0x80) != 0) getManagement().flag(Flag.of(user).setAddedVl(100));
+                               if ((skinMask & 0x80) != 0) getManagement().flag(Flag.of(user).setAddedVl(100));
                            }).build())
                            .build();
     }

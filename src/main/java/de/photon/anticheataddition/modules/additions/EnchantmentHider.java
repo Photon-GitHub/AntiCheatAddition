@@ -10,7 +10,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEn
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.modules.ModuleLoader;
-import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
+import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
 
 import java.util.List;
 

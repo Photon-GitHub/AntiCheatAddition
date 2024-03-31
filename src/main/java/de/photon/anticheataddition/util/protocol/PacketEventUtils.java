@@ -1,4 +1,4 @@
-package de.photon.anticheataddition.protocol;
+package de.photon.anticheataddition.util.protocol;
 
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;

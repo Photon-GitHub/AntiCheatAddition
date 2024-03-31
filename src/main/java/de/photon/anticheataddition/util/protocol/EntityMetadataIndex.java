@@ -1,4 +1,4 @@
-package de.photon.anticheataddition.protocol;
+package de.photon.anticheataddition.util.protocol;
 
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.exception.UnknownMinecraftException;

@@ -1,12 +1,10 @@
 package de.photon.anticheataddition.user.data.subdata;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import de.photon.anticheataddition.AntiCheatAddition;
-import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListenerAbstract;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.event.PacketReceiveEvent;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.buffer.RingBuffer;
@@ -15,6 +13,7 @@ import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.RotationUtil;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.protocol.PacketEventUtils;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
@@ -27,7 +26,7 @@ import java.util.List;
 public final class LookPacketData
 {
     static {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new LookPacketDataUpdater());
+        PacketEvents.getAPI().getEventManager().registerListener(new LookPacketDataUpdater());
     }
 
     private final RingBuffer<RotationChange> rotationChangeQueue = new RingBuffer<>(20, new RotationChange(0, 0));
@@ -103,40 +102,44 @@ public final class LookPacketData
      * Singleton class responsible for updating the {@link LookPacketData} based on received packets.
      * Reduces the number of required packet listeners.
      */
-    private static final class LookPacketDataUpdater extends PacketAdapter
+    private static final class LookPacketDataUpdater extends PacketListenerAbstract
     {
         public LookPacketDataUpdater()
         {
-            super(AntiCheatAddition.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK);
+            super(PacketListenerPriority.MONITOR);
         }
 
         @Override
-        public void onPacketReceiving(PacketEvent event)
+        public void onPacketReceive(PacketReceiveEvent event)
         {
-            final var user = User.safeGetUserFromPacketEvent(event);
-            if (user == null) return;
+            if (event.getPacketType() == PacketType.Play.Client.PLAYER_ROTATION ||
+                event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
 
-            final IWrapperPlayClientLook lookWrapper = event::getPacket;
+                final var user = User.getUser(event);
+                if (user == null) return;
 
-            final var rotationChange = new RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());
-            final var rotationQueue = user.getLookPacketData().rotationChangeQueue;
+                final var rotation = PacketEventUtils.getRotationFromEvent(event);
 
-            // Same tick -> merge
-            synchronized (rotationQueue) {
-                if (rotationChange.timeOffset(rotationQueue.tail()) < 55) rotationQueue.tail().merge(rotationChange);
-                else rotationQueue.add(rotationChange);
+                final var rotationChange = new RotationChange(rotation.yaw(), rotation.pitch());
+                final var rotationQueue = user.getLookPacketData().rotationChangeQueue;
+
+                // Same tick -> merge
+                synchronized (rotationQueue) {
+                    if (rotationChange.timeOffset(rotationQueue.tail()) < 55) rotationQueue.tail().merge(rotationChange);
+                    else rotationQueue.add(rotationChange);
+                }
+
+                // Huge angle change
+                // Use the map values here to because the other ones are already updated.
+                if (RotationUtil.getDirection(user.getData().floating.lastPacketYaw, user.getData().floating.lastPacketPitch)
+                                .angle(RotationUtil.getDirection(rotation.yaw(), rotation.pitch())) > 35) {
+                    user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).update();
+                }
+
+                // Update the values here so the RotationUtil calculation is functional.
+                user.getData().floating.lastPacketYaw = rotation.yaw();
+                user.getData().floating.lastPacketPitch = rotation.pitch();
             }
-
-            // Huge angle change
-            // Use the map values here to because the other ones are already updated.
-            if (RotationUtil.getDirection(user.getData().floating.lastPacketYaw, user.getData().floating.lastPacketPitch)
-                            .angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35) {
-                user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).update();
-            }
-
-            // Update the values here so the RotationUtil calculation is functional.
-            user.getData().floating.lastPacketYaw = lookWrapper.getYaw();
-            user.getData().floating.lastPacketPitch = lookWrapper.getPitch();
         }
     }
 }

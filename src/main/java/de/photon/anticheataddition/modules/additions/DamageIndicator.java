@@ -2,22 +2,22 @@ package de.photon.anticheataddition.modules.additions;
 
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
+import com.github.retrooper.packetevents.protocol.entity.type.EntityType;
+import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.util.protocol.EntityMetadataIndex;
+import de.photon.anticheataddition.util.protocol.LivingEntityIdLookup;
 import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
-import de.photon.anticheataddition.util.minecraft.world.entity.EntityUtil;
-import io.github.retrooper.packetevents.util.SpigotReflectionUtil;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Player;
 
 public final class DamageIndicator extends Module
 {
     public static final DamageIndicator INSTANCE = new DamageIndicator();
 
-    private final boolean spoofAnimals = loadBoolean(".spoof.animals", false);
-    private final boolean spoofMonsters = loadBoolean(".spoof.monsters", true);
+    private final boolean spoofOthers = loadBoolean(".spoof.others", true);
     private final boolean spoofPlayers = loadBoolean(".spoof.players", true);
 
     private DamageIndicator()
@@ -42,25 +42,17 @@ public final class DamageIndicator extends Module
                         if (player.getEntityId() == entityId) return;
 
                         // This is automatically cached.
-                        final Entity entity = SpigotReflectionUtil.getEntityById(wrapper.getEntityId());
-                        // Lookup failed.
-                        if (entity == null) return;
+                        final EntityType entityType = LivingEntityIdLookup.INSTANCE.getEntityType(entityId);
+                        // Lookup failed, so the entity is not a living entity.
+                        if (entityType == null) return;
 
-                        final EntityType entityType = entity.getType();
+                        // Bossbar problems
+                        // Cannot use Boss interface as that doesn't exist on 1.8.8
+                        if (entityType == EntityTypes.ENDER_DRAGON ||
+                            entityType == EntityTypes.WITHER) return;
 
-                        // Entity has health to begin with.
-                        if (!entityType.isAlive() ||
-                            // Bossbar problems
-                            // Cannot use Boss interface as that doesn't exist on 1.8.8
-                            entityType == EntityType.ENDER_DRAGON ||
-                            entityType == EntityType.WITHER ||
-                            entityType == EntityType.PLAYER && !spoofPlayers ||
-
-                            entity instanceof Monster && !spoofMonsters ||
-                            entity instanceof Animals && !spoofAnimals ||
-
-                            // Entity has no passengers.
-                            EntityUtil.INSTANCE.hasPassengers(entity)) return;
+                        // Only spoof the entity if configured to do so.
+                        if (entityType == EntityTypes.PLAYER ? !spoofPlayers : !spoofOthers) return;
 
                         for (EntityData data : wrapper.getEntityMetadata()) {
                             // Search for health.

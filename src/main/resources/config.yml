@@ -40,9 +40,8 @@ DamageIndicator:
   enabled: true
   # Entity categories to spoof health for.
   spoof:
-    animals: false
-    monsters: true
     players: true
+    others: true
 
 # EnchantmentHider obfuscates enchantments to prevent cheats from displaying the correct type and level.
 # Legit players will not see any difference.

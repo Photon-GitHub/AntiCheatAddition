@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.util.pluginmessage;
 
-import com.comphenix.protocol.wrappers.MinecraftKey;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import org.bukkit.Bukkit;
@@ -17,12 +16,6 @@ public interface MessageChannel
     MessageChannel LABYMOD_CHANNEL = MessageChannel.of("labymod3", "main", "LMC");
     MessageChannel SCHEMATICA_CHANNEL = MessageChannel.ofLegacy("schematica");
     MessageChannel BETTER_SPRINTING_CHANNEL = MessageChannel.of("bsm", "settings", "BSM");
-
-    @NotNull
-    static MessageChannel of(final MinecraftKey channel)
-    {
-        return MessageChannel.of(channel.getPrefix(), channel.getKey());
-    }
 
     @NotNull
     static MessageChannel of(final String channel)

@@ -1,9 +1,8 @@
 package de.photon.anticheataddition.util.visibility.legacy;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDestroyEntities;
 import de.photon.anticheataddition.AntiCheatAddition;
-import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.entitydestroy.IWrapperServerEntityDestroy;
 import de.photon.anticheataddition.util.visibility.PacketInformationHider;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -17,22 +16,22 @@ public final class AncientPlayerHider extends PacketInformationHider
 {
     public AncientPlayerHider()
     {
-        super(PacketType.Play.Server.ENTITY_EQUIPMENT,
-              PacketType.Play.Server.ENTITY_EFFECT,
-              PacketType.Play.Server.ENTITY_HEAD_ROTATION,
-              PacketType.Play.Server.ENTITY_LOOK,
-              PacketType.Play.Server.ENTITY_METADATA,
-              PacketType.Play.Server.ENTITY_STATUS,
-              PacketType.Play.Server.ENTITY_TELEPORT,
-              PacketType.Play.Server.ENTITY_VELOCITY,
-              PacketType.Play.Server.ANIMATION,
-              PacketType.Play.Server.NAMED_ENTITY_SPAWN,
-              PacketType.Play.Server.COLLECT,
-              PacketType.Play.Server.REL_ENTITY_MOVE,
-              PacketType.Play.Server.REL_ENTITY_MOVE_LOOK,
-              PacketType.Play.Server.SPAWN_ENTITY_EXPERIENCE_ORB,
-              PacketType.Play.Server.BLOCK_BREAK_ANIMATION,
-              PacketType.Play.Server.REMOVE_ENTITY_EFFECT);
+        super(SupportedPacketTypes.ENTITY_EQUIPMENT,
+              SupportedPacketTypes.ENTITY_EFFECT,
+              SupportedPacketTypes.ENTITY_HEAD_LOOK,
+              SupportedPacketTypes.PLAYER_POSITION_AND_LOOK,
+              SupportedPacketTypes.ENTITY_METADATA,
+              SupportedPacketTypes.ENTITY_STATUS,
+              SupportedPacketTypes.ENTITY_TELEPORT,
+              SupportedPacketTypes.ENTITY_VELOCITY,
+              SupportedPacketTypes.ENTITY_ANIMATION,
+              SupportedPacketTypes.SPAWN_LIVING_ENTITY,
+              SupportedPacketTypes.COLLECT_ITEM,
+              SupportedPacketTypes.ENTITY_RELATIVE_MOVE,
+              SupportedPacketTypes.ENTITY_RELATIVE_MOVE_AND_ROTATION,
+              SupportedPacketTypes.SPAWN_EXPERIENCE_ORB,
+              SupportedPacketTypes.BLOCK_BREAK_ANIMATION,
+              SupportedPacketTypes.REMOVE_ENTITY_EFFECT);
     }
 
     @Override
@@ -40,7 +39,8 @@ public final class AncientPlayerHider extends PacketInformationHider
     {
         if (toHide.isEmpty()) return;
 
-        IWrapperServerEntityDestroy.sendDestroyEntities(observer, toHide.stream().map(Entity::getEntityId).toList());
+        final var destroyWrapper = new WrapperPlayServerDestroyEntities(toHide.stream().mapToInt(Entity::getEntityId).toArray());
+        PacketEvents.getAPI().getPlayerManager().sendPacket(observer, destroyWrapper);
     }
 
     @Override

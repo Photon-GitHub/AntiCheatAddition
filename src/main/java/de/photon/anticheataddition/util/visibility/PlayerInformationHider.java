@@ -1,10 +1,15 @@
 package de.photon.anticheataddition.util.visibility;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.protocol.player.UserProfile;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SetMultimap;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
+import io.github.retrooper.packetevents.util.SpigotConversionUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -77,6 +82,22 @@ public abstract class PlayerInformationHider implements Listener
         // Call onHide for those entities that have been revealed and shall now be hidden.
         this.onHide(observer, newlyHidden);
         this.onReveal(observer, SetUtil.difference(oldHidden, toHide));
+    }
+
+
+    /**
+     * Sends the observing {@link Player} a packet to add the watched {@link Player} to the tablist.
+     */
+    public static void addWatchedPlayerToTablistPacket(Player observer, Player watched)
+    {
+        final var userProfile = new UserProfile(watched.getUniqueId(), watched.getName());
+        final var playerInfo = new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(userProfile, true, 50,
+                                                                                SpigotConversionUtil.fromBukkitGameMode(watched.getGameMode()),
+                                                                                Component.text(watched.getDisplayName()),
+                                                                                null);
+
+        final var wrapper = new WrapperPlayServerPlayerInfoUpdate(WrapperPlayServerPlayerInfoUpdate.Action.ADD_PLAYER, playerInfo);
+        PacketEvents.getAPI().getPlayerManager().sendPacket(observer, wrapper);
     }
 
     /**

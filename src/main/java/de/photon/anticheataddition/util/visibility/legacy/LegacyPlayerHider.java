@@ -1,6 +1,5 @@
-package de.photon.anticheataddition.util.visibility.modern;
+package de.photon.anticheataddition.util.visibility.legacy;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.visibility.PlayerInformationHider;
@@ -9,13 +8,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-public final class ModernPlayerHider extends PlayerInformationHider
+public class LegacyPlayerHider extends PlayerInformationHider
 {
     @Override
     protected void onHide(@NotNull Player observer, @NotNull Set<Player> toHide)
     {
         for (Player player : toHide) {
-            observer.hideEntity(AntiCheatAddition.getInstance(), player);
+            observer.hidePlayer(player);
+            addWatchedPlayerToTablistPacket(observer, player);
             Log.finest(() -> "Player " + player.getName() + " has been fully hidden from " + observer.getName());
         }
     }
@@ -24,7 +24,7 @@ public final class ModernPlayerHider extends PlayerInformationHider
     protected void onReveal(@NotNull Player observer, @NotNull Set<Player> revealed)
     {
         for (Player player : revealed) {
-            observer.showEntity(AntiCheatAddition.getInstance(), player);
+            observer.showPlayer(player);
             Log.finest(() -> "Player " + player.getName() + " has been revealed to " + observer.getName());
         }
     }
@@ -32,6 +32,6 @@ public final class ModernPlayerHider extends PlayerInformationHider
     @Override
     protected Set<ServerVersion> getSupportedVersions()
     {
-        return ServerVersion.MC120.getSupVersionsFrom();
+        return ServerVersion.MC119.getSupVersionsTo();
     }
 }

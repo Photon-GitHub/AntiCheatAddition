@@ -1,23 +1,24 @@
 package de.photon.anticheataddition;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.PacketEventsAPI;
+import com.github.retrooper.packetevents.event.EventManager;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
+import org.bukkit.MusicInstrument;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.damage.DamageType;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 import org.mockito.Mockito;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @UtilityClass
 public final class Dummy
@@ -33,9 +34,11 @@ public final class Dummy
         bukkitMock.when(Bukkit::getVersion).thenReturn("This server is running CraftBukkit version 3661-Spigot-19641c7-8434e36 (MC: 1.19.4) (Implementing API version 1.19.4-R0.1-SNAPSHOT)");
         bukkitMock.when(Bukkit::getBukkitVersion).thenReturn("1.19.4-R0.1-SNAPSHOT");
 
-        final var protocolManager = Mockito.mock(ProtocolManager.class);
-        final var protocolLibMock = Mockito.mockStatic(ProtocolLibrary.class);
-        protocolLibMock.when(ProtocolLibrary::getProtocolManager).thenReturn(protocolManager);
+        final var packetEvents = Mockito.mockStatic(PacketEvents.class);
+        final var packetEventsAPI = Mockito.mock(PacketEventsAPI.class);
+        final var eventManager = Mockito.mock(EventManager.class);
+        Mockito.when(packetEventsAPI.getEventManager()).thenReturn(eventManager);
+        packetEvents.when(PacketEvents::getAPI).thenReturn(packetEventsAPI);
 
         mockedPlayers = new ArrayList<>();
         mockedUsers = new ArrayList<>();

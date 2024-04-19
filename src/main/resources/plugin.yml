@@ -5,7 +5,7 @@ author: Photon
 api-version: 1.15
 website: https://www.spigotmc.org/resources/anticheataddition.33590/
 
-depend: [ ProtocolLib, packetevents ]
+depend: [ packetevents ]
 softdepend: [ ViaVersion , Floodgate ]
 main: de.photon.anticheataddition.AntiCheatAddition
 

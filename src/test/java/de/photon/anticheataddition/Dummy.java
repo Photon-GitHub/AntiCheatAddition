@@ -9,12 +9,8 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
-import org.bukkit.MusicInstrument;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.damage.DamageType;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
 import org.mockito.Mockito;
 
 import java.io.File;

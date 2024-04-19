@@ -20,7 +20,6 @@ public final class SkinBlinkerSprinting extends ViolationModule
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .setAllowedServerVersions(ServerVersion.MC119.getSupVersionsTo())
                            .addPacketListeners(PacketAdapterBuilder.of(this, PacketType.Play.Client.CLIENT_SETTINGS).onReceiving((event, user) -> {
                                /*
                                 * An unmodified client can only send such packets if the player is in the menu

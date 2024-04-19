@@ -2,7 +2,6 @@ package de.photon.anticheataddition.modules.checks.skinblinker;
 
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientSettings;
-import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
@@ -23,7 +22,6 @@ public final class SkinBlinkerUnusedBit extends ViolationModule
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .setAllowedServerVersions(ServerVersion.MC119.getSupVersionsTo())
                            .addPacketListeners(PacketAdapterBuilder.of(this, PacketType.Play.Client.CLIENT_SETTINGS).onReceiving((event, user) -> {
                                /*
                                 * Check for the special 0x80 bit in the skin packet that is officially unused by the protocol and set to 0 in vanilla clients.

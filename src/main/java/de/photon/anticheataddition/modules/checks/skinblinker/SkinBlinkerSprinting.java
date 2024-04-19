@@ -2,7 +2,6 @@ package de.photon.anticheataddition.modules.checks.skinblinker;
 
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientSettings;
-import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
@@ -34,7 +33,9 @@ public final class SkinBlinkerSprinting extends ViolationModule
                                if ((user.getPlayer().isSprinting() || user.getPlayer().isSneaking())
                                    // updateSkinComponents returns true if the skin has changed.
                                    && user.updateSkinComponents(skinMask)) {
-                                   getManagement().flag(Flag.of(user).setAddedVl(50));
+                                   getManagement().flag(Flag.of(user)
+                                                            .setAddedVl(50)
+                                                            .setDebug(() -> "SkinBlinkerSprinting: Skin changed while sprinting or sneaking. New skinmask is %x".formatted(skinMask)));
                                }
                            }).build())
                            .build();

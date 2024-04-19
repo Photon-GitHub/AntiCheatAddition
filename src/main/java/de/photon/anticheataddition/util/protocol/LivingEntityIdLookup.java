@@ -4,13 +4,13 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerAbstract;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityType;
-import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnLivingEntity;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.messaging.Log;
+import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
@@ -57,7 +57,7 @@ public class LivingEntityIdLookup
     private void cacheEntity(LivingEntity entity)
     {
         final int entityId = entity.getEntityId();
-        final var entityType = EntityTypes.getByName(entity.getType().name());
+        final var entityType = SpigotConversionUtil.fromBukkitEntityType(entity.getType());
 
         if (entityType == null) {
             Log.fine(() -> "Attempted to cache null entityType: Entity ID " + entityId + " Raw type: " + entity.getType().name());
@@ -65,8 +65,6 @@ public class LivingEntityIdLookup
         }
 
         entityTypeCache.put(entityId, entityType);
-
-        this.cacheEntityId(entity.getEntityId(), EntityTypes.getByName(entity.getType().name()));
     }
 
     public void cacheEntityId(int entityId, EntityType entityType)

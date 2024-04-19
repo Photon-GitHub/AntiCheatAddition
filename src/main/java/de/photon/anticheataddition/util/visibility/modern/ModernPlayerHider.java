@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.util.visibility.modern;
 
+import com.github.retrooper.packetevents.protocol.npc.NPC;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.messaging.Log;
@@ -15,7 +16,8 @@ public final class ModernPlayerHider extends PlayerInformationHider
     protected void onHide(@NotNull Player observer, @NotNull Set<Player> toHide)
     {
         for (Player player : toHide) {
-            observer.hideEntity(AntiCheatAddition.getInstance(), player);
+            observer.hidePlayer(AntiCheatAddition.getInstance(), player);
+            addWatchedPlayerToTablistPacket(observer, player);
             Log.finest(() -> "Player " + player.getName() + " has been fully hidden from " + observer.getName());
         }
     }
@@ -24,7 +26,7 @@ public final class ModernPlayerHider extends PlayerInformationHider
     protected void onReveal(@NotNull Player observer, @NotNull Set<Player> revealed)
     {
         for (Player player : revealed) {
-            observer.showEntity(AntiCheatAddition.getInstance(), player);
+            observer.showPlayer(AntiCheatAddition.getInstance(), player);
             Log.finest(() -> "Player " + player.getName() + " has been revealed to " + observer.getName());
         }
     }

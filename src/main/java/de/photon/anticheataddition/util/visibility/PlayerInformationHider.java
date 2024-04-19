@@ -113,6 +113,7 @@ public abstract class PlayerInformationHider implements Listener
             skin = SKIN_CACHE.get(watched.getUniqueId());
         } catch (ExecutionException e) {
             // Server unreachable, or the player does not exist. -> Ignore
+            Log.finer(() -> "Failed to load skin for player " + watched.getName() + ". Error: " + e.getMessage());
         }
 
         if (skin == null) return;

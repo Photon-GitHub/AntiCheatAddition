@@ -47,4 +47,17 @@ public final class RotationUtil
 
         return vector;
     }
+
+    /**
+     * Calculates the angle between two rotations using {@link Vector}s.
+     *
+     * @return The angle between the two rotations in degrees.
+     */
+    public static float getAngleBetweenRotations(final float firstYaw, final float firstPitch, final float secondYaw, final float secondPitch)
+    {
+        final Vector first = getDirection(firstYaw, firstPitch);
+        final Vector second = getDirection(secondYaw, secondPitch);
+
+        return (float) Math.toDegrees(first.angle(second));
+    }
 }

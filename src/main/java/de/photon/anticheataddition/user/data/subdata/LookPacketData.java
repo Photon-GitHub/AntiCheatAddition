@@ -5,6 +5,8 @@ import com.github.retrooper.packetevents.event.PacketListenerAbstract;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.google.common.primitives.Doubles;
+import de.photon.anticheataddition.modules.checks.scaffold.ScaffoldRotation;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.buffer.RingBuffer;
@@ -18,6 +20,7 @@ import lombok.Value;
 import lombok.experimental.NonFinal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,7 +35,7 @@ public final class LookPacketData
     private final RingBuffer<RotationChange> rotationChangeQueue = new RingBuffer<>(20, new RotationChange(0, 0));
 
 
-    public record ScaffoldAngleInfo(double changeSum, double variance) {}
+    public record ScaffoldAngleInfo(double angleChangeSum, double angleVariance, List<Double> angleList) {}
 
     public ScaffoldAngleInfo getAngleInformation()
     {
@@ -57,10 +60,10 @@ public final class LookPacketData
         final double angleSum = DataUtil.sum(angleArray);
         final double angleVariance = DataUtil.variance(angleSum / angleArray.length, angleArray);
 
-        Log.finer(() -> "Scaffold-Debug | AngleSum: %.3f | AngleVariance: %.3f | Mean: %.3f".formatted(angleSum, angleVariance, angleSum / angleArray.length));
+        Log.finer(() -> "Scaffold-Debug | AngleSum: %.3f | AngleVariance: %.3f | Mean: %.3f | Max: %.3f".formatted(angleSum, angleVariance, angleSum / angleArray.length, Doubles.max(angleArray)));
 
         // Return the accumulated sum of angle changes and the gaps
-        return new ScaffoldAngleInfo(angleSum, angleVariance);
+        return new ScaffoldAngleInfo(angleSum, angleVariance, Arrays.stream(angleArray).boxed().toList());
     }
 
     @Value
@@ -84,7 +87,7 @@ public final class LookPacketData
          */
         public float angle(RotationChange rotationChange)
         {
-            return RotationUtil.getDirection(this.yaw, this.pitch).angle(RotationUtil.getDirection(rotationChange.getYaw(), rotationChange.getPitch()));
+            return RotationUtil.getAngleBetweenRotations(this.yaw, this.pitch, rotationChange.getYaw(), rotationChange.getPitch());
         }
 
         public long timeOffset(RotationChange other)
@@ -104,6 +107,8 @@ public final class LookPacketData
      */
     private static final class LookPacketDataUpdater extends PacketListenerAbstract
     {
+
+
         public LookPacketDataUpdater()
         {
             super(PacketListenerPriority.MONITOR);
@@ -131,8 +136,7 @@ public final class LookPacketData
 
                 // Huge angle change
                 // Use the map values here to because the other ones are already updated.
-                if (RotationUtil.getDirection(user.getData().floating.lastPacketYaw, user.getData().floating.lastPacketPitch)
-                                .angle(RotationUtil.getDirection(rotation.yaw(), rotation.pitch())) > 35) {
+                if (RotationUtil.getAngleBetweenRotations(user.getData().floating.lastPacketYaw, user.getData().floating.lastPacketPitch, rotation.yaw(), rotation.pitch()) > ScaffoldRotation.SIGNIFICANT_ROTATION_CHANGE_THRESHOLD) {
                     user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).update();
                 }
 

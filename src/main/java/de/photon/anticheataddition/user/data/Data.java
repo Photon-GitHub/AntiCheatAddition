@@ -68,7 +68,7 @@ public final class Data
         public final ViolationCounter scaffoldAngleFails = new ViolationCounter(4);
         public final ViolationCounter scaffoldJumpingFails = new ViolationCounter(6);
         public final ViolationCounter scaffoldJumpingLegit = new ViolationCounter(18);
-        public final ViolationCounter scaffoldRotationFails = new ViolationCounter(6);
+        public final ViolationCounter scaffoldRotationFails = new ViolationCounter(7);
         public final ViolationCounter scaffoldSafewalkPositionFails = new ViolationCounter(4);
         public final ViolationCounter scaffoldSafewalkTimingFails = new ViolationCounter(3);
         public final ViolationCounter scaffoldSprintingFails = new ViolationCounter(5);

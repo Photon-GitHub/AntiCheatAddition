@@ -15,7 +15,7 @@ public class ScaffoldRotation extends Module
     // Thresholds in degrees.
     public static final double SIGNIFICANT_ROTATION_CHANGE_THRESHOLD = 35;
     private static final double ANGLE_CHANGE_SUM_THRESHOLD = 360;
-    private static final double ANGLE_VARIANCE_THRESHOLD = 60;
+    private static final double ANGLE_VARIANCE_THRESHOLD = 75;
     private static final double ANGLE_SWITCH_THRESHOLD = 20;
 
     private ScaffoldRotation()

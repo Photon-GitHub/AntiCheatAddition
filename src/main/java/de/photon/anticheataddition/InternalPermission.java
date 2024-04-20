@@ -10,7 +10,7 @@ public enum InternalPermission
     DEBUG("debug"),
     INFO("info"),
     INTERNALTEST("internaltest"),
-    MAINCOMMAND("maincomamnd"),
+    MAINCOMMAND("maincommand"),
     SETVL("setvl");
 
     @Getter @NotNull private final String realPermission;

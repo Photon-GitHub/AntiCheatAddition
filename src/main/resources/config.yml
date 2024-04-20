@@ -33,6 +33,11 @@ BrandHider:
   # Set this to 0 if you only use static text or placeholders (in ticks).
   refresh_rate: 0
 
+# CommandHider allows you to define a custom message if a player tries to execute a command of AntiCheatAddition
+# without the necessary permissions.
+CommandHider:
+  permissions_message: "Unknown command. Please type /help for help."
+
 # This module spoofs the health of all players on your server, thus rendering DamageIndicators, HealthTags, and other
 # mods that try to display other players' health ineffective.
 # Other plugins can still get the accurate player health.

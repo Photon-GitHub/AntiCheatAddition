@@ -15,7 +15,7 @@ public class ScaffoldRotation extends Module
     // Thresholds in degrees.
     public static final double SIGNIFICANT_ROTATION_CHANGE_THRESHOLD = 35;
     private static final double ANGLE_CHANGE_SUM_THRESHOLD = 360;
-    private static final double ANGLE_VARIANCE_THRESHOLD = 30;
+    private static final double ANGLE_VARIANCE_THRESHOLD = 60;
     private static final double ANGLE_SWITCH_THRESHOLD = 20;
 
     private ScaffoldRotation()
@@ -28,7 +28,9 @@ public class ScaffoldRotation extends Module
         if (!this.isEnabled()) return 0;
         int vl = 0;
 
-        final var scaffoldAngleInfo = user.getLookPacketData().getAngleInformation();
+        final var scaffoldAngleInfoOptional = user.getLookPacketData().getAngleInformation();
+        if (scaffoldAngleInfoOptional.isEmpty()) return 0;
+        final var scaffoldAngleInfo = scaffoldAngleInfoOptional.get();
 
         // Detect sudden changes in the last two ticks.
         if (user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).recentlyUpdated(125)) {

@@ -22,6 +22,7 @@ import lombok.experimental.NonFinal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents a data structure that stores and processes look packets for users.
@@ -37,13 +38,15 @@ public final class LookPacketData
 
     public record ScaffoldAngleInfo(double angleChangeSum, double angleVariance, List<Double> angleList) {}
 
-    public ScaffoldAngleInfo getAngleInformation()
+    public Optional<ScaffoldAngleInfo> getAngleInformation()
     {
         final RotationChange[] changes;
 
         synchronized (this.rotationChangeQueue) {
             changes = this.rotationChangeQueue.toArray(new RotationChange[0]);
         }
+
+        if (changes.length < 2) return Optional.empty();
 
         final long curTime = System.currentTimeMillis();
         final List<Float> angles = new ArrayList<>();
@@ -56,6 +59,7 @@ public final class LookPacketData
             angles.add(changes[i - 1].angle(changes[i]));
         }
 
+
         final double[] angleArray = angles.stream().mapToDouble(Float::doubleValue).toArray();
         final double angleSum = DataUtil.sum(angleArray);
         final double angleVariance = DataUtil.variance(angleSum / angleArray.length, angleArray);
@@ -63,7 +67,7 @@ public final class LookPacketData
         Log.finer(() -> "Scaffold-Debug | AngleSum: %.3f | AngleVariance: %.3f | Mean: %.3f | Max: %.3f".formatted(angleSum, angleVariance, angleSum / angleArray.length, Doubles.max(angleArray)));
 
         // Return the accumulated sum of angle changes and the gaps
-        return new ScaffoldAngleInfo(angleSum, angleVariance, Arrays.stream(angleArray).boxed().toList());
+        return Optional.of(new ScaffoldAngleInfo(angleSum, angleVariance, Arrays.stream(angleArray).boxed().toList()));
     }
 
     @Value

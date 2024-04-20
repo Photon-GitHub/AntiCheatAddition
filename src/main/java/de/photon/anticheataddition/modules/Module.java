@@ -16,7 +16,7 @@ import java.util.SortedSet;
 
 @EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY, onlyExplicitlyIncluded = true)
 @ToString
-public abstract class Module implements ConfigLoading, Comparable<Module>
+public class Module implements ConfigLoading, Comparable<Module>
 {
     @Getter protected final String configString;
     @Getter @EqualsAndHashCode.Include private final String moduleId;

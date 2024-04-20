@@ -221,8 +221,13 @@ Inventory:
   parts:
     # Detects regular intervals between inventory clicks, typical of chest stealer bots.
     # NOTE: Disable this part if you allow inventory sorting mods.
-    # Adds 20 to 70 VL
+    # Adds 20 to 70 VL.
     AverageHeuristic:
+      enabled: true
+    # Detects players that quickly open and close their inventory for prolonged time periods.
+    # This is typical for some inventory cheat bypass attempts.
+    # Adds 3 VL.
+    Frequency:
       enabled: true
     # This part detects attacking while the inventory is open.
     # Adds 20 VL.
@@ -231,7 +236,7 @@ Inventory:
       # VL threshold for canceling attacks. Set to 0 for no cancellations.
       cancel_vl: 60
     # The move part detects when a player moves while they are in their inventory.
-    # Adds 5 (moving) to 20 (jumping) VL
+    # Adds 5 (moving) to 20 (jumping) VL.
     Move:
       enabled: true
       # VL threshold for canceling movements. Set to 0 for no cancellations.

@@ -59,6 +59,7 @@ public final class Data
     public static final class Counter
     {
         public final ViolationCounter inventoryAverageHeuristicsMisclicks = new ViolationCounter(0);
+        public final ViolationCounter inventoryFrequencyFails = new ViolationCounter(30);
         public final ViolationCounter inventoryPerfectExitFails = new ViolationCounter(6);
 
         public final ViolationCounter packetAnalysisPerfectRotationYawFails = new ViolationCounter(4);

@@ -29,6 +29,7 @@ public class Inventory extends ViolationModule implements Listener
     protected Inventory()
     {
         super("Inventory", InventoryAverageHeuristic.INSTANCE,
+              InventoryFrequency.INSTANCE,
               InventoryHit.INSTANCE,
               InventoryMove.INSTANCE,
               InventoryMultiInteraction.INSTANCE,

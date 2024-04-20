@@ -6,6 +6,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEn
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.modules.ModuleLoader;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
 
 public final class ItemCountHider extends Module
@@ -33,7 +34,10 @@ public final class ItemCountHider extends Module
                     for (var equip : wrapper.getEquipment()) {
                         final var item = equip.getItem();
 
+                        Log.finer(() -> "ItemCountHider entity id: " + entityId + " with item " + item);
+
                         if (item.getAmount() <= 1) continue;
+                        Log.finer(() -> "Hiding item count of " + item + " for entity id " + entityId);
                         item.setAmount(1);
                     }
                 }).build();

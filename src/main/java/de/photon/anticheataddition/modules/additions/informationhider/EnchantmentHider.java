@@ -10,6 +10,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEn
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.modules.ModuleLoader;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
 
 import java.util.List;
@@ -41,11 +42,14 @@ public final class EnchantmentHider extends Module
                     for (var equip : wrapper.getEquipment()) {
                         final var item = equip.getItem();
 
+                        Log.finer(() -> "EnchantmentHider entity id: " + entityId + " with item " + item);
+
                         // Check if the item has enchantments
                         final List<Enchantment> enchantments = item.getEnchantments(version);
                         if (enchantments.isEmpty()) continue;
 
                         // If it has, clear them and add a dummy enchantment.
+                        Log.finer(() -> "Hiding enchantments of " + item + " for entity id " + entityId);
                         enchantments.clear();
                         enchantments.add(Enchantment.builder().type(EnchantmentTypes.INFINITY_ARROWS).level(1).build());
                         item.setEnchantments(enchantments, version);

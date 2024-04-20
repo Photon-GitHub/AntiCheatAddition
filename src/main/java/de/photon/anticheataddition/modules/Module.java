@@ -34,7 +34,7 @@ public abstract class Module implements ConfigLoading, Comparable<Module>
             throw new IllegalArgumentException(message);
         }
         this.configString = configString;
-        this.moduleId = "anticheataddition_" + configString.toLowerCase(Locale.ENGLISH);
+        this.moduleId = configString.toLowerCase(Locale.ENGLISH);
         this.children = ImmutableSortedSet.copyOf(children);
     }
 

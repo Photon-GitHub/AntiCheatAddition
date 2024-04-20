@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 /**
  * Checks for suspicious packet rotation patterns that correspond to precise values like 0.25 or 0.1.
  */
-public class PacketAnalysisPerfectRotation extends ViolationModule implements Listener
+public final class PacketAnalysisPerfectRotation extends ViolationModule implements Listener
 {
     public static final PacketAnalysisPerfectRotation INSTANCE = new PacketAnalysisPerfectRotation();
 

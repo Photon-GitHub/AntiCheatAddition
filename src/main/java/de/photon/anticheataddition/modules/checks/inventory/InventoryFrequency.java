@@ -36,7 +36,7 @@ public final class InventoryFrequency extends ViolationModule implements Listene
         if (user.getData().counter.inventoryFrequencyFails.conditionallyIncDec(passedTime <= OPEN_CLOSE_TIME)) {
             this.getManagement().flag(Flag.of(user)
                                           .setAddedVl(3)
-                                          .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " opens and closes inventories very quickly (D: " + passedTime + ')'));
+                                          .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " quickly opens and closes inventories for prolonged periods of time (D: " + passedTime + ')'));
         }
     }
 

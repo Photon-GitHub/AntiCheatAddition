@@ -8,8 +8,9 @@ website: https://www.spigotmc.org/resources/anticheataddition.33590/
 depend:
   - packetevents
 softdepend:
-  - ViaVersion
   - Floodgate
+  - ViaVersion
+  - WorldGuard
 
 main: de.photon.anticheataddition.AntiCheatAddition
 

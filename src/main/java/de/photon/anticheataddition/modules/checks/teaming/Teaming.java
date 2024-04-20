@@ -1,10 +1,6 @@
 package de.photon.anticheataddition.modules.checks.teaming;
 
 import com.google.common.base.Preconditions;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.flags.Flags;
-import com.sk89q.worldguard.protection.flags.StateFlag;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
@@ -12,7 +8,8 @@ import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.quadtree.QuadTreeSet;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.messaging.Log;
-import de.photon.anticheataddition.util.minecraft.world.Region;
+import de.photon.anticheataddition.util.minecraft.world.region.Region;
+import de.photon.anticheataddition.util.minecraft.world.region.WorldGuardRegionUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -64,35 +61,13 @@ public final class Teaming extends ViolationModule implements Listener
         return Set.copyOf(safeZones);
     }
 
-    private Set<Region> loadWorldGuardSafeZones(Set<World> enabledWorlds)
-    {
-        final Set<Region> regions = new HashSet<>();
-        final var regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
-
-        for (World world : enabledWorlds) {
-            final var regionManager = regionContainer.get(BukkitAdapter.adapt(world));
-            if (regionManager == null) continue;
-
-            for (var region : regionManager.getRegions().values()) {
-                final StateFlag.State pvpFlag = region.getFlag(Flags.PVP);
-                if (pvpFlag == null || pvpFlag == StateFlag.State.DENY) {
-                    final var min = region.getMinimumPoint();
-                    final var max = region.getMaximumPoint();
-                    regions.add(new Region(world, min.getX(), min.getZ(), max.getX(), max.getZ()));
-                }
-            }
-        }
-
-        return regions;
-    }
-
     @Override
     public void enable()
     {
         final var enabledWorlds = loadEnabledWorlds();
 
         final var safeZonesLoading = new HashSet<>(loadSafeZones(enabledWorlds));
-        if (loadBoolean(".worldguard", false)) safeZonesLoading.addAll(loadWorldGuardSafeZones(enabledWorlds));
+        if (loadBoolean(".worldguard", false)) safeZonesLoading.addAll(WorldGuardRegionUtil.loadNoPVPRegions(enabledWorlds));
         final var safeZones = Set.copyOf(safeZonesLoading);
 
         final double proximityRange = loadDouble(".proximity_range", 4.5);

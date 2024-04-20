@@ -3,6 +3,7 @@ package de.photon.anticheataddition.modules.checks.inventory;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -32,6 +33,7 @@ public final class InventoryFrequency extends ViolationModule implements Listene
             !Inventory.hasMinTPS()) return;
 
         final long passedTime = user.getTimeMap().at(TimeKey.INVENTORY_OPENED).passedTime();
+        Log.finer(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " frequency passed time: " + passedTime);
 
         if (user.getData().counter.inventoryFrequencyFails.conditionallyIncDec(passedTime <= OPEN_CLOSE_TIME)) {
             this.getManagement().flag(Flag.of(user)

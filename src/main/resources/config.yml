@@ -395,6 +395,8 @@ Teaming:
   # - "<affected_world> <x1> <z1> <x2> <z2>"
   safe_zones:
     - "world -15 -15 15 15"
+  # If this setting is enabled, AntiCheatAddition will treat any worldguard region with disabled PVP as a safe zone.
+  worldguard: false
   # These VLs are cumulative for a team.
   # Every team member gets (actual team size) - (allowed team size) VL per interval.
   # Commands to execute at specific violation levels.

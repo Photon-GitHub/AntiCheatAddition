@@ -30,14 +30,16 @@ public final class InventoryFrequency extends ViolationModule implements Listene
             // Creative-clear might trigger this.
             !user.inAdventureOrSurvivalMode() ||
             // Minimum TPS before the check is activated as of a huge amount of fps
-            !Inventory.hasMinTPS()) return;
+            !Inventory.hasMinTPS() ||
+            // False positive: Players standing still that open chests as quickly as possible
+            !user.hasMovedRecently(TimeKey.XYZ_MOVEMENT, 1000)) return;
 
         final long passedTime = user.getTimeMap().at(TimeKey.INVENTORY_OPENED).passedTime();
         Log.finer(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " frequency passed time: " + passedTime);
 
         if (user.getData().counter.inventoryFrequencyFails.conditionallyIncDec(passedTime <= OPEN_CLOSE_TIME)) {
             this.getManagement().flag(Flag.of(user)
-                                          .setAddedVl(3)
+                                          .setAddedVl(2)
                                           .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " quickly opens and closes inventories for prolonged periods of time (D: " + passedTime + ')'));
         }
     }
@@ -47,6 +49,6 @@ public final class InventoryFrequency extends ViolationModule implements Listene
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(400, 1).build();
+                                       .withDecay(100, 2).build();
     }
 }

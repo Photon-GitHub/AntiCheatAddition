@@ -226,7 +226,7 @@ Inventory:
       enabled: true
     # Detects players that quickly open and close their inventory for prolonged time periods.
     # This is typical for some inventory cheat bypass attempts.
-    # Adds 3 VL.
+    # Adds 2 VL.
     Frequency:
       enabled: true
     # This part detects attacking while the inventory is open.

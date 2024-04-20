@@ -76,7 +76,7 @@ public final class CommandAttributes
     {
         private final ImmutableSortedMap.Builder<String, InternalCommand> childCommandsBuilder = ImmutableSortedMap.naturalOrder();
         private final List<String> commandHelp = new ArrayList<>();
-        private InternalPermission permission = InternalPermission.NONE;
+        private InternalPermission permission = InternalPermission.MAINCOMMAND;
         private int minArguments = 0;
         private int maxArguments = 25;
 

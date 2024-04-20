@@ -27,6 +27,7 @@ permissions:
       anticheataddition.debug: true
       anticheataddition.info: true
       anticheataddition.internaltest: true
+      anticheataddition.maincommand: true
       anticheataddition.setvl: true
     default: op
 
@@ -88,6 +89,10 @@ permissions:
 
   anticheataddition.internaltest:
     description: Allows testing various AntiCheatAddition checks by spoofing cheat behaviour. This is not intended for normal use and can be used to falsely flag players.
+
+  anticheataddition.maincommand:
+    description: Allows the player to execute the main command of AntiCheatAddition and see the current plugin version.
+    permission-message: Unknown command. Type "/help" for help.
 
   anticheataddition.setvl:
     description: Allows the player to execute a command which will set the vl of another player, usually used for testing.

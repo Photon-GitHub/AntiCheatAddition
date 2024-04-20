@@ -2,6 +2,7 @@ package de.photon.anticheataddition;
 
 import lombok.Getter;
 import org.bukkit.permissions.Permissible;
+import org.jetbrains.annotations.Nullable;
 
 public enum InternalPermission
 {
@@ -9,10 +10,10 @@ public enum InternalPermission
     DEBUG("debug"),
     INFO("info"),
     INTERNALTEST("internaltest"),
-    NONE(null),
+    MAINCOMMAND("maincomamnd"),
     SETVL("setvl");
 
-    @Getter private final String realPermission;
+    @Getter @Nullable private final String realPermission;
 
     InternalPermission(final String realPermission)
     {

@@ -57,17 +57,17 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
 
         Log.finer(() -> "Scaffold-Debug | Player: %s min delay: %f | real: %f".formatted(user.getPlayer().getName(), minExpectedAverage, actualAverage));
 
-        // delta-times are too low -> flag
-        if (actualAverage < minExpectedAverage) {
-            final int vlIncrease = Math.min(130, VL_CALCULATOR.apply(minExpectedAverage - actualAverage).intValue());
-            this.getModule().getManagement().flag(Flag.of(user)
-                                                      .setAddedVl(vlIncrease)
-                                                      .setCancelAction(cancelVl, () -> {
-                                                          user.getTimeMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
-                                                          InventoryUtil.syncUpdateInventory(user.getPlayer());
-                                                      })
-                                                      .setDebug(() -> "Scaffold-Debug | Player: %s enforced delay: %f | real: %f | vl increase: %d".formatted(user.getPlayer().getName(), minExpectedAverage, actualAverage, vlIncrease)));
-        }
+        // delta-times are not too low -> no flag
+        if (actualAverage >= minExpectedAverage) return;
+
+        final int vlIncrease = Math.min(130, VL_CALCULATOR.apply(minExpectedAverage - actualAverage).intValue());
+        this.getModule().getManagement().flag(Flag.of(user)
+                                                  .setAddedVl(vlIncrease)
+                                                  .setCancelAction(cancelVl, () -> {
+                                                      user.getTimeMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
+                                                      InventoryUtil.syncUpdateInventory(user.getPlayer());
+                                                  })
+                                                  .setDebug(() -> "Scaffold-Debug | Player: %s enforced delay: %f | real: %f | vl increase: %d".formatted(user.getPlayer().getName(), minExpectedAverage, actualAverage, vlIncrease)));
     }
 
     private double calculateMinExpectedDelay(ScaffoldBatch.ScaffoldBlockPlace old, ScaffoldBatch.ScaffoldBlockPlace current, boolean moonwalk)

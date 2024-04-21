@@ -62,8 +62,9 @@ public final class Scaffold extends ViolationModule implements Listener
         if (User.isUserInvalid(user, this)) return;
 
         final var blockPlaced = event.getBlockPlaced();
+        final var face = event.getBlock().getFace(event.getBlockAgainst());
 
-        // Short distance between player and the block (at most 2 Blocks)
+        // Short distance between player and the block (at most 4 Blocks)
         if (WorldUtil.INSTANCE.areLocationsInRange(user.getPlayer().getLocation(), blockPlaced.getLocation(), 4D) &&
             // Not flying
             !user.getPlayer().isFlying() &&
@@ -79,18 +80,17 @@ public final class Scaffold extends ViolationModule implements Listener
             // Only one block that is not a liquid is allowed (the one which the Block is placed against).
             WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.INSTANCE.getLiquids()) == 1L &&
             // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
-            WorldUtil.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst()))) {
+            WorldUtil.HORIZONTAL_FACES.contains(face)) {
 
             final var lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().block();
             // This checks if the block was placed against the expected block for scaffolding.
             final var newScaffoldLocation = !Objects.equals(lastScaffoldBlock, event.getBlockAgainst()) || !WorldUtil.INSTANCE.isNext(lastScaffoldBlock, event.getBlockPlaced(), WorldUtil.HORIZONTAL_FACES);
-
             // ---------------------------------------------- Average ---------------------------------------------- //
 
             if (newScaffoldLocation) user.getScaffoldBatch().clear();
 
             user.getScaffoldBatch().addDataPoint(new ScaffoldBatch.ScaffoldBlockPlace(event.getBlockPlaced(),
-                                                                                      event.getBlockPlaced().getFace(event.getBlockAgainst()),
+                                                                                      face,
                                                                                       user));
 
             // --------------------------------------------- Rotations ---------------------------------------------- //

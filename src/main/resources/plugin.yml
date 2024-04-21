@@ -45,10 +45,12 @@ permissions:
       anticheataddition.bypass.duping.parts.double_dropped: true
       anticheataddition.bypass.duping.parts.secretcache: true
       anticheataddition.bypass.damageindicator: true
-      anticheataddition.bypass.enchantmenthider: true
       anticheataddition.bypass.esp: true
       anticheataddition.bypass.fastswitch: true
       anticheataddition.bypass.impossiblechat: true
+      anticheataddition.bypass.informationhider: true
+      anticheataddition.bypass.informationhider.parts.enchantments: true
+      anticheataddition.bypass.informationhider.parts.item_count: true
       anticheataddition.bypass.inventory: true
       anticheataddition.bypass.inventory.parts.averageheuristic: true
       anticheataddition.bypass.inventory.parts.hit: true

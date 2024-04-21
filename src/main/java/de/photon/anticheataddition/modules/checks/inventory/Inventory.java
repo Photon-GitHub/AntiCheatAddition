@@ -17,7 +17,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.stream.Collectors;
 
-public class Inventory extends ViolationModule implements Listener
+public final class Inventory extends ViolationModule implements Listener
 {
     public static final Inventory INSTANCE = new Inventory();
     public static final double MIN_TPS = 19.0D;
@@ -26,7 +26,7 @@ public class Inventory extends ViolationModule implements Listener
 
     @Getter private final int maxPing = loadInt(".max_ping", 400);
 
-    protected Inventory()
+    private Inventory()
     {
         super("Inventory", InventoryAverageHeuristic.INSTANCE,
               InventoryFrequency.INSTANCE,

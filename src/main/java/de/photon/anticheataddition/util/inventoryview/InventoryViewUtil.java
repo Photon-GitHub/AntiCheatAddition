@@ -10,7 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-public interface InventoryViewUtil
+public sealed interface InventoryViewUtil permits LegacyInventoryViewUtil, ModernInventoryViewUtil
 {
     InventoryViewUtil INSTANCE = ServerVersion.MC119.activeIsLaterOrEqual() ? new LegacyInventoryViewUtil() : new ModernInventoryViewUtil();
 

@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Set;
 
-public interface PlayerVisibility
+public sealed interface PlayerVisibility permits PlayerVisibilityImpl
 {
     PlayerVisibility INSTANCE = new PlayerVisibilityImpl();
 

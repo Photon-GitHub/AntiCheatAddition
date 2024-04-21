@@ -11,7 +11,7 @@ import java.util.Set;
 
 import static org.bukkit.Material.*;
 
-public interface MaterialUtil
+public sealed interface MaterialUtil permits AncientMaterialUtil, ModernMaterialUtil, OldMaterialUtil
 {
     MaterialUtil INSTANCE = ServerVersion.MC112.activeIsEarlierOrEqual() ? new AncientMaterialUtil() : (ServerVersion.MC119.activeIsEarlierOrEqual() ? new OldMaterialUtil() : new ModernMaterialUtil());
 
@@ -31,6 +31,7 @@ public interface MaterialUtil
     Set<Material> getLiquids();
 
     Set<Material> getSigns();
+
     Set<Material> getNonOpenableInventories();
 
     default Material getExpBottle()

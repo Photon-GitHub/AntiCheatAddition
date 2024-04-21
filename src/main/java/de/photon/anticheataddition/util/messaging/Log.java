@@ -24,7 +24,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class Log
+public final class Log
 {
     public static final Log INSTANCE = new Log();
 

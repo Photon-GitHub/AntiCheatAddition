@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-public class LegacyPlayerHider extends PlayerInformationHider
+public final class LegacyPlayerHider extends PlayerInformationHider
 {
     @Override
     protected void onHide(@NotNull Player observer, @NotNull Set<Player> toHide)

@@ -17,7 +17,7 @@ import org.bukkit.entity.LivingEntity;
 
 import javax.annotation.Nullable;
 
-public class LivingEntityIdLookup
+public final class LivingEntityIdLookup
 {
     // Track at most 1 millon entities
     private static final long MAXIMUM_CACHE_CAPACITY = 1 << 20;

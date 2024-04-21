@@ -61,6 +61,8 @@ public final class LookPacketData
 
 
         final double[] angleArray = angles.stream().mapToDouble(Float::doubleValue).toArray();
+        if (angleArray.length == 0) return Optional.empty();
+
         final double angleSum = DataUtil.sum(angleArray);
         final double angleVariance = DataUtil.variance(angleSum / angleArray.length, angleArray);
 

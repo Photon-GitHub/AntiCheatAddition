@@ -8,7 +8,7 @@ import de.photon.anticheataddition.util.messaging.Log;
 /**
  * This Scaffold part identifies suspicious rotation patterns sudden, large angle changes, as well as some very random rotations.
  */
-public class ScaffoldRotation extends Module
+public final class ScaffoldRotation extends Module
 {
     public static final ScaffoldRotation INSTANCE = new ScaffoldRotation();
 

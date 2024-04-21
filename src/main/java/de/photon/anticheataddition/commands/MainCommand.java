@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class MainCommand extends InternalCommand implements CommandExecutor, TabCompleter
+public final class MainCommand extends InternalCommand implements CommandExecutor, TabCompleter
 {
     private final String acaVersion;
 

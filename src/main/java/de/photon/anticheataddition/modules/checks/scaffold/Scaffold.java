@@ -76,6 +76,8 @@ public final class Scaffold extends ViolationModule implements Listener
                            event.getBlockPlaced().getType() != Material.LADDER && event.getBlockPlaced().getType() != Material.VINE,
                            WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.INSTANCE.getLiquids()) == 1L));
 
+        int vl = ScaffoldFace.INSTANCE.getVl(user, event);
+
         // Short distance between player and the block (at most 4 Blocks)
         if (WorldUtil.INSTANCE.areLocationsInRange(user.getPlayer().getLocation(), blockPlaced.getLocation(), 4D) &&
             // Not flying
@@ -90,21 +92,19 @@ public final class Scaffold extends ViolationModule implements Listener
             event.getBlockPlaced().getType() != Material.LADDER && event.getBlockPlaced().getType() != Material.VINE &&
             // Check if the block is placed against one block face only, also implies no blocks above and below.
             // Only one block that is not a liquid is allowed (the one which the Block is placed against).
-            WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.INSTANCE.getLiquids()) == 1L) {
-
-            int vl = ScaffoldFace.INSTANCE.getVl(user, event);
-
+            WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.INSTANCE.getLiquids()) == 1L &&
             // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
             // Check that the player is not placing blocks up / down as that is not scaffolding.
-            if (WorldUtil.HORIZONTAL_FACES.contains(face)) vl += handleHorizontalChecks(event, user, face);
+            WorldUtil.HORIZONTAL_FACES.contains(face)) {
+            vl += handleHorizontalChecks(event, user, face);
+        }
 
-            if (vl > 0) {
-                this.getManagement().flag(Flag.of(event.getPlayer()).setAddedVl(vl).setCancelAction(cancelVl, () -> {
-                    event.setCancelled(true);
-                    user.getTimeMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
-                    InventoryUtil.syncUpdateInventory(user.getPlayer());
-                }));
-            }
+        if (vl > 0) {
+            this.getManagement().flag(Flag.of(event.getPlayer()).setAddedVl(vl).setCancelAction(cancelVl, () -> {
+                event.setCancelled(true);
+                user.getTimeMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
+                InventoryUtil.syncUpdateInventory(user.getPlayer());
+            }));
         }
     }
 

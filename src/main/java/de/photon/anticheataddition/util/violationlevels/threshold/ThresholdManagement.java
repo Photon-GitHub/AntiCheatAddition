@@ -30,8 +30,6 @@ public sealed interface ThresholdManagement permits EmptyThresholds, SingleThres
         final var keys = Preconditions.checkNotNull(ConfigUtil.loadKeys(configPath), "Config loading error: The keys loaded from " + configPath + " are null.");
         final var thresholds = keys.stream().map(key -> new Threshold(Integer.parseInt(key), ConfigUtil.loadImmutableStringOrStringList(configPath + '.' + key))).toList();
 
-        Log.finer(() -> "ConfigPath: " + configPath + " | Size: " + thresholds.size() + " | Thresholds raw: " + thresholds);
-
         return switch (thresholds.size()) {
             case 0 -> EMPTY;
             case 1 -> new SingleThresholds(thresholds.get(0));

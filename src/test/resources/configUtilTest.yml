@@ -25,3 +25,8 @@ Test:
       - "2"
       - "3"
     stringlist2: [ "1", "2", "3" ]
+
+Debug:
+  console_level: "INFO"
+  file_level: "FINE"
+  player_level: "OFF"

@@ -320,6 +320,10 @@ Scaffold:
     # Adds 15 VL.
     Angle:
       enabled: true
+    # This part detects some invalid block placements e.g. against air or itself.
+    # Adds 30 VL.
+    Face:
+      enabled: true
     # Detects jumping while scaffolding. It is possible for legit players, but very tricky to achieve without cheats.
     # Adds 20 VL.
     Jumping:

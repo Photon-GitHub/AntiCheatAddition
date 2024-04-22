@@ -31,10 +31,7 @@ final class ScaffoldPosition extends Module
         if (!event.getBlockPlaced().getType().isOccluding()) return 0;
 
         final var face = event.getBlock().getFace(event.getBlockAgainst());
-        if (face == null) {
-            Log.fine(() -> "Scaffold-Debug | Player: " + event.getPlayer().getName() + " placed against distant block.");
-            return 30;
-        }
+        if (face == null) return 0;
 
         final double xOffset = MathUtil.absDiff(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
         final double zOffset = MathUtil.absDiff(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());

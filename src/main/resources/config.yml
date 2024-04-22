@@ -765,10 +765,10 @@ Sentinel:
 # "OFF" disables logging, "FINER" causes various debug messages be logged and "ALL" or "FINEST" enable spammy debug messages.
 Debug:
   # The logging level for the console.
-  # WARNING: Please note that DUE TO A SPIGOT BUG, this setting is currently NOT FUNCTIONAL!
   console_level: "INFO"
   # The logging level for the log file.
   # For submitting bug reports, it is imperative that the file log level is at least "FINE".
+  # If you want to submit bypasses, please set this to "FINER".
   file_level: "FINE"
   # The logging level for the players with debug permission. They can still disable them by using the debug command
   # even when this is not "OFF".

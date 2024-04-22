@@ -1,4 +1,4 @@
-package de.photon.anticheataddition.util.minecraft.world;
+package de.photon.anticheataddition.util.minecraft.world.region;
 
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.util.mathematics.AxisAlignedBB;

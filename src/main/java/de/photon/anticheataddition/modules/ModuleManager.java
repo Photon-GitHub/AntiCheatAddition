@@ -2,9 +2,10 @@ package de.photon.anticheataddition.modules;
 
 import de.photon.anticheataddition.modules.additions.BrandHider;
 import de.photon.anticheataddition.modules.additions.DamageIndicator;
-import de.photon.anticheataddition.modules.additions.EnchantmentHider;
 import de.photon.anticheataddition.modules.additions.LogBot;
 import de.photon.anticheataddition.modules.additions.esp.Esp;
+import de.photon.anticheataddition.modules.additions.informationhider.EnchantmentHider;
+import de.photon.anticheataddition.modules.additions.informationhider.ItemCountHider;
 import de.photon.anticheataddition.modules.checks.autoeat.AutoEat;
 import de.photon.anticheataddition.modules.checks.autofish.AutoFishConsistency;
 import de.photon.anticheataddition.modules.checks.autofish.AutoFishInhumanReaction;
@@ -25,17 +26,8 @@ import de.photon.anticheataddition.modules.checks.skinblinker.SkinBlinkerUnusedB
 import de.photon.anticheataddition.modules.checks.teaming.Teaming;
 import de.photon.anticheataddition.modules.checks.tower.Tower;
 import de.photon.anticheataddition.modules.sentinel.SentinelChannelModule;
-import de.photon.anticheataddition.modules.sentinel.exploits.BookPageSentinel;
-import de.photon.anticheataddition.modules.sentinel.exploits.CommandBlockSentinel;
-import de.photon.anticheataddition.modules.sentinel.exploits.CreativeKillPotionSentinel;
-import de.photon.anticheataddition.modules.sentinel.exploits.SelfDamageSentinel;
-import de.photon.anticheataddition.modules.sentinel.exploits.TrollPotionSentinel;
-import de.photon.anticheataddition.modules.sentinel.mods.BetterSprintingSentinel;
-import de.photon.anticheataddition.modules.sentinel.mods.FiveZigSentinel;
-import de.photon.anticheataddition.modules.sentinel.mods.LabyModSentinel;
-import de.photon.anticheataddition.modules.sentinel.mods.SchematicaSentinel;
-import de.photon.anticheataddition.modules.sentinel.mods.VapeSentinel;
-import de.photon.anticheataddition.modules.sentinel.mods.WorldDownloaderSentinel;
+import de.photon.anticheataddition.modules.sentinel.exploits.*;
+import de.photon.anticheataddition.modules.sentinel.mods.*;
 import de.photon.anticheataddition.util.config.ConfigUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -55,7 +47,9 @@ public final class ModuleManager
                 // Additions
                 BrandHider.INSTANCE,
                 DamageIndicator.INSTANCE,
-                EnchantmentHider.INSTANCE,
+
+                new Module("InformationHider", EnchantmentHider.INSTANCE, ItemCountHider.INSTANCE),
+
                 Esp.INSTANCE,
                 LogBot.INSTANCE,
 

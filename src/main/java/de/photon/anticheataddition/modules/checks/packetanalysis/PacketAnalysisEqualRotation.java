@@ -1,12 +1,12 @@
 package de.photon.anticheataddition.modules.checks.packetanalysis;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerPriority;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
-import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
-import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
+import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
+import de.photon.anticheataddition.util.protocol.PacketEventUtils;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
@@ -43,19 +43,15 @@ public final class PacketAnalysisEqualRotation extends ViolationModule implement
     protected ModuleLoader createModuleLoader()
     {
         final var packetAdapter = PacketAdapterBuilder
-                .of(this, PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK)
-                .priority(ListenerPriority.LOW)
+                .of(this, PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION, PacketType.Play.Client.PLAYER_ROTATION)
+                .priority(PacketListenerPriority.LOW)
                 .onReceiving((event, user) -> {
-                    // Get the packet.
-                    final IWrapperPlayClientLook lookWrapper = event::getPacket;
-
-                    final float currentYaw = lookWrapper.getYaw();
-                    final float currentPitch = lookWrapper.getPitch();
+                    final PacketEventUtils.Rotation rotation = PacketEventUtils.getRotationFromEvent(event);
 
                     // Equal rotation.
                     // LookPacketData automatically updates these values.
-                    if (currentYaw != user.getData().floating.lastPacketYaw ||
-                        currentPitch != user.getData().floating.lastPacketPitch) return;
+                    if (rotation.yaw() != user.getData().floating.lastPacketYaw ||
+                        rotation.pitch() != user.getData().floating.lastPacketPitch) return;
 
                     // Interactions with firework as well as entering and exiting vehicles fast can cause false positives.
                     if (user.getTimeMap().at(TimeKey.PACKET_ANALYSIS_EQUAL_ROTATION_INTERACTION).recentlyUpdated(100) ||

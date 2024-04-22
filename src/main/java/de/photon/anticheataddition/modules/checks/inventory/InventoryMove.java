@@ -5,11 +5,11 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
+import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.minecraft.world.entity.EntityUtil;
 import de.photon.anticheataddition.util.minecraft.world.entity.InternalPotion;
-import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
-import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -30,6 +30,9 @@ import java.util.stream.Stream;
 
 public final class InventoryMove extends ViolationModule implements Listener
 {
+    // 300 is the vanilla breaking time without a speed effect (derived from testing, especially slab jumping)
+    public static final long BASE_BREAKING_TIME = 300L;
+
     public static final InventoryMove INSTANCE = new InventoryMove();
     public static final double STANDING_STILL_THRESHOLD = 0.005;
     private final int cancelVl = loadInt(".cancel_vl", 60);
@@ -63,12 +66,11 @@ public final class InventoryMove extends ViolationModule implements Listener
 
     private static long breakingTime(User user)
     {
-        // 300 is the vanilla breaking time without a speed effect (derived from testing, especially slab jumping)
-        return 300L + InternalPotion.SPEED.getPotionEffect(user.getPlayer())
-                                          .map(PotionEffect::getAmplifier)
-                                          // If a speed effect exists calculate the speed millis, otherwise the speedMillis are 0.
-                                          .map(amplifier -> Math.max(100, amplifier + 1) * 50L)
-                                          .orElse(0L);
+        return BASE_BREAKING_TIME + InternalPotion.SPEED.getPotionEffect(user.getPlayer())
+                                                        .map(PotionEffect::getAmplifier)
+                                                        // If a speed effect exists calculate the speed millis, otherwise the speedMillis are 0.
+                                                        .map(amplifier -> Math.max(100, amplifier + 1) * 50L)
+                                                        .orElse(0L);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

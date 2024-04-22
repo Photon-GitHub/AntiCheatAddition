@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-record Threshold(int vl, List<String> commandList) implements Comparable<Threshold>
+public record Threshold(int vl, List<String> commandList) implements Comparable<Threshold>
 {
     public Threshold(int vl, List<String> commandList)
     {

@@ -17,7 +17,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.stream.Collectors;
 
-public class Inventory extends ViolationModule implements Listener
+public final class Inventory extends ViolationModule implements Listener
 {
     public static final Inventory INSTANCE = new Inventory();
     public static final double MIN_TPS = 19.0D;
@@ -26,9 +26,10 @@ public class Inventory extends ViolationModule implements Listener
 
     @Getter private final int maxPing = loadInt(".max_ping", 400);
 
-    protected Inventory()
+    private Inventory()
     {
         super("Inventory", InventoryAverageHeuristic.INSTANCE,
+              InventoryFrequency.INSTANCE,
               InventoryHit.INSTANCE,
               InventoryMove.INSTANCE,
               InventoryMultiInteraction.INSTANCE,
@@ -80,7 +81,7 @@ public class Inventory extends ViolationModule implements Listener
     protected ViolationManagement createViolationManagement()
     {
         return new ViolationAggregation(this,
-                                        ThresholdManagement.loadThresholds(this.getConfigString() + ".thresholds"),
+                                        ThresholdManagement.loadThresholds(this),
                                         this.getChildren().stream().filter(ViolationModule.class::isInstance).map(ViolationModule.class::cast).map(ViolationModule::getManagement).collect(Collectors.toUnmodifiableSet()));
     }
 }

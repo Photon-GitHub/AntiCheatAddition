@@ -14,7 +14,7 @@ import static org.bukkit.Material.*;
 
 
 @Getter
-class AncientMaterialUtil implements MaterialUtil
+final class AncientMaterialUtil implements MaterialUtil
 {
     private final Set<Material> airMaterials = Sets.immutableEnumSet(AIR);
     private final Set<Material> autoStepMaterials = combineToImmutable(EnumSet.of(CHEST, TRAPPED_CHEST, ENDER_CHEST), getMaterialsEndingWith("_STAIRS", "_SLABS"));

@@ -5,8 +5,13 @@ author: Photon
 api-version: 1.15
 website: https://www.spigotmc.org/resources/anticheataddition.33590/
 
-depend: [ ProtocolLib ]
-softdepend: [ ViaVersion , Floodgate ]
+depend:
+  - packetevents
+softdepend:
+  - Floodgate
+  - ViaVersion
+  - WorldGuard
+
 main: de.photon.anticheataddition.AntiCheatAddition
 
 commands:
@@ -23,6 +28,7 @@ permissions:
       anticheataddition.debug: true
       anticheataddition.info: true
       anticheataddition.internaltest: true
+      anticheataddition.maincommand: true
       anticheataddition.setvl: true
     default: op
 
@@ -30,46 +36,49 @@ permissions:
     description: Players with this permission will not be checked by AntiCheatAddition.
     children:
       anticheataddition.bypass.sentinel.*: true
-      anticheataddition.bypass.anticheataddition_autoeat: true
-      anticheataddition.bypass.anticheataddition_autofish: true
-      anticheataddition.bypass.anticheataddition_autofish.parts.consistency: true
-      anticheataddition.bypass.anticheataddition_autofish.parts.inhuman_reaction: true
-      anticheataddition.bypass.anticheataddition_autopotion: true
-      anticheataddition.bypass.anticheataddition_duping: true
-      anticheataddition.bypass.anticheataddition_duping.parts.double_dropped: true
-      anticheataddition.bypass.anticheataddition_duping.parts.secretcache: true
-      anticheataddition.bypass.anticheataddition_damageindicator: true
-      anticheataddition.bypass.anticheataddition_enchantmenthider: true
-      anticheataddition.bypass.anticheataddition_esp: true
-      anticheataddition.bypass.anticheataddition_fastswitch: true
-      anticheataddition.bypass.anticheataddition_impossiblechat: true
-      anticheataddition.bypass.anticheataddition_inventory: true
-      anticheataddition.bypass.anticheataddition_inventory.parts.averageheuristic: true
-      anticheataddition.bypass.anticheataddition_inventory.parts.hit: true
-      anticheataddition.bypass.anticheataddition_inventory.parts.move: true
-      anticheataddition.bypass.anticheataddition_inventory.parts.multiinteraction: true
-      anticheataddition.bypass.anticheataddition_inventory.parts.perfectexit: true
-      anticheataddition.bypass.anticheataddition_inventory.parts.rotation: true
-      anticheataddition.bypass.anticheataddition_inventory.parts.sprinting: true
-      anticheataddition.bypass.anticheataddition_packetanalysis: true
-      anticheataddition.bypass.anticheataddition_packetanalysis.parts.animation: true
-      anticheataddition.bypass.anticheataddition_packetanalysis.parts.equalrotation: true
-      anticheataddition.bypass.anticheataddition_packetanalysis.parts.illegalpitch: true
-      anticheataddition.bypass.anticheataddition_scaffold: true
-      anticheataddition.bypass.anticheataddition_scaffold.parts.angle: true
-      anticheataddition.bypass.anticheataddition_scaffold.parts.jumping: true
-      anticheataddition.bypass.anticheataddition_scaffold.parts.position: true
-      anticheataddition.bypass.anticheataddition_scaffold.parts.rotation.derivative: true
-      anticheataddition.bypass.anticheataddition_scaffold.parts.rotation.fastChange: true
-      anticheataddition.bypass.anticheataddition_scaffold.parts.rotation.secondderivative: true
-      anticheataddition.bypass.anticheataddition_scaffold.parts.safewalk.type1: true
-      anticheataddition.bypass.anticheataddition_scaffold.parts.safewalk.type2: true
-      anticheataddition.bypass.anticheataddition_scaffold.parts.sprinting: true
-      anticheataddition.bypass.anticheataddition_shield: true
-      anticheataddition.bypass.anticheataddition_shield.parts.hit: true
-      anticheataddition.bypass.anticheataddition_skinblinker: true
-      anticheataddition.bypass.anticheataddition_skinblinker.parts.sprinting: true
-      anticheataddition.bypass.anticheataddition_skinblinker.parts.unusedbit: true
+      anticheataddition.bypass.autoeat: true
+      anticheataddition.bypass.autofish: true
+      anticheataddition.bypass.autofish.parts.consistency: true
+      anticheataddition.bypass.autofish.parts.inhuman_reaction: true
+      anticheataddition.bypass.autopotion: true
+      anticheataddition.bypass.duping: true
+      anticheataddition.bypass.duping.parts.double_dropped: true
+      anticheataddition.bypass.duping.parts.secretcache: true
+      anticheataddition.bypass.damageindicator: true
+      anticheataddition.bypass.esp: true
+      anticheataddition.bypass.fastswitch: true
+      anticheataddition.bypass.impossiblechat: true
+      anticheataddition.bypass.informationhider: true
+      anticheataddition.bypass.informationhider.parts.enchantments: true
+      anticheataddition.bypass.informationhider.parts.item_count: true
+      anticheataddition.bypass.inventory: true
+      anticheataddition.bypass.inventory.parts.averageheuristic: true
+      anticheataddition.bypass.inventory.parts.hit: true
+      anticheataddition.bypass.inventory.parts.move: true
+      anticheataddition.bypass.inventory.parts.multiinteraction: true
+      anticheataddition.bypass.inventory.parts.perfectexit: true
+      anticheataddition.bypass.inventory.parts.rotation: true
+      anticheataddition.bypass.inventory.parts.sprinting: true
+      anticheataddition.bypass.inventory.parts.statistical: true
+      anticheataddition.bypass.packetanalysis: true
+      anticheataddition.bypass.packetanalysis.parts.animation: true
+      anticheataddition.bypass.packetanalysis.parts.equalrotation: true
+      anticheataddition.bypass.packetanalysis.parts.illegalpitch: true
+      anticheataddition.bypass.packetanalysis.parts.perfectrotation: true
+      anticheataddition.bypass.scaffold: true
+      anticheataddition.bypass.scaffold.parts.angle: true
+      anticheataddition.bypass.scaffold.parts.face: true
+      anticheataddition.bypass.scaffold.parts.jumping: true
+      anticheataddition.bypass.scaffold.parts.position: true
+      anticheataddition.bypass.scaffold.parts.rotation: true
+      anticheataddition.bypass.scaffold.parts.safewalk.edge: true
+      anticheataddition.bypass.scaffold.parts.safewalk.timing: true
+      anticheataddition.bypass.scaffold.parts.sprinting: true
+      anticheataddition.bypass.shield: true
+      anticheataddition.bypass.shield.parts.hit: true
+      anticheataddition.bypass.skinblinker: true
+      anticheataddition.bypass.skinblinker.parts.sprinting: true
+      anticheataddition.bypass.skinblinker.parts.unusedbit: true
       anticheataddition.bypass.teaming: true
       anticheataddition.bypass.tower: true
 
@@ -84,6 +93,10 @@ permissions:
 
   anticheataddition.internaltest:
     description: Allows testing various AntiCheatAddition checks by spoofing cheat behaviour. This is not intended for normal use and can be used to falsely flag players.
+
+  anticheataddition.maincommand:
+    description: Allows the player to execute the main command of AntiCheatAddition and see the current plugin version.
+    permission-message: Unknown command. Type "/help" for help.
 
   anticheataddition.setvl:
     description: Allows the player to execute a command which will set the vl of another player, usually used for testing.

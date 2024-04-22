@@ -1,13 +1,12 @@
 package de.photon.anticheataddition.modules.checks.packetanalysis;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
-import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
-import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.WrapperPlayClientUseEntity;
+import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -38,14 +37,14 @@ public final class PacketAnalysisAnimation extends ViolationModule
          * 3) Arm Animation packet.
          * */
         final var packetAdapter = PacketAdapterBuilder
-                .of(this, PacketType.Play.Client.USE_ENTITY, PacketType.Play.Client.ARM_ANIMATION)
-                .priority(ListenerPriority.LOW)
+                .of(this, PacketType.Play.Client.INTERACT_ENTITY, PacketType.Play.Client.ANIMATION)
+                .priority(PacketListenerPriority.LOW)
                 .onReceiving((event, user) -> {
                     final var packetType = event.getPacketType();
                     final var boolData = user.getData().bool;
 
-                    if (packetType == PacketType.Play.Client.ARM_ANIMATION) boolData.packetAnalysisAnimationExpected = false;
-                    else if (packetType == PacketType.Play.Client.USE_ENTITY) {
+                    if (packetType == PacketType.Play.Client.ANIMATION) boolData.packetAnalysisAnimationExpected = false;
+                    else if (packetType == PacketType.Play.Client.INTERACT_ENTITY) {
                         // Expected Animation after attack, but didn't arrive.
                         if (boolData.packetAnalysisAnimationExpected) {
                             boolData.packetAnalysisAnimationExpected = false;
@@ -53,8 +52,8 @@ public final class PacketAnalysisAnimation extends ViolationModule
                         }
 
                         // Make sure an arm animation packet is sent directly after an attack as it is the next packet in the client code.
-                        final var useEntityWrapper = new WrapperPlayClientUseEntity(event.getPacket());
-                        if (useEntityWrapper.getType() == EnumWrappers.EntityUseAction.ATTACK) boolData.packetAnalysisAnimationExpected = true;
+                        final var wrapper = new WrapperPlayClientInteractEntity(event);
+                        if (wrapper.getAction() == WrapperPlayClientInteractEntity.InteractAction.ATTACK) boolData.packetAnalysisAnimationExpected = true;
                     }
                 }).build();
 

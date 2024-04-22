@@ -33,6 +33,11 @@ BrandHider:
   # Set this to 0 if you only use static text or placeholders (in ticks).
   refresh_rate: 0
 
+# CommandHider allows you to define a custom message if a player tries to execute a command of AntiCheatAddition
+# without the necessary permissions.
+CommandHider:
+  permissions_message: "Unknown command. Please type /help for help."
+
 # This module spoofs the health of all players on your server, thus rendering DamageIndicators, HealthTags, and other
 # mods that try to display other players' health ineffective.
 # Other plugins can still get the accurate player health.
@@ -40,18 +45,22 @@ DamageIndicator:
   enabled: true
   # Entity categories to spoof health for.
   spoof:
-    animals: false
-    monsters: true
     players: true
+    others: true
 
-# EnchantmentHider obfuscates enchantments to prevent cheats from displaying the correct type and level.
-# Legit players will not see any difference.
-EnchantmentHider:
+# InformationHider obfuscates specific game information that is sent to all clients and allows an information advantage.
+# Legit players will experience no difference.
+InformationHider:
   enabled: true
-  # Entity categories to spoof enchantments for. Spoofing all might impact performance with custom mob equipment systems.
-  spoof:
-    players: true
-    others: false
+  parts:
+    # This part obfuscates enchantments to prevent cheats from displaying the correct type and level.
+    # Legit players will not see any difference.
+    enchantments:
+      enabled: true
+    # This part obfuscates the item count any hand content and equipment in general.
+    # Legit players will not see any difference.
+    item_count:
+      enabled: true
 
 # If two players cannot see each other, ESP conceals their information on the packet-level.
 # ESP does not scan the entire distance between two players to increase performance.
@@ -212,8 +221,13 @@ Inventory:
   parts:
     # Detects regular intervals between inventory clicks, typical of chest stealer bots.
     # NOTE: Disable this part if you allow inventory sorting mods.
-    # Adds 20 to 70 VL
+    # Adds 20 to 70 VL.
     AverageHeuristic:
+      enabled: true
+    # Detects players that quickly open and close their inventory for prolonged time periods.
+    # This is typical for some inventory cheat bypass attempts.
+    # Adds 2 VL.
+    Frequency:
       enabled: true
     # This part detects attacking while the inventory is open.
     # Adds 20 VL.
@@ -222,7 +236,7 @@ Inventory:
       # VL threshold for canceling attacks. Set to 0 for no cancellations.
       cancel_vl: 60
     # The move part detects when a player moves while they are in their inventory.
-    # Adds 5 (moving) to 20 (jumping) VL
+    # Adds 5 (moving) to 20 (jumping) VL.
     Move:
       enabled: true
       # VL threshold for canceling movements. Set to 0 for no cancellations.
@@ -306,6 +320,10 @@ Scaffold:
     # Adds 15 VL.
     Angle:
       enabled: true
+    # This part detects some invalid block placements e.g. against air or itself.
+    # Adds 30 VL.
+    Face:
+      enabled: true
     # Detects jumping while scaffolding. It is possible for legit players, but very tricky to achieve without cheats.
     # Adds 20 VL.
     Jumping:
@@ -386,6 +404,8 @@ Teaming:
   # - "<affected_world> <x1> <z1> <x2> <z2>"
   safe_zones:
     - "world -15 -15 15 15"
+  # If this setting is enabled, AntiCheatAddition will treat any worldguard region with disabled PVP as a safe zone.
+  worldguard: false
   # These VLs are cumulative for a team.
   # Every team member gets (actual team size) - (allowed team size) VL per interval.
   # Commands to execute at specific violation levels.
@@ -745,10 +765,10 @@ Sentinel:
 # "OFF" disables logging, "FINER" causes various debug messages be logged and "ALL" or "FINEST" enable spammy debug messages.
 Debug:
   # The logging level for the console.
-  # Please note that due to a spigot bug, this setting is currently not functional.
   console_level: "INFO"
   # The logging level for the log file.
   # For submitting bug reports, it is imperative that the file log level is at least "FINE".
+  # If you want to submit bypasses, please set this to "FINER".
   file_level: "FINE"
   # The logging level for the players with debug permission. They can still disable them by using the debug command
   # even when this is not "OFF".

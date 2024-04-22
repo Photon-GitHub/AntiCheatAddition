@@ -9,6 +9,8 @@ import de.photon.anticheataddition.util.mathematics.ResetLocation;
 import de.photon.anticheataddition.util.mathematics.ResetVector;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -18,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OcclusionUtil
 {
 

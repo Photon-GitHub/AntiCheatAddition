@@ -1,12 +1,12 @@
 package de.photon.anticheataddition.user.data.subdata;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import de.photon.anticheataddition.AntiCheatAddition;
-import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListenerAbstract;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.event.PacketReceiveEvent;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.google.common.primitives.Doubles;
+import de.photon.anticheataddition.modules.checks.scaffold.ScaffoldRotation;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.buffer.RingBuffer;
@@ -15,11 +15,14 @@ import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.RotationUtil;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.protocol.PacketEventUtils;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents a data structure that stores and processes look packets for users.
@@ -27,21 +30,23 @@ import java.util.List;
 public final class LookPacketData
 {
     static {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new LookPacketDataUpdater());
+        PacketEvents.getAPI().getEventManager().registerListener(new LookPacketDataUpdater());
     }
 
     private final RingBuffer<RotationChange> rotationChangeQueue = new RingBuffer<>(20, new RotationChange(0, 0));
 
 
-    public record ScaffoldAngleInfo(double changeSum, double variance) {}
+    public record ScaffoldAngleInfo(double angleChangeSum, double angleVariance, List<Double> angleList) {}
 
-    public ScaffoldAngleInfo getAngleInformation()
+    public Optional<ScaffoldAngleInfo> getAngleInformation()
     {
         final RotationChange[] changes;
 
         synchronized (this.rotationChangeQueue) {
             changes = this.rotationChangeQueue.toArray(new RotationChange[0]);
         }
+
+        if (changes.length < 2) return Optional.empty();
 
         final long curTime = System.currentTimeMillis();
         final List<Float> angles = new ArrayList<>();
@@ -54,14 +59,17 @@ public final class LookPacketData
             angles.add(changes[i - 1].angle(changes[i]));
         }
 
+
         final double[] angleArray = angles.stream().mapToDouble(Float::doubleValue).toArray();
+        if (angleArray.length == 0) return Optional.empty();
+
         final double angleSum = DataUtil.sum(angleArray);
         final double angleVariance = DataUtil.variance(angleSum / angleArray.length, angleArray);
 
-        Log.finer(() -> "Scaffold-Debug | AngleSum: %.3f | AngleVariance: %.3f | Mean: %.3f".formatted(angleSum, angleVariance, angleSum / angleArray.length));
+        Log.finer(() -> "Scaffold-Debug | AngleSum: %.3f | AngleVariance: %.3f | Mean: %.3f | Max: %.3f".formatted(angleSum, angleVariance, angleSum / angleArray.length, Doubles.max(angleArray)));
 
         // Return the accumulated sum of angle changes and the gaps
-        return new ScaffoldAngleInfo(angleSum, angleVariance);
+        return Optional.of(new ScaffoldAngleInfo(angleSum, angleVariance, Arrays.stream(angleArray).boxed().toList()));
     }
 
     @Value
@@ -85,7 +93,7 @@ public final class LookPacketData
          */
         public float angle(RotationChange rotationChange)
         {
-            return RotationUtil.getDirection(this.yaw, this.pitch).angle(RotationUtil.getDirection(rotationChange.getYaw(), rotationChange.getPitch()));
+            return RotationUtil.getAngleBetweenRotations(this.yaw, this.pitch, rotationChange.getYaw(), rotationChange.getPitch());
         }
 
         public long timeOffset(RotationChange other)
@@ -103,40 +111,45 @@ public final class LookPacketData
      * Singleton class responsible for updating the {@link LookPacketData} based on received packets.
      * Reduces the number of required packet listeners.
      */
-    private static final class LookPacketDataUpdater extends PacketAdapter
+    private static final class LookPacketDataUpdater extends PacketListenerAbstract
     {
+
+
         public LookPacketDataUpdater()
         {
-            super(AntiCheatAddition.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK);
+            super(PacketListenerPriority.MONITOR);
         }
 
         @Override
-        public void onPacketReceiving(PacketEvent event)
+        public void onPacketReceive(PacketReceiveEvent event)
         {
-            final var user = User.safeGetUserFromPacketEvent(event);
-            if (user == null) return;
+            if (event.getPacketType() == PacketType.Play.Client.PLAYER_ROTATION ||
+                event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
 
-            final IWrapperPlayClientLook lookWrapper = event::getPacket;
+                final var user = User.getUser(event);
+                if (user == null) return;
 
-            final var rotationChange = new RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());
-            final var rotationQueue = user.getLookPacketData().rotationChangeQueue;
+                final var rotation = PacketEventUtils.getRotationFromEvent(event);
 
-            // Same tick -> merge
-            synchronized (rotationQueue) {
-                if (rotationChange.timeOffset(rotationQueue.tail()) < 55) rotationQueue.tail().merge(rotationChange);
-                else rotationQueue.add(rotationChange);
+                final var rotationChange = new RotationChange(rotation.yaw(), rotation.pitch());
+                final var rotationQueue = user.getLookPacketData().rotationChangeQueue;
+
+                // Same tick -> merge
+                synchronized (rotationQueue) {
+                    if (rotationChange.timeOffset(rotationQueue.tail()) < 55) rotationQueue.tail().merge(rotationChange);
+                    else rotationQueue.add(rotationChange);
+                }
+
+                // Huge angle change
+                // Use the map values here to because the other ones are already updated.
+                if (RotationUtil.getAngleBetweenRotations(user.getData().floating.lastPacketYaw, user.getData().floating.lastPacketPitch, rotation.yaw(), rotation.pitch()) > ScaffoldRotation.SIGNIFICANT_ROTATION_CHANGE_THRESHOLD) {
+                    user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).update();
+                }
+
+                // Update the values here so the RotationUtil calculation is functional.
+                user.getData().floating.lastPacketYaw = rotation.yaw();
+                user.getData().floating.lastPacketPitch = rotation.pitch();
             }
-
-            // Huge angle change
-            // Use the map values here to because the other ones are already updated.
-            if (RotationUtil.getDirection(user.getData().floating.lastPacketYaw, user.getData().floating.lastPacketPitch)
-                            .angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35) {
-                user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).update();
-            }
-
-            // Update the values here so the RotationUtil calculation is functional.
-            user.getData().floating.lastPacketYaw = lookWrapper.getYaw();
-            user.getData().floating.lastPacketPitch = lookWrapper.getPitch();
         }
     }
 }

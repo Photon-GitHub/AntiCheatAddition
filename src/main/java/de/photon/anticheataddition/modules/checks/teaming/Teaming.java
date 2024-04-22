@@ -8,7 +8,8 @@ import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.quadtree.QuadTreeSet;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.messaging.Log;
-import de.photon.anticheataddition.util.minecraft.world.Region;
+import de.photon.anticheataddition.util.minecraft.world.region.Region;
+import de.photon.anticheataddition.util.minecraft.world.region.WorldGuardRegionUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -30,21 +31,6 @@ public final class Teaming extends ViolationModule implements Listener
         super("Teaming");
     }
 
-    private Set<Region> loadSafeZones()
-    {
-        final Set<Region> safeZones = new HashSet<>();
-        for (final String s : loadStringList(".safe_zones")) {
-            try {
-                safeZones.add(Region.parseRegion(s));
-            } catch (NullPointerException e) {
-                Log.severe(() -> "Unable to load safe zone \"" + s + "\" in teaming check, is the world correct?");
-            } catch (ArrayIndexOutOfBoundsException e) {
-                Log.severe(() -> "Unable to load safe zone \"" + s + "\" in teaming check, are all coordinates present?");
-            }
-        }
-        return Set.copyOf(safeZones);
-    }
-
     private Set<World> loadEnabledWorlds()
     {
         final Set<World> worlds = new HashSet<>();
@@ -59,11 +45,30 @@ public final class Teaming extends ViolationModule implements Listener
         return Set.copyOf(worlds);
     }
 
+    private Set<Region> loadSafeZones(Set<World> enabledWorlds)
+    {
+        final Set<Region> safeZones = new HashSet<>();
+        for (final String s : loadStringList(".safe_zones")) {
+            try {
+                final var region = Region.parseRegion(s);
+                if (enabledWorlds.contains(region.world())) safeZones.add(region);
+            } catch (NullPointerException e) {
+                Log.severe(() -> "Unable to load safe zone \"" + s + "\" in teaming check, is the world correct?");
+            } catch (ArrayIndexOutOfBoundsException e) {
+                Log.severe(() -> "Unable to load safe zone \"" + s + "\" in teaming check, are all coordinates present?");
+            }
+        }
+        return Set.copyOf(safeZones);
+    }
+
     @Override
     public void enable()
     {
-        final var safeZones = loadSafeZones();
         final var enabledWorlds = loadEnabledWorlds();
+
+        final var safeZonesLoading = new HashSet<>(loadSafeZones(enabledWorlds));
+        if (loadBoolean(".worldguard", false)) safeZonesLoading.addAll(WorldGuardRegionUtil.loadNoPVPRegions(enabledWorlds));
+        final var safeZones = Set.copyOf(safeZonesLoading);
 
         final double proximityRange = loadDouble(".proximity_range", 4.5);
         final double proximityRangeSquared = proximityRange * proximityRange;
@@ -84,8 +89,7 @@ public final class Teaming extends ViolationModule implements Listener
                         // Correct game modes.
                         && user.inAdventureOrSurvivalMode()
                         // Not engaged in pvp.
-                        && user.getTimeMap().at(TimeKey.COMBAT).notRecentlyUpdated(noPvpTime))
-                    {
+                        && user.getTimeMap().at(TimeKey.COMBAT).notRecentlyUpdated(noPvpTime)) {
                         final var loc = player.getLocation();
                         // Not in a bypassed region.
                         if (safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(loc))) quadTree.add(loc.getX(), loc.getZ(), player);

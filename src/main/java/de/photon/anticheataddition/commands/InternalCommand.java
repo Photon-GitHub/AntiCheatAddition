@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.commands;
 
 import com.google.common.base.Preconditions;
+import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
 import lombok.EqualsAndHashCode;
@@ -20,6 +21,8 @@ import java.util.Queue;
 @EqualsAndHashCode(doNotUseGetters = true, cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
 public abstract class InternalCommand
 {
+    private static final String NO_PERMISSION_MESSAGE = AntiCheatAddition.getInstance().getConfig().getString("CommandHider.permissions_message", "Unknown command. Please type /help for help.");
+
     /**
      * The name of the command. Guaranteed to be lowercase only.
      */
@@ -122,7 +125,10 @@ public abstract class InternalCommand
      */
     protected void invokeCommand(@NotNull final CommandSender sender, @NotNull final Queue<String> arguments)
     {
-        if (!this.commandAttributes.hasPermission(sender)) return;
+        if (!this.commandAttributes.hasPermission(sender)) {
+            sender.sendMessage(NO_PERMISSION_MESSAGE);
+            return;
+        }
 
         if (!arguments.isEmpty()) {
             final String nextArgument = arguments.peek();

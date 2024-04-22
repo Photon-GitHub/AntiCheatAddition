@@ -2,6 +2,7 @@ package de.photon.anticheataddition;
 
 import lombok.Getter;
 import org.bukkit.permissions.Permissible;
+import org.jetbrains.annotations.NotNull;
 
 public enum InternalPermission
 {
@@ -9,10 +10,10 @@ public enum InternalPermission
     DEBUG("debug"),
     INFO("info"),
     INTERNALTEST("internaltest"),
-    NONE(null),
+    MAINCOMMAND("maincommand"),
     SETVL("setvl");
 
-    @Getter private final String realPermission;
+    @Getter @NotNull private final String realPermission;
 
     InternalPermission(final String realPermission)
     {
@@ -27,9 +28,9 @@ public enum InternalPermission
      *
      * @return true if the player has the permission or is op, otherwise false
      */
-    public static boolean hasPermission(final Permissible permissible, final String permission)
+    public static boolean hasPermission(@NotNull final Permissible permissible, @NotNull final String permission)
     {
-        return permission == null || permissible.hasPermission(permission);
+        return permissible.hasPermission(permission);
     }
 
     /**
@@ -39,7 +40,7 @@ public enum InternalPermission
      *
      * @return true if the player has the permission or is op, otherwise false
      */
-    public boolean hasPermission(final Permissible permissible)
+    public boolean hasPermission(@NotNull final Permissible permissible)
     {
         return hasPermission(permissible, this.realPermission);
     }

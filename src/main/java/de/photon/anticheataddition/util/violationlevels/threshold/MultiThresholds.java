@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.util.violationlevels.threshold;
 
 import com.google.common.collect.ImmutableSortedMap;
+import de.photon.anticheataddition.util.messaging.Log;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,6 +23,13 @@ final class MultiThresholds implements ThresholdManagement
     public void executeThresholds(int fromVl, int toVl, @NotNull Player player)
     {
         final var toExecute = thresholdMap.subMap(fromVl, false, toVl, true).values();
+        Log.finer(() -> "Thresholds executed: " + toExecute.size() + " from " + fromVl + " to " + toVl + " for " + player.getName());
         for (Threshold threshold : toExecute) threshold.executeCommandList(player);
+    }
+
+    @Override
+    public List<Threshold> getThresholds()
+    {
+        return List.copyOf(thresholdMap.values());
     }
 }

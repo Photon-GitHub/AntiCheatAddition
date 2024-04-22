@@ -14,7 +14,7 @@ import static de.photon.anticheataddition.util.minecraft.world.material.Material
 import static org.bukkit.Material.*;
 
 @Getter
-public class OldMaterialUtil implements MaterialUtil
+final class OldMaterialUtil implements MaterialUtil
 {
     private final Set<Material> airMaterials = ServerVersion.MC116.activeIsLaterOrEqual() ?
                                                Sets.immutableEnumSet(AIR, CAVE_AIR, VOID_AIR) :

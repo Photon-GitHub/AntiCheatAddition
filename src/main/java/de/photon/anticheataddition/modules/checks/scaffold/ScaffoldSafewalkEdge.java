@@ -52,7 +52,7 @@ final class ScaffoldSafewalkEdge extends Module
 
         if (sneakBorder) {
             if (user.getData().counter.scaffoldSafewalkPositionFails.incrementCompareThreshold()) {
-                Log.fine(() -> "Scaffold-Debug | Player: %s has behaviour associated with safe-walk. (Position) | Face: %s | xOffset: %f | zOffset: %f".formatted(user.getPlayer().getName(), face, xOffset, zOffset));
+                Log.fine(() -> "Scaffold-Debug | Player: %s has behaviour associated with safe-walk. (Position) | Face: %s | xOffset: %.3f | zOffset: %.3f".formatted(user.getPlayer().getName(), face, xOffset, zOffset));
                 return 15;
             }
         } else user.getData().counter.scaffoldSafewalkPositionFails.setToZero();

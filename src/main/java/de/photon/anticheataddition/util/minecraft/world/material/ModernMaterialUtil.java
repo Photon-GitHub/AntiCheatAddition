@@ -13,7 +13,7 @@ import static de.photon.anticheataddition.util.minecraft.world.material.Material
 import static org.bukkit.Material.*;
 
 @Getter
-class ModernMaterialUtil implements MaterialUtil
+final class ModernMaterialUtil implements MaterialUtil
 {
     private final Set<Material> airMaterials = Sets.immutableEnumSet(AIR, CAVE_AIR, VOID_AIR);
 

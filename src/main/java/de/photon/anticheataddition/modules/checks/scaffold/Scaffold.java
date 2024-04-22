@@ -6,6 +6,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -13,6 +14,7 @@ import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.Getter;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -32,6 +34,7 @@ public final class Scaffold extends ViolationModule implements Listener
     private Scaffold()
     {
         super("Scaffold", ScaffoldAngle.INSTANCE,
+              ScaffoldFace.INSTANCE,
               ScaffoldJumping.INSTANCE,
               ScaffoldPosition.INSTANCE,
               ScaffoldRotation.INSTANCE,
@@ -62,8 +65,19 @@ public final class Scaffold extends ViolationModule implements Listener
         if (User.isUserInvalid(user, this)) return;
 
         final var blockPlaced = event.getBlockPlaced();
+        final var face = event.getBlock().getFace(event.getBlockAgainst());
 
-        // Short distance between player and the block (at most 2 Blocks)
+        Log.finer(() -> "Scaffold-Debug | Player: %s placed block: %s against: %s on face: %s".formatted(user.getPlayer().getName(), blockPlaced.getType(), event.getBlockAgainst().getType(), face));
+        Log.finer(() -> "Scaffold-Debug | Assumptions | Dist: %b, Fly: %b, Y: %b, Solid: %b, L/V: %b, Around: %d, Horizontal: %d"
+                .formatted(WorldUtil.INSTANCE.areLocationsInRange(user.getPlayer().getLocation(), blockPlaced.getLocation(), 4D),
+                           !user.getPlayer().isFlying(),
+                           user.getPlayer().getLocation().getY() > blockPlaced.getY(),
+                           blockPlaced.getType().isSolid(),
+                           event.getBlockPlaced().getType() != Material.LADDER && event.getBlockPlaced().getType() != Material.VINE,
+                           WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.INSTANCE.getLiquids()),
+                           WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.HORIZONTAL_FACES, MaterialUtil.INSTANCE.getLiquids())));
+
+        // Short distance between player and the block (at most 4 Blocks)
         if (WorldUtil.INSTANCE.areLocationsInRange(user.getPlayer().getLocation(), blockPlaced.getLocation(), 4D) &&
             // Not flying
             !user.getPlayer().isFlying() &&
@@ -75,40 +89,16 @@ public final class Scaffold extends ViolationModule implements Listener
             // them, therefore almost doubling the placement speed. However, they can only be placed one at a time, which
             // allows simply ignoring them.
             event.getBlockPlaced().getType() != Material.LADDER && event.getBlockPlaced().getType() != Material.VINE &&
-            // Check if the block is placed against one block face only, also implies no blocks above and below.
+            // Check if the block is placed against one block face only and that is horizontal.
             // Only one block that is not a liquid is allowed (the one which the Block is placed against).
             WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.INSTANCE.getLiquids()) == 1L &&
+            WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.HORIZONTAL_FACES, MaterialUtil.INSTANCE.getLiquids()) == 1L) {
+
+            int vl = ScaffoldFace.INSTANCE.getVl(user, event);
+
             // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
-            WorldUtil.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst()))) {
-
-            final var lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().block();
-            // This checks if the block was placed against the expected block for scaffolding.
-            final var newScaffoldLocation = !Objects.equals(lastScaffoldBlock, event.getBlockAgainst()) || !WorldUtil.INSTANCE.isNext(lastScaffoldBlock, event.getBlockPlaced(), WorldUtil.HORIZONTAL_FACES);
-
-            // ---------------------------------------------- Average ---------------------------------------------- //
-
-            if (newScaffoldLocation) user.getScaffoldBatch().clear();
-
-            user.getScaffoldBatch().addDataPoint(new ScaffoldBatch.ScaffoldBlockPlace(event.getBlockPlaced(),
-                                                                                      event.getBlockPlaced().getFace(event.getBlockAgainst()),
-                                                                                      user));
-
-            // --------------------------------------------- Rotations ---------------------------------------------- //
-
-            int vl = ScaffoldAngle.INSTANCE.getVl(user, event);
-            vl += ScaffoldPosition.INSTANCE.getVl(event);
-
-            // All these checks may have false positives in new situations.
-            if (!newScaffoldLocation) {
-                // Do not check jumping for new locations as of wall-building / jumping.
-                vl += ScaffoldJumping.INSTANCE.getVl(user, event);
-                vl += ScaffoldRotation.INSTANCE.getVl(user);
-                vl += ScaffoldSafewalkEdge.INSTANCE.getVl(user, event);
-                vl += ScaffoldSafewalkTiming.INSTANCE.getVl(user);
-                vl += ScaffoldSprinting.INSTANCE.getVl(user);
-            } else {
-                ScaffoldJumping.INSTANCE.newScaffoldLocation(user, event, lastScaffoldBlock);
-            }
+            // Check that the player is not placing blocks up / down as that is not scaffolding.
+            if (WorldUtil.HORIZONTAL_FACES.contains(face)) vl += handleHorizontalChecks(event, user, face);
 
             if (vl > 0) {
                 this.getManagement().flag(Flag.of(event.getPlayer()).setAddedVl(vl).setCancelAction(cancelVl, () -> {
@@ -118,6 +108,37 @@ public final class Scaffold extends ViolationModule implements Listener
                 }));
             }
         }
+    }
+
+    private static int handleHorizontalChecks(BlockPlaceEvent event, User user, BlockFace face)
+    {
+        final var lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().block();
+        // This checks if the block was placed against the expected block for scaffolding.
+        final var newScaffoldLocation = !Objects.equals(lastScaffoldBlock, event.getBlockAgainst()) || !WorldUtil.INSTANCE.isNext(lastScaffoldBlock, event.getBlockPlaced(), WorldUtil.HORIZONTAL_FACES);
+
+        // ---------------------------------------------- Average ---------------------------------------------- //
+
+        if (newScaffoldLocation) user.getScaffoldBatch().clear();
+
+        user.getScaffoldBatch().addDataPoint(new ScaffoldBatch.ScaffoldBlockPlace(event.getBlockPlaced(), face, user));
+
+        // --------------------------------------------- Rotations ---------------------------------------------- //
+
+        int vl = ScaffoldAngle.INSTANCE.getVl(user, event);
+        vl += ScaffoldPosition.INSTANCE.getVl(event);
+
+        // All these checks may have false positives in new situations.
+        if (!newScaffoldLocation) {
+            // Do not check jumping for new locations as of wall-building / jumping.
+            vl += ScaffoldJumping.INSTANCE.getVl(user, event);
+            vl += ScaffoldRotation.INSTANCE.getVl(user);
+            vl += ScaffoldSafewalkEdge.INSTANCE.getVl(user, event);
+            vl += ScaffoldSafewalkTiming.INSTANCE.getVl(user);
+            vl += ScaffoldSprinting.INSTANCE.getVl(user);
+        } else {
+            ScaffoldJumping.INSTANCE.newScaffoldLocation(user, event, lastScaffoldBlock);
+        }
+        return vl;
     }
 
     @Override

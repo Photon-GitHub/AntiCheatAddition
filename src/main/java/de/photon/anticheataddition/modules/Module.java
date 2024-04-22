@@ -16,7 +16,7 @@ import java.util.SortedSet;
 
 @EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY, onlyExplicitlyIncluded = true)
 @ToString
-public abstract class Module implements ConfigLoading, Comparable<Module>
+public class Module implements ConfigLoading, Comparable<Module>
 {
     @Getter protected final String configString;
     @Getter @EqualsAndHashCode.Include private final String moduleId;
@@ -34,7 +34,7 @@ public abstract class Module implements ConfigLoading, Comparable<Module>
             throw new IllegalArgumentException(message);
         }
         this.configString = configString;
-        this.moduleId = "anticheataddition_" + configString.toLowerCase(Locale.ENGLISH);
+        this.moduleId = configString.toLowerCase(Locale.ENGLISH);
         this.children = ImmutableSortedSet.copyOf(children);
     }
 

@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.util.visibility.modern;
 
-import com.comphenix.protocol.PacketType;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.visibility.PacketInformationHider;
@@ -18,7 +17,7 @@ public final class ModernPlayerEquipmentHider extends PacketInformationHider
 
     public ModernPlayerEquipmentHider()
     {
-        super(PacketType.Play.Server.ENTITY_EQUIPMENT);
+        super(SupportedPacketTypes.ENTITY_EQUIPMENT);
     }
 
     @Override

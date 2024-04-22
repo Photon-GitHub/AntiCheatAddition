@@ -1,6 +1,6 @@
 package de.photon.anticheataddition;
 
-import com.comphenix.protocol.ProtocolLibrary;
+import com.github.retrooper.packetevents.PacketEvents;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.ViaAPI;
 import de.photon.anticheataddition.commands.MainCommand;
@@ -11,6 +11,7 @@ import de.photon.anticheataddition.user.data.subdata.BrandChannelData;
 import de.photon.anticheataddition.util.config.Configs;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -87,6 +88,17 @@ public class AntiCheatAddition extends JavaPlugin
     }
 
     @Override
+    public void onLoad()
+    {
+        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
+        //Are all listeners read only?
+        PacketEvents.getAPI().getSettings().reEncodeByDefault(false)
+                    .checkForUpdates(true)
+                    .bStats(true);
+        PacketEvents.getAPI().load();
+    }
+
+    @Override
     public void onEnable()
     {
         try {
@@ -99,7 +111,7 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
-            getLogger().info(() -> "Server version " + ServerVersion.ACTIVE.getVersionOutputString() + " detected.");
+            Log.info(() -> "Server version " + ServerVersion.ACTIVE.getVersionOutputString() + " detected.");
 
             if (!ServerVersion.ACTIVE.isSupported()) {
                 getLogger().severe("Server version is not supported.");
@@ -112,13 +124,13 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             this.bungeecord = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getBoolean("settings.bungeecord", false);
-            getLogger().info(() -> "Bungeecord " + (this.bungeecord ? "detected" : "not detected"));
+            Log.info(() -> "Bungeecord " + (this.bungeecord ? "detected" : "not detected"));
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Metrics                                                 //
             // ------------------------------------------------------------------------------------------------------ //
 
-            getLogger().info("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AntiCheatAddition/14608");
+            Log.info(() -> "Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AntiCheatAddition/14608");
             final var metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
             // ------------------------------------------------------------------------------------------------------ //
@@ -148,18 +160,21 @@ public class AntiCheatAddition extends JavaPlugin
             final var mainCommand = new MainCommand(this.getDescription().getVersion());
             final var commandToRegister = this.getCommand(mainCommand.getName());
             if (commandToRegister == null) {
-                getLogger().severe("Could not register command " + mainCommand.getName());
+                Log.severe(() -> "Could not register command " + mainCommand.getName());
                 return;
             }
             commandToRegister.setExecutor(mainCommand);
             commandToRegister.setTabCompleter(mainCommand);
 
+            // PacketEvents
+            PacketEvents.getAPI().init();
+
             // ------------------------------------------------------------------------------------------------------ //
             //                                           Enabled-Debug + API                                          //
             // ------------------------------------------------------------------------------------------------------ //
-            getLogger().info(this.getName() + " Version " + this.getDescription().getVersion() + " enabled");
-            getLogger().fine("AntiCheatAddition initialization completed.");
-            getLogger().finest("Full debug is active.");
+            Log.info(() -> this.getName() + " Version " + this.getDescription().getVersion() + " enabled");
+            Log.fine(() -> "AntiCheatAddition initialization completed.");
+            Log.finest(() -> "Full debug is active.");
         } catch (final Exception e) {
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Failed loading                                            //
@@ -172,7 +187,7 @@ public class AntiCheatAddition extends JavaPlugin
     public void onDisable()
     {
         // Remove all the Listeners, PacketListeners
-        ProtocolLibrary.getProtocolManager().removePacketListeners(this);
+        PacketEvents.getAPI().terminate();
         HandlerList.unregisterAll(this);
 
         // Unregister all plugin channels

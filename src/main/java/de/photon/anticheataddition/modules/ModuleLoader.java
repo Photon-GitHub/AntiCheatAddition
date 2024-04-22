@@ -1,8 +1,7 @@
 package de.photon.anticheataddition.modules;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketListener;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListenerCommon;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -41,9 +40,9 @@ public final class ModuleLoader
     @NotNull private final Set<MessageChannel> outgoing;
 
     @NotNull private final Set<Listener> listeners;
-    @NotNull private final Set<PacketListener> packetListeners;
+    @NotNull private final Set<PacketListenerCommon> packetListeners;
 
-    public static ModuleLoader of(Module module, PacketAdapter adapter)
+    public static ModuleLoader of(Module module, PacketListenerCommon adapter)
     {
         return builder(module).addPacketListeners(adapter).build();
     }
@@ -89,7 +88,7 @@ public final class ModuleLoader
 
         // Handle Listeners and PacketListeners
         for (Listener listener : listeners) AntiCheatAddition.getInstance().registerListener(listener);
-        for (PacketListener packetListener : packetListeners) ProtocolLibrary.getProtocolManager().addPacketListener(packetListener);
+        for (PacketListenerCommon packetListener : packetListeners) PacketEvents.getAPI().getEventManager().registerListener(packetListener);
 
         if (batchProcessor != null) batchProcessor.enable();
 
@@ -104,7 +103,7 @@ public final class ModuleLoader
     {
         // Handle Listeners and PacketListeners
         for (Listener listener : listeners) HandlerList.unregisterAll(listener);
-        for (PacketListener packetListener : packetListeners) ProtocolLibrary.getProtocolManager().removePacketListener(packetListener);
+        for (PacketListenerCommon packetListener : packetListeners) PacketEvents.getAPI().getEventManager().unregisterListener(packetListener);
 
         if (batchProcessor != null) batchProcessor.disable();
 
@@ -116,7 +115,7 @@ public final class ModuleLoader
     {
         private final Module module;
         private final ImmutableSet.Builder<Listener> listeners = ImmutableSet.builder();
-        private final ImmutableSet.Builder<PacketListener> packetListeners = ImmutableSet.builder();
+        private final ImmutableSet.Builder<PacketListenerCommon> packetListeners = ImmutableSet.builder();
         private final ImmutableSet.Builder<String> pluginDependencies = ImmutableSet.builder();
         private final ImmutableSet.Builder<String> pluginIncompatibilities = ImmutableSet.builder();
         private final ImmutableSet.Builder<MessageChannel> incoming = ImmutableSet.builder();
@@ -139,7 +138,7 @@ public final class ModuleLoader
             return this;
         }
 
-        public Builder addPacketListeners(PacketListener... packetListeners)
+        public Builder addPacketListeners(PacketListenerCommon... packetListeners)
         {
             this.packetListeners.add(packetListeners);
             return this;

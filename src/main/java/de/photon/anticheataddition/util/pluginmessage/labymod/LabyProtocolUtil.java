@@ -1,8 +1,9 @@
 package de.photon.anticheataddition.util.pluginmessage.labymod;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPluginMessage;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerCustomPayload;
 import de.photon.anticheataddition.util.pluginmessage.ByteBufUtil;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import io.netty.buffer.ByteBuf;
@@ -59,10 +60,9 @@ public class LabyProtocolUtil
      */
     public static void sendLabyModMessage(Player player, String key, JsonElement messageContent)
     {
-        final var payload = new WrapperPlayServerCustomPayload();
-        payload.setContents(getBytesToSend(key, messageContent.toString()));
-        payload.setChannel(MessageChannel.LABYMOD_CHANNEL);
-        payload.sendPacket(player);
+        final var channel = MessageChannel.LABYMOD_CHANNEL.getChannel().orElseThrow(() -> new IllegalStateException("LabyMod channel not found"));
+        final var messageWrapper = new WrapperPlayServerPluginMessage(channel, getBytesToSend(key, messageContent.toString()));
+        PacketEvents.getAPI().getPlayerManager().sendPacket(player, messageWrapper);
     }
 
     /**

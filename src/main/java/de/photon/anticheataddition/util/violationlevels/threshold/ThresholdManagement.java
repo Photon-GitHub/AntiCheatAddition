@@ -4,8 +4,11 @@ import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.config.ConfigUtil;
+import de.photon.anticheataddition.util.messaging.Log;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public sealed interface ThresholdManagement permits EmptyThresholds, SingleThresholds, MultiThresholds
 {
@@ -47,4 +50,9 @@ public sealed interface ThresholdManagement permits EmptyThresholds, SingleThres
      * Used to execute the commands of the {@link Threshold}s in this  {@link MultiThresholds}.
      */
     void executeThresholds(int fromVl, int toVl, @NotNull Player players);
+
+    /**
+     * Used for testing the threshold loading.
+     */
+    List<Threshold> getThresholds();
 }

@@ -21,3 +21,8 @@ MultiCommandThreshold:
     - "Another command"
     - "Yes, this as well."
   3: "Yup."
+
+Debug:
+  console_level: "INFO"
+  file_level: "FINE"
+  player_level: "OFF"

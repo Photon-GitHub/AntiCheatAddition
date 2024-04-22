@@ -59,6 +59,7 @@ public final class Data
     public static final class Counter
     {
         public final ViolationCounter inventoryAverageHeuristicsMisclicks = new ViolationCounter(0);
+        public final ViolationCounter inventoryFrequencyFails = new ViolationCounter(40);
         public final ViolationCounter inventoryPerfectExitFails = new ViolationCounter(6);
 
         public final ViolationCounter packetAnalysisPerfectRotationYawFails = new ViolationCounter(4);
@@ -67,7 +68,11 @@ public final class Data
         public final ViolationCounter scaffoldAngleFails = new ViolationCounter(4);
         public final ViolationCounter scaffoldJumpingFails = new ViolationCounter(6);
         public final ViolationCounter scaffoldJumpingLegit = new ViolationCounter(18);
-        public final ViolationCounter scaffoldRotationFails = new ViolationCounter(6);
+        public final ViolationCounter scaffoldRotationSignificantChangeFails = new ViolationCounter(3);
+        public final ViolationCounter scaffoldRotationAngleSumFails = new ViolationCounter(3);
+        public final ViolationCounter scaffoldRotationAngleVarianceFails = new ViolationCounter(10);
+        public final ViolationCounter scaffoldRotationAngleSwitchFails = new ViolationCounter(4);
+
         public final ViolationCounter scaffoldSafewalkPositionFails = new ViolationCounter(4);
         public final ViolationCounter scaffoldSafewalkTimingFails = new ViolationCounter(3);
         public final ViolationCounter scaffoldSprintingFails = new ViolationCounter(5);

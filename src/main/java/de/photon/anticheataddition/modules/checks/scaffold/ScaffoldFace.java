@@ -8,7 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-public class ScaffoldFace extends Module
+public final class ScaffoldFace extends Module
 {
     public static final ScaffoldFace INSTANCE = new ScaffoldFace();
 
@@ -38,7 +38,7 @@ public class ScaffoldFace extends Module
             case UP, DOWN, NORTH, SOUTH, EAST, WEST -> 0;
             default -> {
                 // Block placement against itself or diagonally is impossible in vanilla.
-                Log.fine(() -> "Scaffold-Debug | Player: %s placed a block with a suspicious facing: %s".formatted(user.getPlayer().getName(), face));
+                Log.fine(() -> "Scaffold-Debug | Player: %s placed a block with a suspicious facing: %s against type %s".formatted(user.getPlayer().getName(), face, blockAgainst.getType()));
                 yield 30;
             }
         };

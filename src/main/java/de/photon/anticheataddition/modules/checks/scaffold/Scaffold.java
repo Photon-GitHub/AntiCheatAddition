@@ -68,15 +68,14 @@ public final class Scaffold extends ViolationModule implements Listener
         final var face = event.getBlock().getFace(event.getBlockAgainst());
 
         Log.finer(() -> "Scaffold-Debug | Player: %s placed block: %s against: %s on face: %s".formatted(user.getPlayer().getName(), blockPlaced.getType(), event.getBlockAgainst().getType(), face));
-        Log.finer(() -> "Scaffold-Debug | Assumptions | Dist: %b, Fly: %b, Y: %b, Solid: %b, L/V: %b, Around: %b"
+        Log.finer(() -> "Scaffold-Debug | Assumptions | Dist: %b, Fly: %b, Y: %b, Solid: %b, L/V: %b, Around: %d, Horizontal: %d"
                 .formatted(WorldUtil.INSTANCE.areLocationsInRange(user.getPlayer().getLocation(), blockPlaced.getLocation(), 4D),
                            !user.getPlayer().isFlying(),
                            user.getPlayer().getLocation().getY() > blockPlaced.getY(),
                            blockPlaced.getType().isSolid(),
                            event.getBlockPlaced().getType() != Material.LADDER && event.getBlockPlaced().getType() != Material.VINE,
-                           WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.INSTANCE.getLiquids()) == 1L));
-
-        int vl = ScaffoldFace.INSTANCE.getVl(user, event);
+                           WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.INSTANCE.getLiquids()),
+                           WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.HORIZONTAL_FACES, MaterialUtil.INSTANCE.getLiquids())));
 
         // Short distance between player and the block (at most 4 Blocks)
         if (WorldUtil.INSTANCE.areLocationsInRange(user.getPlayer().getLocation(), blockPlaced.getLocation(), 4D) &&
@@ -90,21 +89,24 @@ public final class Scaffold extends ViolationModule implements Listener
             // them, therefore almost doubling the placement speed. However, they can only be placed one at a time, which
             // allows simply ignoring them.
             event.getBlockPlaced().getType() != Material.LADDER && event.getBlockPlaced().getType() != Material.VINE &&
-            // Check if the block is placed against one block face only, also implies no blocks above and below.
+            // Check if the block is placed against one block face only and that is horizontal.
             // Only one block that is not a liquid is allowed (the one which the Block is placed against).
             WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.INSTANCE.getLiquids()) == 1L &&
+            WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.HORIZONTAL_FACES, MaterialUtil.INSTANCE.getLiquids()) == 1L) {
+
+            int vl = ScaffoldFace.INSTANCE.getVl(user, event);
+
             // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
             // Check that the player is not placing blocks up / down as that is not scaffolding.
-            WorldUtil.HORIZONTAL_FACES.contains(face)) {
-            vl += handleHorizontalChecks(event, user, face);
-        }
+            if (WorldUtil.HORIZONTAL_FACES.contains(face)) vl += handleHorizontalChecks(event, user, face);
 
-        if (vl > 0) {
-            this.getManagement().flag(Flag.of(event.getPlayer()).setAddedVl(vl).setCancelAction(cancelVl, () -> {
-                event.setCancelled(true);
-                user.getTimeMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
-                InventoryUtil.syncUpdateInventory(user.getPlayer());
-            }));
+            if (vl > 0) {
+                this.getManagement().flag(Flag.of(event.getPlayer()).setAddedVl(vl).setCancelAction(cancelVl, () -> {
+                    event.setCancelled(true);
+                    user.getTimeMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
+                    InventoryUtil.syncUpdateInventory(user.getPlayer());
+                }));
+            }
         }
     }
 

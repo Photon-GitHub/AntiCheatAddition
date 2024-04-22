@@ -45,8 +45,7 @@ public final class Log
         {
             return LocalDateTime.now().format(PREFIX_TIME_FORMATTER) +
                    // Do not use simple substring here as purpur uses a different format.
-                   ChatColor.stripColor(formatMessage(logRecord)).replace(REPLACE_PREFIX, "") +
-                   System.lineSeparator();
+                   ChatColor.stripColor(formatMessage(logRecord)).replace(REPLACE_PREFIX, "") + System.lineSeparator();
         }
     };
 
@@ -113,18 +112,23 @@ public final class Log
         if (!Level.OFF.equals(FILE_LEVEL)) replaceDebugFileCycle();
         if (!Level.OFF.equals(PLAYER_LEVEL)) logger().addHandler(new DebugUserHandler(PLAYER_LEVEL));
 
-        // Set the smallest level as the main logger (smaller -> more messages)
-        final var levels = new Level[]{CONSOLE_LEVEL, FILE_LEVEL, PLAYER_LEVEL};
-        Arrays.sort(levels, (level1, level2) -> level2.intValue() - level1.intValue());
-
-        // Set the console level.
-        logger().setLevel(levels[0]);
+        // Set the smallest level as the main logger (smaller -> more messages) to ensure all handlers get their messages.
+        logger().setLevel(minLevel(CONSOLE_LEVEL, FILE_LEVEL, PLAYER_LEVEL));
 
         // Add the violation debug messages.
         AntiCheatAddition.getInstance().registerListener(new ViolationLogger());
 
         fine(() -> "Logger handlers: " + Arrays.stream(logger().getHandlers()).map(handler -> handler.getClass().getName() + " with level " + handler.getLevel()).collect(Collectors.joining(", ")));
         info(() -> "Logging setup finished. Console: " + CONSOLE_LEVEL.getName() + " | File: " + FILE_LEVEL.getName() + " | Player: " + PLAYER_LEVEL.getName());
+    }
+
+    public static Level minLevel(Level... levels)
+    {
+        Level min = Level.ALL;
+        for (Level level : levels) {
+            if (level.intValue() < min.intValue()) min = level;
+        }
+        return min;
     }
 
     public void close()
@@ -202,6 +206,8 @@ public final class Log
         public void publish(LogRecord logRecord)
         {
             if (!isLoggable(logRecord)) return;
+            // The default bukkit logger already logs INFO messages to console.
+            if (logRecord.getLevel().intValue() >= Level.INFO.intValue()) return;
 
             final var msg = getFormatter().format(logRecord);
             Bukkit.getConsoleSender().sendMessage(msg);

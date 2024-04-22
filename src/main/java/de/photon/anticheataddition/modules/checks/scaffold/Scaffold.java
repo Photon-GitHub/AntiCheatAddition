@@ -6,6 +6,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -63,6 +64,16 @@ public final class Scaffold extends ViolationModule implements Listener
 
         final var blockPlaced = event.getBlockPlaced();
         final var face = event.getBlock().getFace(event.getBlockAgainst());
+
+        Log.finer(() -> "Scaffold-Debug | Player: %s placed block: %s against: %s on face: %s".formatted(user.getPlayer().getName(), blockPlaced.getType(), event.getBlockAgainst().getType(), face));
+        Log.finer(() -> "Scaffold-Debug | Assumptions | Dist: %b, Fly: %b, Y: %b, Solid: %b, L/V: %b, Around: %b, Horizontal: %b"
+                .formatted(WorldUtil.INSTANCE.areLocationsInRange(user.getPlayer().getLocation(), blockPlaced.getLocation(), 4D),
+                           !user.getPlayer().isFlying(),
+                           user.getPlayer().getLocation().getY() > blockPlaced.getY(),
+                           blockPlaced.getType().isSolid(),
+                           event.getBlockPlaced().getType() != Material.LADDER && event.getBlockPlaced().getType() != Material.VINE,
+                           WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.INSTANCE.getLiquids()) == 1L,
+                           WorldUtil.HORIZONTAL_FACES.contains(face)));
 
         // Short distance between player and the block (at most 4 Blocks)
         if (WorldUtil.INSTANCE.areLocationsInRange(user.getPlayer().getLocation(), blockPlaced.getLocation(), 4D) &&

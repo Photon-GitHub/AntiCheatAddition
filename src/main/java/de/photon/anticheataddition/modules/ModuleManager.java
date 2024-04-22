@@ -48,8 +48,6 @@ public final class ModuleManager
                 BrandHider.INSTANCE,
                 DamageIndicator.INSTANCE,
 
-                EnchantmentHider.INSTANCE,
-                ItemCountHider.INSTANCE,
                 new Module("InformationHider", EnchantmentHider.INSTANCE, ItemCountHider.INSTANCE),
 
                 Esp.INSTANCE,

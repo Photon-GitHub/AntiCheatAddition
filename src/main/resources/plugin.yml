@@ -67,6 +67,7 @@ permissions:
       anticheataddition.bypass.packetanalysis.parts.perfectrotation: true
       anticheataddition.bypass.scaffold: true
       anticheataddition.bypass.scaffold.parts.angle: true
+      anticheataddition.bypass.scaffold.parts.face: true
       anticheataddition.bypass.scaffold.parts.jumping: true
       anticheataddition.bypass.scaffold.parts.position: true
       anticheataddition.bypass.scaffold.parts.rotation: true

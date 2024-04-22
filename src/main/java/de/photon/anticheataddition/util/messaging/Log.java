@@ -16,12 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.function.Supplier;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import java.util.stream.Collectors;
 
 public final class Log
@@ -54,6 +49,7 @@ public final class Log
                    System.lineSeparator();
         }
     };
+
     private static final Formatter DEBUG_USER_FORMATTER = new Formatter()
     {
         @Override
@@ -113,11 +109,16 @@ public final class Log
 
     public void setup()
     {
+        if (!Level.OFF.equals(CONSOLE_LEVEL)) logger().addHandler(new ConsoleHandler(CONSOLE_LEVEL));
         if (!Level.OFF.equals(FILE_LEVEL)) replaceDebugFileCycle();
         if (!Level.OFF.equals(PLAYER_LEVEL)) logger().addHandler(new DebugUserHandler(PLAYER_LEVEL));
 
+        // Set the smallest level as the main logger (smaller -> more messages)
+        final var levels = new Level[]{CONSOLE_LEVEL, FILE_LEVEL, PLAYER_LEVEL};
+        Arrays.sort(levels, (level1, level2) -> level2.intValue() - level1.intValue());
+
         // Set the console level.
-        logger().setLevel(CONSOLE_LEVEL);
+        logger().setLevel(levels[0]);
 
         // Add the violation debug messages.
         AntiCheatAddition.getInstance().registerListener(new ViolationLogger());
@@ -174,6 +175,36 @@ public final class Log
 
             final var msg = getFormatter().format(logRecord);
             for (User debugUser : User.getDebugUsers()) debugUser.getPlayer().sendMessage(msg);
+        }
+
+        @Override
+        public void flush()
+        {
+            // We do not buffer.
+        }
+
+        @Override
+        public void close() throws SecurityException
+        {
+            // Not necessary for chat.
+        }
+    }
+
+    private static final class ConsoleHandler extends Handler
+    {
+        public ConsoleHandler(Level level)
+        {
+            this.setFormatter(DEBUG_USER_FORMATTER);
+            this.setLevel(level);
+        }
+
+        @Override
+        public void publish(LogRecord logRecord)
+        {
+            if (!isLoggable(logRecord)) return;
+
+            final var msg = getFormatter().format(logRecord);
+            Bukkit.getConsoleSender().sendMessage(msg);
         }
 
         @Override

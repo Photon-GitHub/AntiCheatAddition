@@ -14,6 +14,7 @@ import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.Getter;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -95,35 +96,7 @@ public final class Scaffold extends ViolationModule implements Listener
 
             // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
             // Check that the player is not placing blocks up / down as that is not scaffolding.
-            if (WorldUtil.HORIZONTAL_FACES.contains(face)) {
-                final var lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().block();
-                // This checks if the block was placed against the expected block for scaffolding.
-                final var newScaffoldLocation = !Objects.equals(lastScaffoldBlock, event.getBlockAgainst()) || !WorldUtil.INSTANCE.isNext(lastScaffoldBlock, event.getBlockPlaced(), WorldUtil.HORIZONTAL_FACES);
-                // ---------------------------------------------- Average ---------------------------------------------- //
-
-                if (newScaffoldLocation) user.getScaffoldBatch().clear();
-
-                user.getScaffoldBatch().addDataPoint(new ScaffoldBatch.ScaffoldBlockPlace(event.getBlockPlaced(),
-                                                                                          face,
-                                                                                          user));
-
-                // --------------------------------------------- Rotations ---------------------------------------------- //
-
-                vl += ScaffoldAngle.INSTANCE.getVl(user, event);
-                vl += ScaffoldPosition.INSTANCE.getVl(event);
-
-                // All these checks may have false positives in new situations.
-                if (!newScaffoldLocation) {
-                    // Do not check jumping for new locations as of wall-building / jumping.
-                    vl += ScaffoldJumping.INSTANCE.getVl(user, event);
-                    vl += ScaffoldRotation.INSTANCE.getVl(user);
-                    vl += ScaffoldSafewalkEdge.INSTANCE.getVl(user, event);
-                    vl += ScaffoldSafewalkTiming.INSTANCE.getVl(user);
-                    vl += ScaffoldSprinting.INSTANCE.getVl(user);
-                } else {
-                    ScaffoldJumping.INSTANCE.newScaffoldLocation(user, event, lastScaffoldBlock);
-                }
-            }
+            if (WorldUtil.HORIZONTAL_FACES.contains(face)) vl += handleHorizontalChecks(event, user, face);
 
             if (vl > 0) {
                 this.getManagement().flag(Flag.of(event.getPlayer()).setAddedVl(vl).setCancelAction(cancelVl, () -> {
@@ -133,6 +106,37 @@ public final class Scaffold extends ViolationModule implements Listener
                 }));
             }
         }
+    }
+
+    private static int handleHorizontalChecks(BlockPlaceEvent event, User user, BlockFace face)
+    {
+        final var lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().block();
+        // This checks if the block was placed against the expected block for scaffolding.
+        final var newScaffoldLocation = !Objects.equals(lastScaffoldBlock, event.getBlockAgainst()) || !WorldUtil.INSTANCE.isNext(lastScaffoldBlock, event.getBlockPlaced(), WorldUtil.HORIZONTAL_FACES);
+
+        // ---------------------------------------------- Average ---------------------------------------------- //
+
+        if (newScaffoldLocation) user.getScaffoldBatch().clear();
+
+        user.getScaffoldBatch().addDataPoint(new ScaffoldBatch.ScaffoldBlockPlace(event.getBlockPlaced(), face, user));
+
+        // --------------------------------------------- Rotations ---------------------------------------------- //
+
+        int vl = ScaffoldAngle.INSTANCE.getVl(user, event);
+        vl += ScaffoldPosition.INSTANCE.getVl(event);
+
+        // All these checks may have false positives in new situations.
+        if (!newScaffoldLocation) {
+            // Do not check jumping for new locations as of wall-building / jumping.
+            vl += ScaffoldJumping.INSTANCE.getVl(user, event);
+            vl += ScaffoldRotation.INSTANCE.getVl(user);
+            vl += ScaffoldSafewalkEdge.INSTANCE.getVl(user, event);
+            vl += ScaffoldSafewalkTiming.INSTANCE.getVl(user);
+            vl += ScaffoldSprinting.INSTANCE.getVl(user);
+        } else {
+            ScaffoldJumping.INSTANCE.newScaffoldLocation(user, event, lastScaffoldBlock);
+        }
+        return vl;
     }
 
     @Override

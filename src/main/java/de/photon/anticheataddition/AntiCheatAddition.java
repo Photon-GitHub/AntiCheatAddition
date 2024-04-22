@@ -111,7 +111,7 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
-            getLogger().info(() -> "Server version " + ServerVersion.ACTIVE.getVersionOutputString() + " detected.");
+            Log.info(() -> "Server version " + ServerVersion.ACTIVE.getVersionOutputString() + " detected.");
 
             if (!ServerVersion.ACTIVE.isSupported()) {
                 getLogger().severe("Server version is not supported.");
@@ -124,13 +124,13 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             this.bungeecord = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getBoolean("settings.bungeecord", false);
-            getLogger().info(() -> "Bungeecord " + (this.bungeecord ? "detected" : "not detected"));
+            Log.info(() -> "Bungeecord " + (this.bungeecord ? "detected" : "not detected"));
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Metrics                                                 //
             // ------------------------------------------------------------------------------------------------------ //
 
-            getLogger().info("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AntiCheatAddition/14608");
+            Log.info(() -> "Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AntiCheatAddition/14608");
             final var metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
             // ------------------------------------------------------------------------------------------------------ //
@@ -160,7 +160,7 @@ public class AntiCheatAddition extends JavaPlugin
             final var mainCommand = new MainCommand(this.getDescription().getVersion());
             final var commandToRegister = this.getCommand(mainCommand.getName());
             if (commandToRegister == null) {
-                getLogger().severe("Could not register command " + mainCommand.getName());
+                Log.severe(() -> "Could not register command " + mainCommand.getName());
                 return;
             }
             commandToRegister.setExecutor(mainCommand);
@@ -172,9 +172,9 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
             //                                           Enabled-Debug + API                                          //
             // ------------------------------------------------------------------------------------------------------ //
-            getLogger().info(this.getName() + " Version " + this.getDescription().getVersion() + " enabled");
-            getLogger().fine("AntiCheatAddition initialization completed.");
-            getLogger().finest("Full debug is active.");
+            Log.info(() -> this.getName() + " Version " + this.getDescription().getVersion() + " enabled");
+            Log.fine(() -> "AntiCheatAddition initialization completed.");
+            Log.finest(() -> "Full debug is active.");
         } catch (final Exception e) {
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Failed loading                                            //

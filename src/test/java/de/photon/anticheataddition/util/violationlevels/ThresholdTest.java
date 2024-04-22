@@ -1,10 +1,13 @@
 package de.photon.anticheataddition.util.violationlevels;
 
 import de.photon.anticheataddition.Dummy;
+import de.photon.anticheataddition.util.violationlevels.threshold.Threshold;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 class ThresholdTest
 {
@@ -35,5 +38,26 @@ class ThresholdTest
         Assertions.assertDoesNotThrow(() -> ThresholdManagement.loadThresholds("SingleCommandThreshold"));
         Assertions.assertDoesNotThrow(() -> ThresholdManagement.loadThresholds("SingleCommandThresholdTwo"));
         Assertions.assertDoesNotThrow(() -> ThresholdManagement.loadThresholds("MultiCommandThreshold"));
+    }
+
+    @Test
+    void thresholdCorrectLoadingTest()
+    {
+        final List<Threshold> singleThreshold = ThresholdManagement.loadThresholds("SingleCommandThreshold").getThresholds();
+        Assertions.assertEquals(1, singleThreshold.size());
+        Assertions.assertEquals(1, singleThreshold.get(0).commandList().size());
+        Assertions.assertLinesMatch(List.of("Some command"), singleThreshold.get(0).commandList());
+
+        final List<Threshold> multiThreshold = ThresholdManagement.loadThresholds("MultiCommandThreshold").getThresholds();
+        Assertions.assertEquals(3, multiThreshold.size());
+
+        Assertions.assertEquals(1, multiThreshold.get(0).commandList().size());
+        Assertions.assertLinesMatch(List.of("Some command"), multiThreshold.get(0).commandList());
+
+        Assertions.assertEquals(2, multiThreshold.get(1).commandList().size());
+        Assertions.assertLinesMatch(List.of("Another command", "Yes, this as well."), multiThreshold.get(1).commandList());
+
+        Assertions.assertEquals(1, multiThreshold.get(2).commandList().size());
+        Assertions.assertLinesMatch(List.of("Yup."), multiThreshold.get(2).commandList());
     }
 }

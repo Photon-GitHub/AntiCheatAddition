@@ -4,8 +4,11 @@ import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.config.ConfigUtil;
+import de.photon.anticheataddition.util.messaging.Log;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public sealed interface ThresholdManagement permits EmptyThresholds, SingleThresholds, MultiThresholds
 {
@@ -27,6 +30,8 @@ public sealed interface ThresholdManagement permits EmptyThresholds, SingleThres
         final var keys = Preconditions.checkNotNull(ConfigUtil.loadKeys(configPath), "Config loading error: The keys loaded from " + configPath + " are null.");
         final var thresholds = keys.stream().map(key -> new Threshold(Integer.parseInt(key), ConfigUtil.loadImmutableStringOrStringList(configPath + '.' + key))).toList();
 
+        Log.finer(() -> "ConfigPath: " + configPath + " | Size: " + thresholds.size() + " | Thresholds raw: " + thresholds);
+
         return switch (thresholds.size()) {
             case 0 -> EMPTY;
             case 1 -> new SingleThresholds(thresholds.get(0));
@@ -47,4 +52,9 @@ public sealed interface ThresholdManagement permits EmptyThresholds, SingleThres
      * Used to execute the commands of the {@link Threshold}s in this  {@link MultiThresholds}.
      */
     void executeThresholds(int fromVl, int toVl, @NotNull Player players);
+
+    /**
+     * Used for testing the threshold loading.
+     */
+    List<Threshold> getThresholds();
 }

@@ -81,7 +81,7 @@ public final class Inventory extends ViolationModule implements Listener
     protected ViolationManagement createViolationManagement()
     {
         return new ViolationAggregation(this,
-                                        ThresholdManagement.loadThresholds(this.getConfigString() + ".thresholds"),
+                                        ThresholdManagement.loadThresholds(this),
                                         this.getChildren().stream().filter(ViolationModule.class::isInstance).map(ViolationModule.class::cast).map(ViolationModule::getManagement).collect(Collectors.toUnmodifiableSet()));
     }
 }

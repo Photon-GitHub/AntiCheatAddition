@@ -49,6 +49,11 @@ public sealed interface MaterialUtil permits AncientMaterialUtil, ModernMaterial
         return getAirMaterials().contains(material);
     }
 
+    default boolean isLiquid(Material material)
+    {
+        return getLiquids().contains(material);
+    }
+
     /**
      * Fix for Spigot's broken occluding method.
      */

@@ -11,7 +11,8 @@ import java.util.stream.Collectors;
 
 public abstract class ViolationModule extends Module
 {
-    @Getter(lazy = true) private final ViolationManagement management = createViolationManagement();
+    // DO NOT use lazy loading here, this will result in the violation management never being created!
+    @Getter private final ViolationManagement management = createViolationManagement();
 
     protected ViolationModule(String configString)
     {
@@ -32,7 +33,7 @@ public abstract class ViolationModule extends Module
             @Override
             protected ViolationManagement createViolationManagement()
             {
-                return new ViolationAggregation(this, ThresholdManagement.loadThresholds(this.getConfigString() + ".thresholds"), Arrays.stream(children).map(ViolationModule::getManagement).collect(Collectors.toUnmodifiableSet()));
+                return new ViolationAggregation(this, ThresholdManagement.loadThresholds(this), Arrays.stream(children).map(ViolationModule::getManagement).collect(Collectors.toUnmodifiableSet()));
             }
         };
     }

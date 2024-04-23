@@ -16,7 +16,7 @@ As maven automatically handles all dependencies for you, you just need to clone 
 
 ## Deployment
 
-You need to set up a spigot server with the correct version of [ProtocolLib](https://ci.dmulloy2.net/job/ProtocolLib) installed.
+You need to set up a spigot server with the correct version of [PacketEvents](https://www.spigotmc.org/resources/packetevents-api.80279/) installed.
 
 ## Built With
 

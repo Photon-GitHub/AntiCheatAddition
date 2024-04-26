@@ -98,7 +98,7 @@ public final class DupingDoubleDropped extends ViolationModule implements Listen
     {
         return ModuleLoader.builder(this)
                            // Both EntityPickupItemEvent and BlockDropItemEvent are not available in 1.8.8 and 1.12.2
-                           .setAllowedServerVersions(ServerVersion.MC115.getSupVersionsFrom())
+                           .setAllowedServerVersions(ServerVersion.MC116.getSupVersionsFrom())
                            .build();
     }
 }

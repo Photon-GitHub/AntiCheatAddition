@@ -25,7 +25,7 @@ public final class Log
 
     private static final Level CONSOLE_LEVEL = getConfigLevel("Debug.console_level");
     private static final Level FILE_LEVEL = getConfigLevel("Debug.file_level");
-    private static final Level PLAYER_LEVEL = getConfigLevel("Debug.file_level");
+    private static final Level PLAYER_LEVEL = getConfigLevel("Debug.player_level");
 
     private static Level getConfigLevel(String path)
     {

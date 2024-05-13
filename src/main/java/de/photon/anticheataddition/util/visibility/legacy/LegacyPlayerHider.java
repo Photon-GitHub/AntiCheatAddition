@@ -15,30 +15,20 @@ public final class LegacyPlayerHider extends PlayerInformationHider
     @Override
     protected void onHide(@NotNull Player observer, @NotNull Set<Player> toHide)
     {
-        if (toHide.isEmpty()) return;
-
-        // Schedule to only call spigot API methods from the main thread.
-        Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> {
-            for (Player player : toHide) {
-                observer.hidePlayer(player);
-                addWatchedPlayerToTablistPacket(observer, player);
-                Log.finest(() -> "Player " + player.getName() + " has been fully hidden from " + observer.getName());
-            }
-        });
+        for (Player player : toHide) {
+            observer.hidePlayer(player);
+            addWatchedPlayerToTablistPacket(observer, player);
+            Log.finest(() -> "Player " + player.getName() + " has been fully hidden from " + observer.getName());
+        }
     }
 
     @Override
     protected void onReveal(@NotNull Player observer, @NotNull Set<Player> revealed)
     {
-        if (revealed.isEmpty()) return;
-
-        // Schedule to only call spigot API methods from the main thread.
-        Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> {
-            for (Player player : revealed) {
-                observer.showPlayer(player);
-                Log.finest(() -> "Player " + player.getName() + " has been revealed to " + observer.getName());
-            }
-        });
+        for (Player player : revealed) {
+            observer.showPlayer(player);
+            Log.finest(() -> "Player " + player.getName() + " has been revealed to " + observer.getName());
+        }
     }
 
     @Override

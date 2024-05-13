@@ -4,7 +4,6 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.visibility.PlayerInformationHider;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,30 +14,20 @@ public final class ModernPlayerHider extends PlayerInformationHider
     @Override
     protected void onHide(@NotNull Player observer, @NotNull Set<Player> toHide)
     {
-        if (toHide.isEmpty()) return;
-
-        // Schedule to only call spigot API methods from the main thread.
-        Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> {
-            for (Player player : toHide) {
-                observer.hidePlayer(AntiCheatAddition.getInstance(), player);
-                addWatchedPlayerToTablistPacket(observer, player);
-                Log.finest(() -> "Player " + player.getName() + " has been fully hidden from " + observer.getName());
-            }
-        });
+        for (Player player : toHide) {
+            observer.hidePlayer(AntiCheatAddition.getInstance(), player);
+            addWatchedPlayerToTablistPacket(observer, player);
+            Log.finest(() -> "Player " + player.getName() + " has been fully hidden from " + observer.getName());
+        }
     }
 
     @Override
     protected void onReveal(@NotNull Player observer, @NotNull Set<Player> revealed)
     {
-        if (revealed.isEmpty()) return;
-
-        // Schedule to only call spigot API methods from the main thread.
-        Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> {
-            for (Player player : revealed) {
-                observer.showPlayer(AntiCheatAddition.getInstance(), player);
-                Log.finest(() -> "Player " + player.getName() + " has been revealed to " + observer.getName());
-            }
-        });
+        for (Player player : revealed) {
+            observer.showPlayer(AntiCheatAddition.getInstance(), player);
+            Log.finest(() -> "Player " + player.getName() + " has been revealed to " + observer.getName());
+        }
     }
 
     @Override

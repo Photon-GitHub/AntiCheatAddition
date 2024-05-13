@@ -89,7 +89,7 @@ public final class Esp extends Module
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(AntiCheatAddition.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), () -> {
             for (World world : Bukkit.getWorlds()) {
                 final int playerTrackingRange = playerTrackingRanges.getOrDefault(world, defaultTrackingRange);
 

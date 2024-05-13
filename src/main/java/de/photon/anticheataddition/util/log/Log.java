@@ -76,7 +76,7 @@ public final class Log
     {
         // By default, the logger is set to do nothing to prevent testing errors.
         this.logger = NothingLogger.INSTANCE;
-        this.logFileHandler = new LogFileHandler(logger, FILE_LEVEL);
+        this.logFileHandler = new LogFileHandler(logger);
     }
 
     public void bukkitSetup()
@@ -84,7 +84,10 @@ public final class Log
         this.logger = AntiCheatAddition.getInstance().getLogger();
 
         if (!Level.OFF.equals(CONSOLE_LEVEL)) INSTANCE.logger.addHandler(new ConsoleLogHandler(CONSOLE_LEVEL));
-        if (!Level.OFF.equals(FILE_LEVEL)) logFileHandler.replaceDebugFileCycle();
+        if (!Level.OFF.equals(FILE_LEVEL)) {
+            logFileHandler.setFileLevel(FILE_LEVEL);
+            logFileHandler.replaceDebugFileCycle();
+        }
         if (!Level.OFF.equals(PLAYER_LEVEL)) INSTANCE.logger.addHandler(new DebugUserLogHandler(PLAYER_LEVEL));
 
         // Set the smallest level as the main logger (smaller -> more messages) to ensure all handlers get their messages.

@@ -21,7 +21,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,15 +71,6 @@ public abstract class PlayerInformationHider implements Listener
         return ServerVersion.ALL_SUPPORTED_VERSIONS;
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onGameModeChange(PlayerGameModeChangeEvent event)
-    {
-        // An observer that has hidden players and changes their GameMode to creative or spectator is no longer processed by ESP, and therefore, their hidden players must be revealed manually.
-        // On the contrary, all other players are still processed and the hider will automatically reveal the player with changed GameMode.
-        switch (event.getNewGameMode()) {
-            case CREATIVE, SPECTATOR -> setHiddenEntities(event.getPlayer(), Set.of());
-        }
-    }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event)

@@ -96,7 +96,6 @@ public final class Esp extends Module
                 final var worldPlayers = world.getPlayers().stream()
                                               .map(User::getUser)
                                               .filter(user -> !User.isUserInvalid(user, this))
-                                              .filter(User::inAdventureOrSurvivalMode)
                                               .map(User::getPlayer)
                                               .collect(Collectors.toUnmodifiableSet());
 
@@ -111,9 +110,17 @@ public final class Esp extends Module
     private static void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, QuadTreeQueue<Player> playerQuadTree)
     {
         for (final var observerNode : playerQuadTree) {
+            final Player observer = observerNode.element();
+
+            // Special case for creative and spectator mode observers to make sure that they can see all players.
+            if (!User.inAdventureOrSurvivalMode(observer)) {
+                Log.finest(() -> "ESP | Observer: " + observer.getName() + " | In creative or spectator mode, no hidden players.");
+                Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> PlayerVisibility.INSTANCE.setHidden(observerNode.element(), Set.of(), Set.of()));
+                continue;
+            }
+
             final Set<Player> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
             final Set<Player> fullHiddenPlayers = new HashSet<>(worldPlayers);
-            final Player observer = observerNode.element();
 
             for (final var playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
                 final Player watched = playerNode.element();
@@ -126,8 +133,7 @@ public final class Esp extends Module
                     // Less than 1 block distance (removes the player themselves and any very close player)
                     || observerNode.distanceSquared(playerNode) < 1
                     || watched.isDead()
-                    || CanSee.canSee(observer, watched))
-                {
+                    || CanSee.canSee(observer, watched)) {
                     // No hiding case
                     fullHiddenPlayers.remove(watched);
                 } else if (!ONLY_FULL_HIDE && !watched.isSneaking()) {

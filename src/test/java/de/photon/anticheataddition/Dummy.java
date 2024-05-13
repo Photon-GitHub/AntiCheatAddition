@@ -21,7 +21,6 @@ public final class Dummy
 {
     public static final String SERVER_VERSION_STRING = "This server is running CraftBukkit version 3661-Spigot-19641c7-8434e36 (MC: 1.19.4) (Implementing API version 1.19.4-R0.1-SNAPSHOT)";
     public static final String BUKKIT_VERSION_STRING = "1.19.4-R0.1-SNAPSHOT";
-    public static final ServerVersion TEST_SERVER_VERSION = ServerVersion.MC119;
 
     private static final List<Player> mockedPlayers;
     private static final List<User> mockedUsers;

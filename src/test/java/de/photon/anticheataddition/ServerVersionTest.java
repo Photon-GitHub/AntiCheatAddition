@@ -12,6 +12,8 @@ import java.util.stream.Stream;
 
 class ServerVersionTest
 {
+    private static final ServerVersion TEST_SERVER_VERSION = ServerVersion.MC119;
+
     @BeforeAll
     static void setup()
     {
@@ -21,7 +23,7 @@ class ServerVersionTest
     @Test
     void serverVersionTest()
     {
-        Assertions.assertEquals(Dummy.TEST_SERVER_VERSION, ServerVersion.ACTIVE);
+        Assertions.assertEquals(TEST_SERVER_VERSION, ServerVersion.ACTIVE);
         Assertions.assertTrue(ServerVersion.ACTIVE.isSupported());
     }
 
@@ -47,7 +49,7 @@ class ServerVersionTest
         Assertions.assertFalse(ServerVersion.containsActive(ServerVersion.MC19.getSupVersionsTo()));
         Assertions.assertFalse(ServerVersion.is18());
         Assertions.assertTrue(ServerVersion.containsActive(ServerVersion.ALL_SUPPORTED_VERSIONS));
-        Assertions.assertTrue(Dummy.TEST_SERVER_VERSION.activeIsEarlierOrEqual());
+        Assertions.assertTrue(TEST_SERVER_VERSION.activeIsEarlierOrEqual());
 
         expected = Stream.of(ServerVersion.MC18, ServerVersion.MC19, ServerVersion.MC110, ServerVersion.MC111, ServerVersion.MC112)
                          .filter(ServerVersion::isSupported)

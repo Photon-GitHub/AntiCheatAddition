@@ -2,8 +2,10 @@ package de.photon.anticheataddition.modules.checks.inventory;
 
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -41,6 +43,13 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
     public void onInventoryClick(InventoryClickEvent event)
     {
         final var user = User.getUser(event.getWhoClicked().getUniqueId());
+        Log.finest(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " | MultiInteraction assumptions | Invalid: " + User.isUserInvalid(user, this) +
+                         ", null inv: " + (event.getClickedInventory() != null) +
+                         ", Adventure/Survival: " + !user.inAdventureOrSurvivalMode() +
+                         ", MinTPS: " + !Inventory.hasMinTPS() +
+                         ", MaxPing: " + !PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), Inventory.INSTANCE.getMaxPing()) +
+                         ", Last slot: " + (event.getRawSlot() == user.getData().number.lastRawSlotClicked));
+
         if (User.isUserInvalid(user, this) ||
             event.getClickedInventory() == null ||
             // Creative-clear might trigger this.
@@ -55,7 +64,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
         // Default vl is 6
         int addedVl = 6;
         // Time in ticks that have to pass to not be flagged by this check for too fast inventory interactions.
-        int enforcedTicks = 0;
+        final int enforcedTicks;
 
         //noinspection EnhancedSwitchMigration
         switch (event.getAction()) {
@@ -64,7 +73,8 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
             // Unknown reason might not be safe to handle
             // False positive with collecting all items of one type in the inventory
             // False positives due to auto-dropping feature of minecraft when holding q
-            case NOTHING, UNKNOWN, COLLECT_TO_CURSOR, DROP_ALL_SLOT, DROP_ONE_SLOT: return;
+            case NOTHING, UNKNOWN, COLLECT_TO_CURSOR, DROP_ALL_SLOT, DROP_ONE_SLOT:
+                return;
             // ------------------------------------------ Normal -------------------------------------------- //
             case HOTBAR_SWAP, HOTBAR_MOVE_AND_READD:
                 addedVl = 1;
@@ -103,7 +113,13 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
                     default -> 2;
                 };
                 break;
+
+            default:
+                enforcedTicks = 0;
+                break;
         }
+
+        Log.finer(() -> "Inventory-Debug | Player: %s | MultiInteraction delays | Enforced: %d, passed: %d".formatted(user.getPlayer().getName(), TimeUtil.toMillis(enforcedTicks), user.getTimeMap().at(TimeKey.INVENTORY_CLICK).passedTime()));
 
         // Convert ticks to millis.
         // 25 to account for server lag.

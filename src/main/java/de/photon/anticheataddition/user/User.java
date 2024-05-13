@@ -16,6 +16,7 @@ import de.photon.anticheataddition.user.data.batch.TowerBatch;
 import de.photon.anticheataddition.user.data.subdata.BrandChannelData;
 import de.photon.anticheataddition.user.data.subdata.LookPacketData;
 import de.photon.anticheataddition.util.mathematics.Hitbox;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Delegate;
@@ -83,6 +84,9 @@ public final class User implements Permissible
         }
 
         if (InternalPermission.DEBUG.hasPermission(player)) DEBUG_USERS.add(this);
+
+        // Join log for debugging purposes.
+        Log.finer(() -> "User %s created | General bypass permissions: %s | Debug permissions: %s".formatted(player.getName(), InternalPermission.BYPASS.hasPermission(player), InternalPermission.DEBUG.hasPermission(player)));
     }
 
     public static User getUser(PacketReceiveEvent event)

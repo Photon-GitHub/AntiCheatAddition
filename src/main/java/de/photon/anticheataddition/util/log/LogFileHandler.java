@@ -1,9 +1,11 @@
 package de.photon.anticheataddition.util.log;
 
+import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +40,7 @@ public class LogFileHandler
 
     private final Logger logger;
     private final Level fileLevel;
-    private FileHandler currentHandler = null;
+    private FileHandler currentHandler;
 
     /**
      * Constructs a new LogFileHandler.
@@ -46,10 +48,10 @@ public class LogFileHandler
      * @param logger    the Logger instance to which this handler is attached
      * @param fileLevel the logging level for the log file
      */
-    public LogFileHandler(Logger logger, Level fileLevel)
+    public LogFileHandler(@NotNull Logger logger, @NotNull Level fileLevel)
     {
-        this.logger = logger;
-        this.fileLevel = fileLevel;
+        this.logger = Preconditions.checkNotNull(logger, "Logger cannot be null.");
+        this.fileLevel = Preconditions.checkNotNull(fileLevel, "File level cannot be null.");
     }
 
     /**

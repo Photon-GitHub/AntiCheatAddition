@@ -14,8 +14,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.logging.*;
 
+/**
+ * The LogFileHandler class manages log file creation and rotation for AntiCheatAddition.
+ * It creates new log files daily and ensures log messages are appropriately formatted and written.
+ */
 public class LogFileHandler
 {
+
+    // Constants for log message formatting
     private static final String REPLACE_PREFIX = ChatColor.stripColor(AntiCheatAddition.ANTICHEAT_ADDITION_PREFIX);
     private static final DateTimeFormatter PREFIX_TIME_FORMATTER = DateTimeFormatter.ofPattern("'['HH:mm:ss.SSS']' ");
 
@@ -34,12 +40,22 @@ public class LogFileHandler
     private final Level fileLevel;
     private FileHandler currentHandler = null;
 
+    /**
+     * Constructs a new LogFileHandler.
+     *
+     * @param logger    the Logger instance to which this handler is attached
+     * @param fileLevel the logging level for the log file
+     */
     public LogFileHandler(Logger logger, Level fileLevel)
     {
         this.logger = logger;
         this.fileLevel = fileLevel;
     }
 
+    /**
+     * Replaces the current log file with a new one, creating a new log file for the current day.
+     * This method schedules itself to run again at the start of the next day.
+     */
     public void replaceDebugFileCycle()
     {
         final var now = LocalDateTime.now();
@@ -68,6 +84,9 @@ public class LogFileHandler
         Bukkit.getScheduler().scheduleSyncDelayedTask(AntiCheatAddition.getInstance(), this::replaceDebugFileCycle, TimeUtil.toMillis(difference));
     }
 
+    /**
+     * Closes the current log file handler, if one exists.
+     */
     public void close()
     {
         if (currentHandler != null) currentHandler.close();

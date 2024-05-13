@@ -115,7 +115,7 @@ public final class Esp extends Module
             // Special case for creative and spectator mode observers to make sure that they can see all players.
             if (!User.inAdventureOrSurvivalMode(observer)) {
                 Log.finest(() -> "ESP | Observer: " + observer.getName() + " | In creative or spectator mode, no hidden players.");
-                Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> PlayerVisibility.INSTANCE.setHidden(observerNode.element(), Set.of(), Set.of()));
+                PlayerVisibility.INSTANCE.setHidden(observerNode.element(), Set.of(), Set.of());
                 continue;
             }
 
@@ -148,7 +148,7 @@ public final class Esp extends Module
                              " | FULL: " + fullHiddenPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")) +
                              " | EQUIP: " + equipHiddenPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")));
 
-            Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> PlayerVisibility.INSTANCE.setHidden(observerNode.element(), fullHiddenPlayers, equipHiddenPlayers));
+            PlayerVisibility.INSTANCE.setHidden(observerNode.element(), fullHiddenPlayers, equipHiddenPlayers);
         }
     }
 }

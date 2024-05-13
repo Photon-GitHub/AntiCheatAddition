@@ -1,8 +1,10 @@
 package de.photon.anticheataddition.util.visibility.modern;
 
+import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.visibility.PacketInformationHider;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
@@ -23,25 +25,35 @@ public final class ModernPlayerEquipmentHider extends PacketInformationHider
     @Override
     protected void onPreHide(@NotNull Player observer, @NotNull Set<Player> toHide)
     {
-        for (Player player : toHide) {
-            for (EquipmentSlot slot : EquipmentSlot.values()) {
-                observer.sendEquipmentChange(player, slot, AIR_STACK);
-                Log.finest(() -> "Player " + player.getName() + "'s equipment has been hidden from " + observer.getName());
+        if (toHide.isEmpty()) return;
+
+        // Schedule to only call spigot API methods from the main thread.
+        Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> {
+            for (Player player : toHide) {
+                for (EquipmentSlot slot : EquipmentSlot.values()) {
+                    observer.sendEquipmentChange(player, slot, AIR_STACK);
+                    Log.finest(() -> "Player " + player.getName() + "'s equipment has been hidden from " + observer.getName());
+                }
             }
-        }
+        });
     }
 
     @Override
     protected void onReveal(@NotNull Player observer, @NotNull Set<Player> revealed)
     {
-        for (Player watched : revealed) {
-            for (EquipmentSlot slot : EquipmentSlot.values()) {
-                final var stack = watched.getInventory().getItem(slot);
-                // Only send non-null stacks, as the null stacks are air, and we sent that upon hiding.
-                if (stack != null) observer.sendEquipmentChange(watched, slot, stack);
+        if (revealed.isEmpty()) return;
+
+        // Schedule to only call spigot API methods from the main thread.
+        Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> {
+            for (Player watched : revealed) {
+                for (EquipmentSlot slot : EquipmentSlot.values()) {
+                    final var stack = watched.getInventory().getItem(slot);
+                    // Only send non-null stacks, as the null stacks are air, and we sent that upon hiding.
+                    if (stack != null) observer.sendEquipmentChange(watched, slot, stack);
+                }
+                Log.finest(() -> "Player " + watched.getName() + "'s equipment has been revealed to " + observer.getName());
             }
-            Log.finest(() -> "Player " + watched.getName() + "'s equipment has been revealed to " + observer.getName());
-        }
+        });
     }
 
     @Override

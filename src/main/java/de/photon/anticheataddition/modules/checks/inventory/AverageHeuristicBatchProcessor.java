@@ -25,6 +25,8 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
     @Override
     public void processBatch(User user, List<InventoryBatch.InventoryClick> batch)
     {
+        if (User.isUserInvalid(user, this.getModule())) return;
+
         final long[] timeOffsets = BatchPreprocessors.zipOffsetOne(batch).stream()
                                                      .filter(pair -> pair.first().inventory().equals(pair.second().inventory()))
                                                      .mapToLong(pair -> pair.first().timeOffset(pair.second()))

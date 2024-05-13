@@ -17,6 +17,7 @@ import java.util.Set;
 
 public final class StatisticalBatchProcessor extends AsyncBatchProcessor<InventoryBatch.InventoryClick>
 {
+    // TODO: Refine this value further.
     private static final double D_TEST = 0.21;
     private static final Polynomial D_TEST_VL_CALCULATOR = new Polynomial(-50, 60);
 
@@ -28,6 +29,8 @@ public final class StatisticalBatchProcessor extends AsyncBatchProcessor<Invento
     @Override
     public void processBatch(User user, List<InventoryBatch.InventoryClick> batch)
     {
+        if (User.isUserInvalid(user, this.getModule())) return;
+
         final long[] timeOffsets = BatchPreprocessors.zipOffsetOne(batch).stream()
                                                      .filter(pair -> pair.first().inventory().equals(pair.second().inventory()))
                                                      .mapToLong(pair -> pair.first().timeOffset(pair.second()))

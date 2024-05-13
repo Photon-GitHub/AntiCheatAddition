@@ -32,6 +32,8 @@ final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBloc
     @Override
     public void processBatch(User user, List<TowerBatch.TowerBlockPlace> batch)
     {
+        if (User.isUserInvalid(user, this.getModule())) return;
+
         final var statistics = BatchPreprocessors.zipReduceToDoubleStatistics(batch,
                                                                               (old, cur) -> calculateDelay(old),
                                                                               TowerBatch.TowerBlockPlace::timeOffset);

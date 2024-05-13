@@ -9,7 +9,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataUpdaterEvents;
 import de.photon.anticheataddition.user.data.subdata.BrandChannelData;
 import de.photon.anticheataddition.util.config.Configs;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.AccessLevel;
@@ -106,7 +106,7 @@ public class AntiCheatAddition extends JavaPlugin
             setInstance(this);
 
             // Setup logging.
-            Log.INSTANCE.setup();
+            Log.INSTANCE.bukkitSetup();
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //

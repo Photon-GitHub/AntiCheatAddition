@@ -16,7 +16,7 @@ import com.google.common.collect.SetMultimap;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

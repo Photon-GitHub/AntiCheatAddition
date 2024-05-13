@@ -16,7 +16,7 @@ import de.photon.anticheataddition.user.data.batch.TowerBatch;
 import de.photon.anticheataddition.user.data.subdata.BrandChannelData;
 import de.photon.anticheataddition.user.data.subdata.LookPacketData;
 import de.photon.anticheataddition.util.mathematics.Hitbox;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Delegate;

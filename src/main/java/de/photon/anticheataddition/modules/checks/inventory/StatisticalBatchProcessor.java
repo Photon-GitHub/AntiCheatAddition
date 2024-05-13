@@ -8,7 +8,7 @@ import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
 import de.photon.anticheataddition.util.mathematics.DataUtil;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 
 import java.util.Arrays;

@@ -9,7 +9,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSp
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import de.photon.anticheataddition.AntiCheatAddition;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.World;

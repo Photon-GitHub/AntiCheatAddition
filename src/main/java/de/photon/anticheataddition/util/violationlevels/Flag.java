@@ -2,7 +2,7 @@ package de.photon.anticheataddition.util.violationlevels;
 
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 

@@ -4,7 +4,7 @@ import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.sentinel.ParsedPluginMessageListener;
 import de.photon.anticheataddition.modules.sentinel.SentinelModule;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

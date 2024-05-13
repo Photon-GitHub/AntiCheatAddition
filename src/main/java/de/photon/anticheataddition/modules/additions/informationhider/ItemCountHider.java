@@ -6,7 +6,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEn
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.modules.ModuleLoader;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
 
 public final class ItemCountHider extends Module

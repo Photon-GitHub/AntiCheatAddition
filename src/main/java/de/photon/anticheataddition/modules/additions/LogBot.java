@@ -3,7 +3,7 @@ package de.photon.anticheataddition.modules.additions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import org.bukkit.Bukkit;
 
 import java.io.File;

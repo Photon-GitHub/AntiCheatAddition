@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.config.ConfigUtil;
-import de.photon.anticheataddition.util.messaging.Log;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 

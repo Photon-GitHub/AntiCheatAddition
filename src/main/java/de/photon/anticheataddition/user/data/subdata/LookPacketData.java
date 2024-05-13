@@ -14,7 +14,7 @@ import de.photon.anticheataddition.util.mathematics.DataUtil;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.RotationUtil;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.protocol.PacketEventUtils;
 import lombok.Value;
 import lombok.experimental.NonFinal;

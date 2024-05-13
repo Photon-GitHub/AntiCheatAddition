@@ -6,7 +6,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;

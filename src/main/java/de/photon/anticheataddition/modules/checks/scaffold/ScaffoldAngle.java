@@ -2,7 +2,7 @@ package de.photon.anticheataddition.modules.checks.scaffold;
 
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.util.Vector;
 

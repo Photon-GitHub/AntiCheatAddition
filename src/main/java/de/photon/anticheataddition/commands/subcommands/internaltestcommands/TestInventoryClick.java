@@ -7,7 +7,7 @@ import de.photon.anticheataddition.commands.TabCompleteSupplier;
 import de.photon.anticheataddition.user.data.DataUpdaterEvents;
 import de.photon.anticheataddition.util.inventoryview.InventoryViewUtil;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;

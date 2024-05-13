@@ -7,7 +7,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.quadtree.QuadTreeSet;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.minecraft.world.region.Region;
 import de.photon.anticheataddition.util.minecraft.world.region.WorldGuardRegionUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;

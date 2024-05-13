@@ -8,7 +8,7 @@ import com.google.common.collect.Sets;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.datastructure.batch.BatchProcessor;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;

@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 
 @UtilityClass
-public class KolmogorovSmirnow
+public final class KolmogorovSmirnow
 {
     /**
      * Normalizes the given array of values to the range [0, 1].

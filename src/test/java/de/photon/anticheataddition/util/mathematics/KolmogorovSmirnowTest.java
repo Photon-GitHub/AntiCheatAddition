@@ -83,7 +83,7 @@ class KolmogorovSmirnowTest
         double[] sample = {};
         double expected = 1.0;
 
-        double result = KolmogorovSmirnow.kolmogorovSmirnowUniformTest(sample);
+        double result = KolmogorovSmirnow.kSTestForUniformDistribution(sample);
 
         assertEquals(expected, result, 1e-9);
     }
@@ -94,7 +94,7 @@ class KolmogorovSmirnowTest
         double[] sample = null;
         double expected = 1.0;
 
-        double result = KolmogorovSmirnow.kolmogorovSmirnowUniformTest(sample);
+        double result = KolmogorovSmirnow.kSTestForUniformDistribution(sample);
 
         assertEquals(expected, result, 1e-9);
     }
@@ -103,16 +103,16 @@ class KolmogorovSmirnowTest
     void testKolmogorovSmirnowUniformDistribution()
     {
         double[] sample = KolmogorovSmirnow.normalizeData(generateUniformDistribution(1000));
-        final double d_max = KolmogorovSmirnow.kolmogorovSmirnowUniformTest(sample);
+        final double d_max = KolmogorovSmirnow.kSTestForUniformDistribution(sample);
 
         Assertions.assertTrue(d_max < 0.05, "D statistic should be close to zero 0 for a uniform distribution");
     }
 
     @Test
-    void testKolmogorovSmirnowUniformNormalDistribution()
+    void testKolmogorovSmirnowNormalDistribution()
     {
         double[] sample = KolmogorovSmirnow.normalizeData(generateNormalDistribution(1000, 5, 10));
-        double d_max = KolmogorovSmirnow.kolmogorovSmirnowUniformTest(sample);
+        double d_max = KolmogorovSmirnow.kSTestForUniformDistribution(sample);
 
         // The D statistic should be significantly higher than 0 for a normal distribution
         Assertions.assertTrue(d_max > 0.21, "D statistic should be significantly higher than 0 for a normal distribution");
@@ -122,7 +122,7 @@ class KolmogorovSmirnowTest
     void testKolmogorovSmirnowExponentialDistribution()
     {
         double[] sample = generateExponentialDistribution(1000);
-        double d_max = KolmogorovSmirnow.kolmogorovSmirnowUniformTest(sample);
+        double d_max = KolmogorovSmirnow.kSTestForUniformDistribution(sample);
 
         // The D statistic should be significantly higher than 0 for a Poisson distribution
         Assertions.assertTrue(d_max > 0.21, "D statistic should be significantly higher than 0 for a Poisson distribution");

@@ -77,7 +77,7 @@ public final class StatisticalBatchProcessor extends AsyncBatchProcessor<Invento
         Log.finest(() -> "Inventory-Debug | Statistical Player: %s | RAW-OFFSET: %s | SCALED-OFFSET: %s".formatted(user.getPlayer().getName(), Arrays.toString(timeOffsets), Arrays.toString(normalizedOffsets)));
 
         // Perform the K-S test
-        final double d_max = KolmogorovSmirnow.kolmogorovSmirnowUniformTest(normalizedOffsets);
+        final double d_max = KolmogorovSmirnow.kSTestForUniformDistribution(normalizedOffsets);
 
         Log.finer(() -> "Inventory-Debug | Statistical Player: %s, D_MAX: %f, D_TEST: %f".formatted(user.getPlayer().getName(), d_max, D_TEST));
 

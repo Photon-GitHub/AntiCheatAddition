@@ -59,7 +59,7 @@ public final class KolmogorovSmirnow
      *
      * @return The D statistic, ranging from 0 to 1.
      */
-    public double kolmogorovSmirnowUniformTest(double[] sample)
+    public double kSTestForUniformDistribution(double[] sample)
     {
         if (sample == null || sample.length == 0) return 1.0;
 

@@ -28,12 +28,29 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
         super("Inventory.parts.MultiInteraction");
     }
 
+
+    /**
+     * Calculates the distance between the last clicked slot and the current clicked slot.
+     *
+     * @param user  The user performing the click.
+     * @param event The inventory click event.
+     *
+     * @return An OptionalDouble containing the distance if available, or empty if the inventory is null.
+     */
     private static OptionalDouble distanceToLastClickedSlot(User user, InventoryClickEvent event)
     {
         final var inventory = event.getClickedInventory();
         return inventory == null ? OptionalDouble.empty() : InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getData().number.lastRawSlotClicked, inventory);
     }
 
+    /**
+     * Determines if the distance to the last clicked slot is small.
+     *
+     * @param user  The user performing the click.
+     * @param event The inventory click event.
+     *
+     * @return True if the distance is less than 4, false otherwise.
+     */
     private static boolean smallDistance(User user, InventoryClickEvent event)
     {
         return distanceToLastClickedSlot(user, event).orElse(0D) < 4;
@@ -127,7 +144,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
             this.getManagement().flag(Flag.of(user).setAddedVl(addedVl).setCancelAction(cancelVl, () -> {
                 event.setCancelled(true);
                 InventoryUtil.syncUpdateInventory(user.getPlayer());
-            }).setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " moved items too quickly."));
+            }).setDebug(() -> "Inventory-Debug | Player: %s moved items too quickly.".formatted(user.getPlayer().getName())));
         }
     }
 

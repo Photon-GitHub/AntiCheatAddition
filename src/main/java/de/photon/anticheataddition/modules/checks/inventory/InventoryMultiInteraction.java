@@ -44,7 +44,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
     {
         final var user = User.getUser(event.getWhoClicked().getUniqueId());
         Log.finer(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " | MultiInteraction assumptions | Invalid: " + User.isUserInvalid(user, this) +
-                        ", null inv: " + (event.getClickedInventory() != null) +
+                        ", null inv: " + (event.getClickedInventory() == null) +
                         ", Adventure/Survival: " + !user.inAdventureOrSurvivalMode() +
                         ", MinTPS: " + !Inventory.hasMinTPS() +
                         ", MaxPing: " + !PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), Inventory.INSTANCE.getMaxPing()) +

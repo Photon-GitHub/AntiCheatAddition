@@ -1,16 +1,14 @@
 package de.photon.anticheataddition.modules.checks.inventory;
 
-import com.google.common.primitives.Longs;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
 import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
 import de.photon.anticheataddition.util.log.Log;
+import de.photon.anticheataddition.util.mathematics.KolmogorovSmirnow;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.violationlevels.Flag;
-import org.apache.commons.math3.distribution.UniformRealDistribution;
-import org.apache.commons.math3.stat.inference.KolmogorovSmirnovTest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,11 +25,6 @@ public final class StatisticalBatchProcessor extends AsyncBatchProcessor<Invento
     private static final double D_TEST = 0.21;
     // Polynomial for calculating violation levels based on the D-statistic.
     private static final Polynomial D_TEST_VL_CALCULATOR = new Polynomial(-50, 60);
-
-    // Perform the K-S test
-    private static final KolmogorovSmirnovTest KS_TEST = new KolmogorovSmirnovTest();
-    // Create a uniform distribution with the range [0, 1]
-    private static final UniformRealDistribution UNIFORM_DISTRIBUTION = new UniformRealDistribution(0, 1);
 
     /**
      * Constructor for StatisticalBatchProcessor.
@@ -78,19 +71,13 @@ public final class StatisticalBatchProcessor extends AsyncBatchProcessor<Invento
      */
     private void kolmogorowSmirnowTest(User user, long[] timeOffsets)
     {
-        // Find the min and max values in the clickOffsets array
-        final double min = Longs.min(timeOffsets);
-        final double max = Longs.max(timeOffsets);
-
         // Normalize the clickOffsets to the [0, 1] range
-        final double[] normalizedOffsets = Arrays.stream(timeOffsets)
-                                                 .mapToDouble(offset -> (offset - min) / (max - min))
-                                                 .toArray();
+        final double[] normalizedOffsets = KolmogorovSmirnow.normalizeData(timeOffsets);
 
         Log.finest(() -> "Inventory-Debug | Statistical Player: %s | RAW-OFFSET: %s | SCALED-OFFSET: %s".formatted(user.getPlayer().getName(), Arrays.toString(timeOffsets), Arrays.toString(normalizedOffsets)));
 
         // Perform the K-S test
-        final double d_max = KS_TEST.kolmogorovSmirnovTest(UNIFORM_DISTRIBUTION, normalizedOffsets);
+        final double d_max = KolmogorovSmirnow.kolmogorovSmirnowUniformTest(normalizedOffsets);
 
         Log.finer(() -> "Inventory-Debug | Statistical Player: %s, D_MAX: %f, D_TEST: %f".formatted(user.getPlayer().getName(), d_max, D_TEST));
 

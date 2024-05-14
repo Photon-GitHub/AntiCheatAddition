@@ -182,12 +182,6 @@
             <version>33.0.0-jre</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Math library for Kolmogorov Smirnow -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-math3</artifactId>
-            <version>3.6.1</version>
-        </dependency>
         <!-- PacketEvents -->
         <dependency>
             <groupId>com.github.retrooper.packetevents</groupId>

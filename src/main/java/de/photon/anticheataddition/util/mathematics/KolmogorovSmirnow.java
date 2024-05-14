@@ -53,7 +53,7 @@ public class KolmogorovSmirnow
     }
 
     /**
-     * Calculates the Kolmogorov-Smirnov statistic for the given sample.
+     * Calculates the Kolmogorov-Smirnov statistic for the given sample, assuming a uniform distribution.
      *
      * @param sample The sample to be tested.
      *

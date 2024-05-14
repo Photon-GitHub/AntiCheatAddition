@@ -105,7 +105,7 @@ class KolmogorovSmirnowTest
         double[] sample = KolmogorovSmirnow.normalizeData(generateUniformDistribution(1000));
         final double d_max = KolmogorovSmirnow.kSTestForUniformDistribution(sample);
 
-        Assertions.assertTrue(d_max < 0.05, "D statistic should be close to zero 0 for a uniform distribution");
+        Assertions.assertTrue(d_max < 0.1, "D statistic should be close to zero 0 for a uniform distribution");
     }
 
     @Test

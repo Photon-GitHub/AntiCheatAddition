@@ -11,7 +11,7 @@ public enum Movement
     PROJECTILES(-0.03);
 
     /**
-     * The gravitation that is applied to that type of entity
+     * The gravitation applied to the entity per tick.
      */
     private final double gravitationPerTick;
 
@@ -21,29 +21,35 @@ public enum Movement
     }
 
     /**
-     * This applies the drag of Minecraft's gravitation system (*= 0.98) to a {@link Vector}
+     * Applies the drag of Minecraft's air resistance system (*= 0.98) to a {@link Vector}.
      *
      * @param input the input vector (will not be cloned)
+     *
+     * @return the modified vector after applying air resistance
      */
-    private static Vector applyAirResistance(@NotNull Vector input)
+    public static Vector applyAirResistance(@NotNull Vector input)
     {
         return input.multiply((double) 0.98F);
     }
 
     /**
-     * This applies the gravitation of a specific type to a {@link Vector}
+     * Applies the gravitational force of this entity type to a {@link Vector}.
      *
      * @param input the input vector (will not be cloned)
+     *
+     * @return the modified vector after applying gravity
      */
-    private Vector applyGravitation(@NotNull Vector input)
+    public Vector applyGravitation(@NotNull Vector input)
     {
         return input.setY(input.getY() + this.gravitationPerTick);
     }
 
     /**
-     * This applies the gravitation and the air resistance of a specific type to a {@link Vector}
+     * Applies both the gravitational force and air resistance of this entity type to a {@link Vector}.
      *
      * @param input the input vector (will not be cloned)
+     *
+     * @return the modified vector after applying gravity and air resistance
      */
     public Vector applyGravitationAndAirResistance(@NotNull Vector input)
     {
@@ -51,10 +57,14 @@ public enum Movement
     }
 
     /**
-     * Client-Copy for exact values.
-     * This gets the y-Motion of a {@link org.bukkit.entity.Player} for every JumpBoost effect.
+     * Gets the vertical motion (Y-axis) of a {@link org.bukkit.entity.Player} when jumping, taking into account any Jump Boost effects.
+     * This method is copied from the client, so any unnecessary casts are kept to ensure the same behavior.
      *
-     * @param amplifier the amplifier of the Jump_Boost effect. If no effect should be applied this should be null
+     * @param amplifier the amplifier level of the Jump Boost effect. If no effect should be applied, this should be null.
+     *
+     * @return the Y motion of the player when jumping
+     *
+     * @throws UnsupportedOperationException if called on a movement type that does not support jumping
      */
     @SuppressWarnings({"RedundantCast"})
     public double getJumpYMotion(final Integer amplifier)

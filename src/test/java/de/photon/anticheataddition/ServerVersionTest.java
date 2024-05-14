@@ -12,7 +12,13 @@ import java.util.stream.Stream;
 
 class ServerVersionTest
 {
-    private static final ServerVersion TEST_SERVER_VERSION = ServerVersion.MC119;
+    private static final ServerVersion TEST_SERVER_VERSION;
+
+    static {
+        // IMPORTANT: Mock first, otherwise ServerVersion will try to access Bukkit without mocks.
+        Dummy.mockEnvironment();
+        TEST_SERVER_VERSION = ServerVersion.MC119;
+    }
 
     @BeforeAll
     static void setup()

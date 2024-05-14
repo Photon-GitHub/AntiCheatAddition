@@ -7,7 +7,6 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -16,7 +15,7 @@ import org.mockito.Mockito;
 import java.io.File;
 import java.util.*;
 
-@UtilityClass
+
 public final class Dummy
 {
     public static final String SERVER_VERSION_STRING = "This server is running CraftBukkit version 3661-Spigot-19641c7-8434e36 (MC: 1.19.4) (Implementing API version 1.19.4-R0.1-SNAPSHOT)";
@@ -38,16 +37,16 @@ public final class Dummy
 
     private static void mockBukkit()
     {
-        var bukkitMock = Mockito.mockStatic(Bukkit.class);
+        final var bukkitMock = Mockito.mockStatic(Bukkit.class);
         bukkitMock.when(Bukkit::getVersion).thenReturn(SERVER_VERSION_STRING);
         bukkitMock.when(Bukkit::getBukkitVersion).thenReturn(BUKKIT_VERSION_STRING);
     }
 
     private static void mockPacketEvents()
     {
-        var packetEvents = Mockito.mockStatic(PacketEvents.class);
-        var packetEventsAPI = Mockito.mock(PacketEventsAPI.class);
-        var eventManager = Mockito.mock(EventManager.class);
+        final var packetEvents = Mockito.mockStatic(PacketEvents.class);
+        final var packetEventsAPI = Mockito.mock(PacketEventsAPI.class);
+        final var eventManager = Mockito.mock(EventManager.class);
         Mockito.when(packetEventsAPI.getEventManager()).thenReturn(eventManager);
         packetEvents.when(PacketEvents::getAPI).thenReturn(packetEventsAPI);
     }

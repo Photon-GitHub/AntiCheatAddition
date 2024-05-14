@@ -44,7 +44,7 @@ public final class LivingEntityIdLookup
         });
 
         // Do not immediately loop through all entities to cache them, as Bukkit may not have loaded all entities yet which leads to connection errors when players try to join.
-        Bukkit.getScheduler().scheduleSyncDelayedTask(AntiCheatAddition.getInstance(), this::cacheAllEntities, CACHE_TIME);
+        Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(), this::cacheAllEntities, CACHE_TIME);
     }
 
     private void cacheAllEntities()

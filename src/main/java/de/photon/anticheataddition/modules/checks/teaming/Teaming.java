@@ -6,8 +6,8 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.quadtree.QuadTreeSet;
-import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.log.Log;
+import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.minecraft.world.region.Region;
 import de.photon.anticheataddition.util.minecraft.world.region.WorldGuardRegionUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -78,7 +78,7 @@ public final class Teaming extends ViolationModule implements Listener
         final int allowedSize = loadInt(".allowed_size", 1);
         Preconditions.checkArgument(allowedSize > 0, "The Teaming allowed_size must be greater than 0.");
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(AntiCheatAddition.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), () -> {
             // Set for fast removeAll calls.
             final var quadTree = new QuadTreeSet<Player>();
 

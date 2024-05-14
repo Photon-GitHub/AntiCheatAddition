@@ -4,8 +4,8 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
-import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.log.Log;
+import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -43,12 +43,12 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
     public void onInventoryClick(InventoryClickEvent event)
     {
         final var user = User.getUser(event.getWhoClicked().getUniqueId());
-        Log.finest(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " | MultiInteraction assumptions | Invalid: " + User.isUserInvalid(user, this) +
-                         ", null inv: " + (event.getClickedInventory() != null) +
-                         ", Adventure/Survival: " + !user.inAdventureOrSurvivalMode() +
-                         ", MinTPS: " + !Inventory.hasMinTPS() +
-                         ", MaxPing: " + !PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), Inventory.INSTANCE.getMaxPing()) +
-                         ", Last slot: " + (event.getRawSlot() == user.getData().number.lastRawSlotClicked));
+        Log.finer(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " | MultiInteraction assumptions | Invalid: " + User.isUserInvalid(user, this) +
+                        ", null inv: " + (event.getClickedInventory() != null) +
+                        ", Adventure/Survival: " + !user.inAdventureOrSurvivalMode() +
+                        ", MinTPS: " + !Inventory.hasMinTPS() +
+                        ", MaxPing: " + !PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), Inventory.INSTANCE.getMaxPing()) +
+                        ", Last slot: " + (event.getRawSlot() == user.getData().number.lastRawSlotClicked));
 
         if (User.isUserInvalid(user, this) ||
             event.getClickedInventory() == null ||

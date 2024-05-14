@@ -6,6 +6,7 @@ import de.photon.anticheataddition.user.data.ViolationCounter;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
 import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.mathematics.DataUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -53,6 +54,8 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
         // 2500 error sum is legit achievable.
         // +1 to avoid division by 0
         final int vl = getVl(misClickCounter, variance, averageMillis);
+
+        Log.finer(() -> "Inventory-Debug | Player: %s | Average-Heuristics | (VAR: %f | AVG: %f | MISS: %d | VL: %d)".formatted(user.getPlayer().getName(), variance, averageMillis, misClickCounter.getCounter(), vl));
 
         // Too low vl.
         if (vl < 10) return;

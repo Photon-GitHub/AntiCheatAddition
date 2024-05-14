@@ -5,10 +5,10 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
 import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.mathematics.DataUtil;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
-import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 
 import java.util.Arrays;
@@ -68,7 +68,7 @@ public final class StatisticalBatchProcessor extends AsyncBatchProcessor<Invento
 
         final double finalD_max = d_max;
 
-        Log.finer(() -> "Inventory-Debug | Statistical Player: %s SCALE: %f, START: %f, D_MAX: %f, D_TEST: %f".formatted(user.getPlayer(), scalingFactor, startAtZeroFactor, finalD_max, D_TEST));
+        Log.finer(() -> "Inventory-Debug | Statistical Player: %s SCALE: %f, START: %f, D_MAX: %f, D_TEST: %f".formatted(user.getPlayer().getName(), scalingFactor, startAtZeroFactor, finalD_max, D_TEST));
 
         if (d_max >= D_TEST) return;
         this.getModule().getManagement().flag(Flag.of(user)

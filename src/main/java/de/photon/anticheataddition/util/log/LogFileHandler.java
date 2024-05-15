@@ -39,7 +39,7 @@ public class LogFileHandler
         }
     };
 
-    private final Logger logger;
+    @Setter private Logger logger;
     @Setter private Level fileLevel = Level.OFF;
     private FileHandler currentHandler;
 

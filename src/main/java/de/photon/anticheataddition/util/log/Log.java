@@ -85,6 +85,7 @@ public final class Log
 
         if (!Level.OFF.equals(CONSOLE_LEVEL)) INSTANCE.logger.addHandler(new ConsoleLogHandler(CONSOLE_LEVEL));
         if (!Level.OFF.equals(FILE_LEVEL)) {
+            logFileHandler.setLogger(this.logger);
             logFileHandler.setFileLevel(FILE_LEVEL);
             logFileHandler.replaceDebugFileCycle();
         }

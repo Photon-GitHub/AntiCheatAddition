@@ -60,6 +60,8 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
     public void onInventoryClick(InventoryClickEvent event)
     {
         final var user = User.getUser(event.getWhoClicked().getUniqueId());
+        if (user == null) return;
+
         Log.finer(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " | MultiInteraction assumptions | Invalid: " + User.isUserInvalid(user, this) +
                         ", null inv: " + (event.getClickedInventory() == null) +
                         ", Adventure/Survival: " + !user.inAdventureOrSurvivalMode() +

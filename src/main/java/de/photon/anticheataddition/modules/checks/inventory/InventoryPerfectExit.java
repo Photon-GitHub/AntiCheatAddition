@@ -29,6 +29,7 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
     public void onInventoryClose(final InventoryCloseEvent event)
     {
         final var user = User.getUser(event.getPlayer().getUniqueId());
+        if (user == null) return;
 
         Log.finer(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " | PerfectExit assumptions | Invalid: " + User.isUserInvalid(user, this) +
                         ", Adventure/Survival: " + !user.inAdventureOrSurvivalMode() +

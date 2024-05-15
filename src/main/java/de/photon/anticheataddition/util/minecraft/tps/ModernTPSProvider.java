@@ -2,12 +2,12 @@ package de.photon.anticheataddition.util.minecraft.tps;
 
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.datastructure.statistics.MovingLongStatistics;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.Bukkit;
 
 /**
  * This util provides methods to get information from the server that is usually hidden.
  */
-final class ModernTPSProvider extends BukkitRunnable implements TPSProvider
+final class ModernTPSProvider implements TPSProvider
 {
     private static final int RESOLUTION = 40;
 
@@ -17,16 +17,12 @@ final class ModernTPSProvider extends BukkitRunnable implements TPSProvider
 
     public ModernTPSProvider()
     {
-        this.runTaskTimer(AntiCheatAddition.getInstance(), 1L, 1L);
-    }
-
-    @Override
-    public void run()
-    {
-        final long curr = System.currentTimeMillis();
-        // Add the tick time difference as a data point.
-        tickIntervals.add(curr - this.lastTick);
-        this.lastTick = curr;
+        Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), () -> {
+            final long curr = System.currentTimeMillis();
+            // Add the tick time difference as a data point.
+            tickIntervals.add(curr - this.lastTick);
+            this.lastTick = curr;
+        }, 1L, 1L);
     }
 
     @Override

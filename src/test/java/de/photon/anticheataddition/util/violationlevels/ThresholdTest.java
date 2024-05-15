@@ -3,6 +3,7 @@ package de.photon.anticheataddition.util.violationlevels;
 import de.photon.anticheataddition.Dummy;
 import de.photon.anticheataddition.util.violationlevels.threshold.Threshold;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ class ThresholdTest
     {
         Assertions.assertThrows(NullPointerException.class, () -> ThresholdManagement.loadThresholds((String) null), "Can load null path.");
         Assertions.assertThrows(NullPointerException.class, () -> ThresholdManagement.loadThresholds("THIS_KEY_DOES_NOT_EXIST_REALLY!"), "Nonexistent key loaded.");
-        Assertions.assertThrows(NullPointerException.class, () -> ThresholdManagement.loadThresholds("NoCommandThreshold"), "Loaded malformed threshold.");
+        Assertions.assertThrows(NullPointerException.class, () -> ThresholdManagement.loadThresholds("MalformedCommandThreshold"), "Loaded malformed threshold.");
 
         Assertions.assertDoesNotThrow(() -> ThresholdManagement.loadThresholds("SingleCommandThreshold"));
         Assertions.assertDoesNotThrow(() -> ThresholdManagement.loadThresholds("SingleCommandThresholdTwo"));
@@ -43,6 +44,9 @@ class ThresholdTest
     @Test
     void thresholdCorrectLoadingTest()
     {
+        final List<Threshold> noThreshold = ThresholdManagement.loadThresholds("NoCommandThreshold").getThresholds();
+        Assertions.assertEquals(0, noThreshold.size());
+
         final List<Threshold> singleThreshold = ThresholdManagement.loadThresholds("SingleCommandThreshold").getThresholds();
         Assertions.assertEquals(1, singleThreshold.size());
         Assertions.assertEquals(1, singleThreshold.get(0).commandList().size());

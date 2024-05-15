@@ -5,29 +5,51 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
 import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
-import de.photon.anticheataddition.util.mathematics.DataUtil;
-import de.photon.anticheataddition.util.mathematics.MathUtil;
+import de.photon.anticheataddition.util.log.Log;
+import de.photon.anticheataddition.util.mathematics.KolmogorovSmirnow;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
-import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The StatisticalBatchProcessor class processes batches of inventory clicks from users,
+ * analyzing the time offsets between clicks to detect suspicious behavior using the Kolmogorov-Smirnov test.
+ */
 public final class StatisticalBatchProcessor extends AsyncBatchProcessor<InventoryBatch.InventoryClick>
 {
+    // TODO: Refine this value further.
+    // Threshold value for the Kolmogorov-Smirnov test (D-statistic).
     private static final double D_TEST = 0.21;
+    // Polynomial for calculating violation levels based on the D-statistic.
     private static final Polynomial D_TEST_VL_CALCULATOR = new Polynomial(-50, 60);
 
+    /**
+     * Constructor for StatisticalBatchProcessor.
+     *
+     * @param module The violation module to which this processor belongs.
+     */
     StatisticalBatchProcessor(ViolationModule module)
     {
         super(module, Set.of(InventoryBatch.INVENTORY_BATCH_EVENTBUS));
     }
 
+    /**
+     * Processes a batch of inventory clicks.
+     * If the user is invalid or there is not enough data, the method returns early.
+     * Otherwise, it proceeds to perform a Kolmogorov-Smirnov test on the time offsets between clicks.
+     *
+     * @param user  The user whose inventory clicks are being processed.
+     * @param batch The batch of inventory clicks to process.
+     */
     @Override
     public void processBatch(User user, List<InventoryBatch.InventoryClick> batch)
     {
+        if (User.isUserInvalid(user, this.getModule())) return;
+
+        // Calculate time offsets between successive clicks on the same inventory.
         final long[] timeOffsets = BatchPreprocessors.zipOffsetOne(batch).stream()
                                                      .filter(pair -> pair.first().inventory().equals(pair.second().inventory()))
                                                      .mapToLong(pair -> pair.first().timeOffset(pair.second()))
@@ -41,35 +63,28 @@ public final class StatisticalBatchProcessor extends AsyncBatchProcessor<Invento
         kolmogorowSmirnowTest(user, timeOffsets);
     }
 
+    /**
+     * Performs the Kolmogorov-Smirnov test on the given time offsets to detect suspicious behavior.
+     *
+     * @param user        The user whose inventory clicks are being analyzed.
+     * @param timeOffsets The time offsets between successive inventory clicks.
+     */
     private void kolmogorowSmirnowTest(User user, long[] timeOffsets)
     {
-        final double average = DataUtil.average(timeOffsets);
+        // Normalize the clickOffsets to the [0, 1] range
+        final double[] normalizedOffsets = KolmogorovSmirnow.normalizeData(timeOffsets);
 
-        // Subtract the average to make sure that any base value on which a uniform distribution was added is removed.
-        final double[] sortedCenterOffset = Arrays.stream(timeOffsets).mapToDouble(offset -> offset - average).sorted().toArray();
-        // Scale to the range -0.5 to 0.5
-        final double scalingFactor = 2 * MathUtil.absDiff(sortedCenterOffset[0], sortedCenterOffset[sortedCenterOffset.length - 1]);
-        // Scale to the range 0 to 1
-        final double startAtZeroFactor = sortedCenterOffset[0] / scalingFactor;
+        Log.finest(() -> "Inventory-Debug | Statistical Player: %s | RAW-OFFSET: %s | SCALED-OFFSET: %s".formatted(user.getPlayer().getName(), Arrays.toString(timeOffsets), Arrays.toString(normalizedOffsets)));
 
-        final double[] scaledTimeOffsets = Arrays.stream(sortedCenterOffset).map(d -> d / scalingFactor).map(d -> d + startAtZeroFactor).toArray();
+        // Perform the K-S test to see if the clicks are uniformly distributed.
+        final double d_max = KolmogorovSmirnow.kSTestForUniformDistribution(normalizedOffsets);
 
-        Log.finest(() -> "Inventory-Debug | Statistical Player: %s | RAW-OFFSET: %s | SCALED-OFFSET: %s".formatted(user.getPlayer().getName(), Arrays.toString(sortedCenterOffset), Arrays.toString(scaledTimeOffsets)));
+        Log.finer(() -> "Inventory-Debug | Statistical Player: %s, D_MAX: %f, D_TEST: %f".formatted(user.getPlayer().getName(), d_max, D_TEST));
 
-        double d_max = 0;
-        for (int i = 0; i < scaledTimeOffsets.length; i++) {
-            final double uniform = (i + 0.5) / scaledTimeOffsets.length;
-            final double d = MathUtil.absDiff(scaledTimeOffsets[i], uniform);
-            if (d > d_max) d_max = d;
-        }
-
-        final double finalD_max = d_max;
-
-        Log.finer(() -> "Inventory-Debug | Statistical Player: %s SCALE: %f, START: %f, D_MAX: %f, D_TEST: %f".formatted(user.getPlayer(), scalingFactor, startAtZeroFactor, finalD_max, D_TEST));
-
+        // If the D-statistic is greater than or equal to the threshold, return (no uniform distribution found).
         if (d_max >= D_TEST) return;
         this.getModule().getManagement().flag(Flag.of(user)
                                                   .setAddedVl(D_TEST_VL_CALCULATOR.apply(d_max / D_TEST).intValue())
-                                                  .setDebug(() -> "Inventory-Debug | Player: %s has suspiciously distributed click delays. (SCALE: %f, START: %f, D_MAX: %f, D_TEST: %f)".formatted(user.getPlayer().getName(), scalingFactor, startAtZeroFactor, finalD_max, D_TEST)));
+                                                  .setDebug(() -> "Inventory-Debug | Player: %s has suspiciously distributed click delays. (D_MAX: %f, D_TEST: %f)".formatted(user.getPlayer().getName(), d_max, D_TEST)));
     }
 }

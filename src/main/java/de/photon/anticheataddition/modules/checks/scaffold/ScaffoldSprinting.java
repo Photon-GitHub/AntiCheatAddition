@@ -2,7 +2,7 @@ package de.photon.anticheataddition.modules.checks.scaffold;
 
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 
 /**
  * This pattern detects bursts of sprinting while scaffolding. No legit is able to properly utilize sprinting so far

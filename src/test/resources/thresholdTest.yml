@@ -4,7 +4,9 @@ MultiCommand:
   - "CommandOne"
   - "CommandTwo"
 
-NoCommandThreshold: [ ]
+MalformedCommandThreshold: [ ]
+
+NoCommandThreshold: { }
 
 SingleCommandThreshold:
   1: "Some command"

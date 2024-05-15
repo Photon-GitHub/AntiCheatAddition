@@ -8,7 +8,7 @@ import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 
 import java.util.List;
@@ -47,6 +47,8 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
     @Override
     public void processBatch(User user, List<ScaffoldBatch.ScaffoldBlockPlace> batch)
     {
+        if (User.isUserInvalid(user, this.getModule())) return;
+
         final boolean moonwalk = batch.stream().filter(Predicate.not(ScaffoldBatch.ScaffoldBlockPlace::sneaked)).count() >= batch.size() / 2;
         final var delays = BatchPreprocessors.zipReduceToDoubleStatistics(batch,
                                                                           (old, cur) -> old.speedModifier() * cur.timeOffset(old),

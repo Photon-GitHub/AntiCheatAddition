@@ -2,7 +2,9 @@ package de.photon.anticheataddition.modules.checks.inventory;
 
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -26,12 +28,29 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
         super("Inventory.parts.MultiInteraction");
     }
 
+
+    /**
+     * Calculates the distance between the last clicked slot and the current clicked slot.
+     *
+     * @param user  The user performing the click.
+     * @param event The inventory click event.
+     *
+     * @return An OptionalDouble containing the distance if available, or empty if the inventory is null.
+     */
     private static OptionalDouble distanceToLastClickedSlot(User user, InventoryClickEvent event)
     {
         final var inventory = event.getClickedInventory();
         return inventory == null ? OptionalDouble.empty() : InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getData().number.lastRawSlotClicked, inventory);
     }
 
+    /**
+     * Determines if the distance to the last clicked slot is small.
+     *
+     * @param user  The user performing the click.
+     * @param event The inventory click event.
+     *
+     * @return True if the distance is less than 4, false otherwise.
+     */
     private static boolean smallDistance(User user, InventoryClickEvent event)
     {
         return distanceToLastClickedSlot(user, event).orElse(0D) < 4;
@@ -41,6 +60,15 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
     public void onInventoryClick(InventoryClickEvent event)
     {
         final var user = User.getUser(event.getWhoClicked().getUniqueId());
+        if (user == null) return;
+
+        Log.finer(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " | MultiInteraction assumptions | Invalid: " + User.isUserInvalid(user, this) +
+                        ", null inv: " + (event.getClickedInventory() == null) +
+                        ", Adventure/Survival: " + !user.inAdventureOrSurvivalMode() +
+                        ", MinTPS: " + !Inventory.hasMinTPS() +
+                        ", MaxPing: " + !PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), Inventory.INSTANCE.getMaxPing()) +
+                        ", Last slot: " + (event.getRawSlot() == user.getData().number.lastRawSlotClicked));
+
         if (User.isUserInvalid(user, this) ||
             event.getClickedInventory() == null ||
             // Creative-clear might trigger this.
@@ -55,7 +83,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
         // Default vl is 6
         int addedVl = 6;
         // Time in ticks that have to pass to not be flagged by this check for too fast inventory interactions.
-        int enforcedTicks = 0;
+        final int enforcedTicks;
 
         //noinspection EnhancedSwitchMigration
         switch (event.getAction()) {
@@ -64,7 +92,8 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
             // Unknown reason might not be safe to handle
             // False positive with collecting all items of one type in the inventory
             // False positives due to auto-dropping feature of minecraft when holding q
-            case NOTHING, UNKNOWN, COLLECT_TO_CURSOR, DROP_ALL_SLOT, DROP_ONE_SLOT: return;
+            case NOTHING, UNKNOWN, COLLECT_TO_CURSOR, DROP_ALL_SLOT, DROP_ONE_SLOT:
+                return;
             // ------------------------------------------ Normal -------------------------------------------- //
             case HOTBAR_SWAP, HOTBAR_MOVE_AND_READD:
                 addedVl = 1;
@@ -103,7 +132,13 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
                     default -> 2;
                 };
                 break;
+
+            default:
+                enforcedTicks = 0;
+                break;
         }
+
+        Log.finer(() -> "Inventory-Debug | Player: %s | MultiInteraction delays | Enforced: %d, passed: %d".formatted(user.getPlayer().getName(), TimeUtil.toMillis(enforcedTicks), user.getTimeMap().at(TimeKey.INVENTORY_CLICK).passedTime()));
 
         // Convert ticks to millis.
         // 25 to account for server lag.
@@ -111,7 +146,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
             this.getManagement().flag(Flag.of(user).setAddedVl(addedVl).setCancelAction(cancelVl, () -> {
                 event.setCancelled(true);
                 InventoryUtil.syncUpdateInventory(user.getPlayer());
-            }).setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " moved items too quickly."));
+            }).setDebug(() -> "Inventory-Debug | Player: %s moved items too quickly.".formatted(user.getPlayer().getName())));
         }
     }
 

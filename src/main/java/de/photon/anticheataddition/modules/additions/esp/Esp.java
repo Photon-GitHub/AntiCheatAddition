@@ -5,7 +5,7 @@ import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.config.Configs;
 import de.photon.anticheataddition.util.datastructure.quadtree.QuadTreeQueue;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.visibility.PlayerVisibility;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -89,14 +89,13 @@ public final class Esp extends Module
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(AntiCheatAddition.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), () -> {
             for (World world : Bukkit.getWorlds()) {
                 final int playerTrackingRange = playerTrackingRanges.getOrDefault(world, defaultTrackingRange);
 
                 final var worldPlayers = world.getPlayers().stream()
                                               .map(User::getUser)
                                               .filter(user -> !User.isUserInvalid(user, this))
-                                              .filter(User::inAdventureOrSurvivalMode)
                                               .map(User::getPlayer)
                                               .collect(Collectors.toUnmodifiableSet());
 
@@ -111,9 +110,17 @@ public final class Esp extends Module
     private static void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, QuadTreeQueue<Player> playerQuadTree)
     {
         for (final var observerNode : playerQuadTree) {
+            final Player observer = observerNode.element();
+
+            // Special case for creative and spectator mode observers to make sure that they can see all players.
+            if (!User.inAdventureOrSurvivalMode(observer)) {
+                Log.finest(() -> "ESP | Observer: " + observer.getName() + " | In creative or spectator mode, no hidden players.");
+                PlayerVisibility.INSTANCE.setHidden(observerNode.element(), Set.of(), Set.of());
+                continue;
+            }
+
             final Set<Player> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
             final Set<Player> fullHiddenPlayers = new HashSet<>(worldPlayers);
-            final Player observer = observerNode.element();
 
             for (final var playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
                 final Player watched = playerNode.element();
@@ -126,8 +133,7 @@ public final class Esp extends Module
                     // Less than 1 block distance (removes the player themselves and any very close player)
                     || observerNode.distanceSquared(playerNode) < 1
                     || watched.isDead()
-                    || CanSee.canSee(observer, watched))
-                {
+                    || CanSee.canSee(observer, watched)) {
                     // No hiding case
                     fullHiddenPlayers.remove(watched);
                 } else if (!ONLY_FULL_HIDE && !watched.isSneaking()) {
@@ -142,7 +148,7 @@ public final class Esp extends Module
                              " | FULL: " + fullHiddenPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")) +
                              " | EQUIP: " + equipHiddenPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")));
 
-            Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> PlayerVisibility.INSTANCE.setHidden(observerNode.element(), fullHiddenPlayers, equipHiddenPlayers));
+            PlayerVisibility.INSTANCE.setHidden(observerNode.element(), fullHiddenPlayers, equipHiddenPlayers);
         }
     }
 }

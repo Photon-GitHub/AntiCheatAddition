@@ -1,7 +1,7 @@
 package de.photon.anticheataddition.util.visibility.modern;
 
 import de.photon.anticheataddition.ServerVersion;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.visibility.PacketInformationHider;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

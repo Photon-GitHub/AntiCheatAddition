@@ -1,7 +1,7 @@
 package de.photon.anticheataddition.util.reflection;
 
 import com.google.common.base.Preconditions;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

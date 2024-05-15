@@ -9,25 +9,29 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class PacketEventUtils
 {
+
+    /**
+     * Extracts the rotation (yaw and pitch) from a packet receive event.
+     *
+     * @param event the packet receive event
+     *
+     * @return a Rotation object containing the yaw and pitch
+     *
+     * @throws IllegalStateException if the packet type is not PLAYER_POSITION_AND_ROTATION or PLAYER_ROTATION
+     */
     public static Rotation getRotationFromEvent(PacketReceiveEvent event)
     {
-        final float currentYaw;
-        final float currentPitch;
-
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
             final var wrapper = new WrapperPlayClientPlayerPositionAndRotation(event);
-            currentYaw = wrapper.getYaw();
-            currentPitch = wrapper.getPitch();
+            return new Rotation(wrapper.getYaw(), wrapper.getPitch());
         } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_ROTATION) {
             final var wrapper = new WrapperPlayClientPlayerRotation(event);
-            currentYaw = wrapper.getYaw();
-            currentPitch = wrapper.getPitch();
-        } else {
-            throw new IllegalStateException("Unexpected packet type: " + event.getPacketType());
-        }
-
-        return new Rotation(currentYaw, currentPitch);
+            return new Rotation(wrapper.getYaw(), wrapper.getPitch());
+        } else throw new IllegalStateException("Unexpected packet type: " + event.getPacketType());
     }
 
+    /**
+     * Record class representing the rotation of a player.
+     */
     public record Rotation(float yaw, float pitch) {}
 }

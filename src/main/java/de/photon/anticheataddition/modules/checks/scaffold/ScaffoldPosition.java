@@ -2,7 +2,7 @@ package de.photon.anticheataddition.modules.checks.scaffold;
 
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import org.bukkit.event.block.BlockPlaceEvent;
 

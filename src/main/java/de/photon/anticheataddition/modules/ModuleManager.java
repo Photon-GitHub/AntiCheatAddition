@@ -4,6 +4,7 @@ import de.photon.anticheataddition.modules.additions.BrandHider;
 import de.photon.anticheataddition.modules.additions.DamageIndicator;
 import de.photon.anticheataddition.modules.additions.LogBot;
 import de.photon.anticheataddition.modules.additions.esp.Esp;
+import de.photon.anticheataddition.modules.additions.informationhider.DurabilityHider;
 import de.photon.anticheataddition.modules.additions.informationhider.EnchantmentHider;
 import de.photon.anticheataddition.modules.additions.informationhider.ItemCountHider;
 import de.photon.anticheataddition.modules.checks.autoeat.AutoEat;
@@ -48,7 +49,7 @@ public final class ModuleManager
                 BrandHider.INSTANCE,
                 DamageIndicator.INSTANCE,
 
-                new Module("InformationHider", EnchantmentHider.INSTANCE, ItemCountHider.INSTANCE),
+                new Module("InformationHider", DurabilityHider.INSTANCE, EnchantmentHider.INSTANCE, ItemCountHider.INSTANCE),
 
                 Esp.INSTANCE,
                 LogBot.INSTANCE,

@@ -16,7 +16,7 @@ import com.google.common.collect.SetMultimap;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,11 +32,24 @@ import java.util.concurrent.ExecutionException;
 
 public abstract class PlayerInformationHider implements Listener
 {
-    private static final long SKIN_CACHE_CAPACITY = 2 << 10;
+    private static final long SKIN_CACHE_CAPACITY = 2048L;
     private static final LoadingCache<UUID, List<TextureProperty>> SKIN_CACHE = CacheBuilder.newBuilder()
                                                                                             .initialCapacity(AntiCheatAddition.SERVER_EXPECTED_PLAYERS)
                                                                                             .maximumSize(SKIN_CACHE_CAPACITY)
-                                                                                            .build(CacheLoader.from(MojangAPIUtil::requestPlayerTextureProperties));
+                                                                                            .build(new CacheLoader<>()
+                                                                                            {
+                                                                                                @Override
+                                                                                                public @NotNull List<TextureProperty> load(@NotNull UUID key)
+                                                                                                {
+                                                                                                    try {
+                                                                                                        final var skin = MojangAPIUtil.requestPlayerTextureProperties(key);
+                                                                                                        if (skin == null) return List.of();
+                                                                                                        return skin;
+                                                                                                    } catch (IllegalStateException exception) {
+                                                                                                        return List.of();
+                                                                                                    }
+                                                                                                }
+                                                                                            });
 
     protected final SetMultimap<Player, Player> hiddenFromPlayerMap;
 
@@ -57,6 +70,7 @@ public abstract class PlayerInformationHider implements Listener
     {
         return ServerVersion.ALL_SUPPORTED_VERSIONS;
     }
+
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
@@ -116,9 +130,9 @@ public abstract class PlayerInformationHider implements Listener
             Log.finer(() -> "Failed to load skin for player " + watched.getName() + ". Error: " + e.getMessage());
         }
 
-        if (skin == null) return;
+        if (skin == null || skin.isEmpty()) return;
 
-        Log.finer(() -> "Adding player " + watched.getName() + " to the tablist of " + observer.getName() + ". Skin successfully loaded.");
+        Log.finest(() -> "Adding player " + watched.getName() + " to the tablist of " + observer.getName() + ". Skin successfully loaded.");
 
         final var userProfile = new UserProfile(watched.getUniqueId(), watched.getName(), skin);
 

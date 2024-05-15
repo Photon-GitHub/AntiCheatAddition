@@ -1,6 +1,6 @@
 package de.photon.anticheataddition.util.minecraft.ping;
 
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.reflection.ClassReflect;
 import de.photon.anticheataddition.util.reflection.Reflect;
 import org.bukkit.entity.Player;

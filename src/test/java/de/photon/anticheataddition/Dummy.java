@@ -7,7 +7,6 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -16,29 +15,40 @@ import org.mockito.Mockito;
 import java.io.File;
 import java.util.*;
 
-@UtilityClass
+
 public final class Dummy
 {
+    public static final String SERVER_VERSION_STRING = "This server is running CraftBukkit version 3661-Spigot-19641c7-8434e36 (MC: 1.19.4) (Implementing API version 1.19.4-R0.1-SNAPSHOT)";
+    public static final String BUKKIT_VERSION_STRING = "1.19.4-R0.1-SNAPSHOT";
+
     private static final List<Player> mockedPlayers;
     private static final List<User> mockedUsers;
     private static final Map<String, AntiCheatAddition> mockedAntiCheatAdditionMap;
 
-    // Mock the environment.
+    // Mock the environment
     static {
-        final var bukkitMock = Mockito.mockStatic(Bukkit.class);
-        // ProtocolLib needs this method.
-        bukkitMock.when(Bukkit::getVersion).thenReturn("This server is running CraftBukkit version 3661-Spigot-19641c7-8434e36 (MC: 1.19.4) (Implementing API version 1.19.4-R0.1-SNAPSHOT)");
-        bukkitMock.when(Bukkit::getBukkitVersion).thenReturn("1.19.4-R0.1-SNAPSHOT");
+        mockBukkit();
+        mockPacketEvents();
 
+        mockedPlayers = new ArrayList<>();
+        mockedUsers = new ArrayList<>();
+        mockedAntiCheatAdditionMap = new HashMap<>();
+    }
+
+    private static void mockBukkit()
+    {
+        final var bukkitMock = Mockito.mockStatic(Bukkit.class);
+        bukkitMock.when(Bukkit::getVersion).thenReturn(SERVER_VERSION_STRING);
+        bukkitMock.when(Bukkit::getBukkitVersion).thenReturn(BUKKIT_VERSION_STRING);
+    }
+
+    private static void mockPacketEvents()
+    {
         final var packetEvents = Mockito.mockStatic(PacketEvents.class);
         final var packetEventsAPI = Mockito.mock(PacketEventsAPI.class);
         final var eventManager = Mockito.mock(EventManager.class);
         Mockito.when(packetEventsAPI.getEventManager()).thenReturn(eventManager);
         packetEvents.when(PacketEvents::getAPI).thenReturn(packetEventsAPI);
-
-        mockedPlayers = new ArrayList<>();
-        mockedUsers = new ArrayList<>();
-        mockedAntiCheatAdditionMap = new HashMap<>();
     }
 
     /**

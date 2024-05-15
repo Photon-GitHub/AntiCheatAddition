@@ -1,6 +1,6 @@
 package de.photon.anticheataddition.util.config;
 
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 

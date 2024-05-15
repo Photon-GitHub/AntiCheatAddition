@@ -1,4 +1,4 @@
-package de.photon.anticheataddition.util.messaging;
+package de.photon.anticheataddition.util.log;
 
 import de.photon.anticheataddition.events.SentinelEvent;
 import de.photon.anticheataddition.events.ViolationEvent;

@@ -6,8 +6,8 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
-import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -57,7 +57,7 @@ public final class DupingSecretCache extends ViolationModule implements Listener
 
                     // Check after x minutes how many blocks surround the chest or shulker box.
                     // If the chest or shulker box is completely surrounded, flag as secret cache.
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(AntiCheatAddition.getInstance(), () -> {
+                    Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(), () -> {
                         // Now that the location is checked, allow queueing it again.
                         user.getData().object.dupingSecretCacheCurrentlyCheckedLocations.remove(loc);
 

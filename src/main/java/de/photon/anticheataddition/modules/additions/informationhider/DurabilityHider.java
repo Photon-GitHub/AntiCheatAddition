@@ -5,22 +5,22 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEn
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.log.Log;
 
-public final class ItemCountHider extends InformationHiderModule
+public class DurabilityHider extends InformationHiderModule
 {
-    public static final ItemCountHider INSTANCE = new ItemCountHider();
+    public static final DurabilityHider INSTANCE = new DurabilityHider();
 
-    private ItemCountHider()
+    private DurabilityHider()
     {
-        super("InformationHider.parts.item_count");
+        super("InformationHider.parts.durability");
     }
 
     @Override
     protected void hideInformation(User user, WrapperPlayServerEntityEquipment wrapper, int entityId, ItemStack item)
     {
-        Log.finer(() -> "ItemCountHider entity id: " + entityId + " with item " + item);
+        Log.finer(() -> "DurabilityHider entity id: " + entityId + " with item " + item);
 
-        if (item.getAmount() <= 1) return;
-        Log.finer(() -> "Hiding item count of " + item + " for entity id " + entityId);
-        item.setAmount(1);
+        if (item.getDamageValue() <= 0) return;
+        Log.finer(() -> "Hiding durability " + item + " for entity id " + entityId);
+        item.setDamageValue(item.getMaxDamage());
     }
 }

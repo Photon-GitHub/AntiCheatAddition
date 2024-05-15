@@ -3,7 +3,7 @@ package de.photon.anticheataddition.modules.checks.scaffold;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 
 /**
  * This Scaffold part identifies suspicious rotation patterns sudden, large angle changes, as well as some very random rotations.

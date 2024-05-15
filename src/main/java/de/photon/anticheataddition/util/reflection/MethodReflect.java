@@ -1,6 +1,6 @@
 package de.photon.anticheataddition.util.reflection;
 
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -4,6 +4,7 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -28,6 +29,13 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
     public void onInventoryClose(final InventoryCloseEvent event)
     {
         final var user = User.getUser(event.getPlayer().getUniqueId());
+        if (user == null) return;
+
+        Log.finer(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " | PerfectExit assumptions | Invalid: " + User.isUserInvalid(user, this) +
+                        ", Adventure/Survival: " + !user.inAdventureOrSurvivalMode() +
+                        ", MinTPS: " + !Inventory.hasMinTPS() +
+                        ", EmptyInv: " + !InventoryUtil.isInventoryEmpty(event.getInventory()));
+
         if (User.isUserInvalid(user, this) ||
             // Creative-clear might trigger this.
             !user.inAdventureOrSurvivalMode() ||
@@ -37,6 +45,9 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
             !InventoryUtil.isInventoryEmpty(event.getInventory())) return;
 
         final long passedTime = user.getTimeMap().at(TimeKey.INVENTORY_CLICK_ON_ITEM).passedTime();
+
+        Log.finer(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " | PerfectExit | Passed time: " + passedTime + " | Counter: " + user.getData().counter.inventoryPerfectExitFails.getCounter());
+
         if (user.getData().counter.inventoryPerfectExitFails.conditionallyIncDec(passedTime <= 70)) {
             this.getManagement().flag(Flag.of(user)
                                           .setAddedVl(VL_CALCULATOR.apply(passedTime).intValue())

@@ -49,16 +49,20 @@ DamageIndicator:
     others: true
 
 # InformationHider obfuscates specific game information that is sent to all clients and allows an information advantage.
-# Legit players will experience no difference.
+# Vanilla players will experience no difference.
 InformationHider:
   enabled: true
   parts:
+    # This part obfuscates the durability of items to prevent cheats from displaying the correct durability.
+    # Vanilla players will not see any difference.
+    durability:
+      enabled: true
     # This part obfuscates enchantments to prevent cheats from displaying the correct type and level.
-    # Legit players will not see any difference.
+    # Vanilla players will not see any difference.
     enchantments:
       enabled: true
     # This part obfuscates the item count any hand content and equipment in general.
-    # Legit players will not see any difference.
+    # Vanilla players will not see any difference.
     item_count:
       enabled: true
 

@@ -1,9 +1,8 @@
 package de.photon.anticheataddition.util.visibility.modern;
 
-import com.github.retrooper.packetevents.protocol.npc.NPC;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.visibility.PlayerInformationHider;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

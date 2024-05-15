@@ -2,9 +2,10 @@ package de.photon.anticheataddition.modules.additions;
 
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
-import de.photon.anticheataddition.util.messaging.Log;
 import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.util.List;
@@ -21,7 +22,7 @@ public final class LogBot extends Module
                                                                           .filter(LogDeletionTime::isActive)
                                                                           .toList();
 
-    private int taskNumber;
+    private BukkitTask task;
 
     private LogBot()
     {
@@ -32,7 +33,7 @@ public final class LogBot extends Module
     public void enable()
     {
         // Start a daily executed task to clean up the logs.
-        taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(AntiCheatAddition.getInstance(), () -> {
+        task = Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), () -> {
             final long currentTime = System.currentTimeMillis();
             for (LogDeletionTime logDeletionTime : LOG_DELETION_TIMES) logDeletionTime.handleLog(currentTime);
         }, 1, TimeUtil.toTicks(1, TimeUnit.DAYS));
@@ -41,7 +42,7 @@ public final class LogBot extends Module
     @Override
     public void disable()
     {
-        Bukkit.getScheduler().cancelTask(taskNumber);
+        task.cancel();
     }
 
     private record LogDeletionTime(File logFolder, long timeToDelete)

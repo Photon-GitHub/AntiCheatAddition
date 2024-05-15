@@ -10,6 +10,7 @@ public sealed interface PlayerVisibility permits PlayerVisibilityImpl
 
     /**
      * Sets fully and equip hidden {@link Player}s for a {@link Player}.
+     * Can be called asynchronously.
      */
     void setHidden(Player observer, Set<Player> fullyHidden, Set<Player> hideEquipment);
 }

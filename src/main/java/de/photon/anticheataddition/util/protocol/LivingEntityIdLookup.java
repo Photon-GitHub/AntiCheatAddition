@@ -9,7 +9,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSp
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import de.photon.anticheataddition.AntiCheatAddition;
-import de.photon.anticheataddition.util.messaging.Log;
+import de.photon.anticheataddition.util.log.Log;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -44,7 +44,7 @@ public final class LivingEntityIdLookup
         });
 
         // Do not immediately loop through all entities to cache them, as Bukkit may not have loaded all entities yet which leads to connection errors when players try to join.
-        Bukkit.getScheduler().scheduleSyncDelayedTask(AntiCheatAddition.getInstance(), this::cacheAllEntities, CACHE_TIME);
+        Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(), this::cacheAllEntities, CACHE_TIME);
     }
 
     private void cacheAllEntities()

@@ -56,7 +56,7 @@ public final class BrandHider extends Module implements Listener
         this.setBrand(loadString(".brand", "Some Spigot"));
 
         final long refreshRate = loadLong(".refresh_rate", 0);
-        if (refreshRate > 0) Bukkit.getScheduler().scheduleSyncRepeatingTask(AntiCheatAddition.getInstance(), this::updateAllBrands, 20, refreshRate);
+        if (refreshRate > 0) Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), this::updateAllBrands, 20, refreshRate);
     }
 
     @EventHandler

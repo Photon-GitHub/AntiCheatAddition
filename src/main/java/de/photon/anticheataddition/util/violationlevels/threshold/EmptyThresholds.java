@@ -11,7 +11,7 @@ final class EmptyThresholds implements ThresholdManagement
     @Override
     public void executeThresholds(int fromVl, int toVl, @NotNull Player player)
     {
-        Log.finer(() -> "EmptyThresholds executed: " + 0 + " from " + fromVl + " to " + toVl + " for " + player.getName());
+        Log.finest(() -> "EmptyThresholds executed: " + 0 + " from " + fromVl + " to " + toVl + " for " + player.getName());
         // Do nothing, as there are no thresholds.
     }
 

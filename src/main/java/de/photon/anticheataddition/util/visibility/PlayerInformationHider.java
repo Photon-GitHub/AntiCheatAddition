@@ -132,7 +132,7 @@ public abstract class PlayerInformationHider implements Listener
 
         if (skin == null || skin.isEmpty()) return;
 
-        Log.finer(() -> "Adding player " + watched.getName() + " to the tablist of " + observer.getName() + ". Skin successfully loaded.");
+        Log.finest(() -> "Adding player " + watched.getName() + " to the tablist of " + observer.getName() + ". Skin successfully loaded.");
 
         final var userProfile = new UserProfile(watched.getUniqueId(), watched.getName(), skin);
 

@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.log;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
@@ -15,13 +14,14 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 
 /**
  * The LogFileHandler class manages log file creation and rotation for AntiCheatAddition.
  * It creates new log files daily and ensures log messages are appropriately formatted and written.
  */
-public class LogFileHandler
+public final class LogFileHandler
 {
 
     // Constants for log message formatting
@@ -39,8 +39,8 @@ public class LogFileHandler
         }
     };
 
-    @Setter private Logger logger;
-    @Setter private Level fileLevel = Level.OFF;
+    private Logger logger;
+    private Level fileLevel = Level.OFF;
     private FileHandler currentHandler;
 
     /**
@@ -53,11 +53,25 @@ public class LogFileHandler
         this.logger = Preconditions.checkNotNull(logger, "Logger cannot be null.");
     }
 
+    public void startCycle(Logger logger, Level level)
+    {
+        this.logger = logger;
+        this.fileLevel = level;
+
+        // 5 seconds after the next day to prevent date problems.
+        final var nextDay = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(0, 0, 5));
+        final long difference = LocalDateTime.now().until(nextDay, ChronoUnit.MILLIS);
+
+        // Schedule the first log file replacement to occur at the start of the next day. Then have a daily cycle.
+        this.replaceDebugFile();
+        Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), this::replaceDebugFile, TimeUtil.toTicks(difference), TimeUtil.toTicks(1, TimeUnit.DAYS));
+    }
+
     /**
      * Replaces the current log file with a new one, creating a new log file for the current day.
      * This method schedules itself to run again at the start of the next day.
      */
-    public void replaceDebugFileCycle()
+    private void replaceDebugFile()
     {
         final var now = LocalDateTime.now();
         final var oldHandler = currentHandler;
@@ -77,12 +91,6 @@ public class LogFileHandler
         // Replace old handler.
         this.logger.addHandler(currentHandler);
         if (oldHandler != null) this.logger.removeHandler(oldHandler);
-
-        // Replace again the next day.
-        // 5 seconds after the next day to prevent date problems.
-        final var nextDay = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(0, 0, 5));
-        final long difference = LocalDateTime.now().until(nextDay, ChronoUnit.MILLIS);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(AntiCheatAddition.getInstance(), this::replaceDebugFileCycle, TimeUtil.toMillis(difference));
     }
 
     /**

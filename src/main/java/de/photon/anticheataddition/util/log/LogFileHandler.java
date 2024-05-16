@@ -62,6 +62,7 @@ public final class LogFileHandler
         final var nextDay = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(0, 0, 5));
         final long difference = LocalDateTime.now().until(nextDay, ChronoUnit.MILLIS);
         // Schedule the first log file replacement to occur at the start of the next day. Then have a daily cycle.
+        this.replaceDebugFile();
         Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), this::replaceDebugFile, TimeUtil.toTicks(difference), TimeUtil.toTicks(1, TimeUnit.DAYS));
     }
 

@@ -5,7 +5,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEn
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.log.Log;
 
-public class DurabilityHider extends InformationHiderModule
+public final class DurabilityHider extends InformationHiderModule
 {
     public static final DurabilityHider INSTANCE = new DurabilityHider();
 

@@ -15,8 +15,8 @@ import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
 import de.photon.anticheataddition.user.data.batch.TowerBatch;
 import de.photon.anticheataddition.user.data.subdata.BrandChannelData;
 import de.photon.anticheataddition.user.data.subdata.LookPacketData;
-import de.photon.anticheataddition.util.mathematics.Hitbox;
 import de.photon.anticheataddition.util.log.Log;
+import de.photon.anticheataddition.util.mathematics.Hitbox;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Delegate;
@@ -91,7 +91,8 @@ public final class User implements Permissible
 
     public static User getUser(PacketReceiveEvent event)
     {
-        return getUser((Player) event.getPlayer());
+        final var player = event.getPlayer();
+        return player == null ? null : getUser((Player) player);
     }
 
     public static User getUser(PacketSendEvent event)

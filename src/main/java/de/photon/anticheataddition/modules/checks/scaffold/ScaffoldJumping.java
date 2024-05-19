@@ -15,7 +15,7 @@ final class ScaffoldJumping extends Module
 {
     public static final ScaffoldJumping INSTANCE = new ScaffoldJumping();
 
-    private static final int STAIR_SCAFFOLD_BYPASS_TIME = 2000;
+    private static final int STAIR_SCAFFOLD_BYPASS_TIME = 2500;
 
     private ScaffoldJumping()
     {
@@ -33,7 +33,7 @@ final class ScaffoldJumping extends Module
             // Ignore stair scaffolding.
             && user.getTimeMap().at(TimeKey.SCAFFOLD_JUMPING_STAIR).notRecentlyUpdated(STAIR_SCAFFOLD_BYPASS_TIME)) {
             if (failCounter.incrementCompareThreshold()) {
-                Log.fine(() -> "Scaffold-Debug | Player: " + event.getPlayer().getName() + " jumped while scaffolding.");
+                Log.fine(() -> "Scaffold-Debug | Player: " + event.getPlayer().getName() + " jumped while scaffolding. Last stair: " + user.getTimeMap().at(TimeKey.SCAFFOLD_JUMPING_STAIR).passedTime());
                 return 20;
             }
         } else {

@@ -122,8 +122,8 @@ public final class Esp extends Module
             final Set<Player> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
             final Set<Player> fullHiddenPlayers = new HashSet<>(worldPlayers);
 
-            for (final var playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
-                final Player watched = playerNode.element();
+            for (final var watchedNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
+                final Player watched = watchedNode.element();
 
                 // Different worlds (might be possible if the player changed world in just the right moment)
                 if (!observer.getWorld().getUID().equals(watched.getWorld().getUID())
@@ -131,7 +131,7 @@ public final class Esp extends Module
                     || !User.inAdventureOrSurvivalMode(observer)
                     || !User.inAdventureOrSurvivalMode(watched)
                     // Less than 1 block distance (removes the player themselves and any very close player)
-                    || observerNode.distanceSquared(playerNode) < 1
+                    || observerNode.distanceSquared(watchedNode) < 1
                     || watched.isDead()
                     || CanSee.canSee(observer, watched)) {
                     // No hiding case

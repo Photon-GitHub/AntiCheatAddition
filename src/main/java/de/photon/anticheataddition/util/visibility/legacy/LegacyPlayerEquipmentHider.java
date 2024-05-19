@@ -33,7 +33,7 @@ public final class LegacyPlayerEquipmentHider extends PacketInformationHider
                                         .map(slot -> new Equipment(slot, ItemStack.EMPTY))
                                         .toList();
 
-            sendEquipment(player, equipment);
+            sendEquipment(observer, player, equipment);
             Log.finest(() -> "Player " + player.getName() + "'s equipment has been hidden from " + observer.getName());
         }
     }
@@ -53,17 +53,17 @@ public final class LegacyPlayerEquipmentHider extends PacketInformationHider
             equipment.add(new Equipment(EquipmentSlot.LEGGINGS, SpigotConversionUtil.fromBukkitItemStack(watched.getInventory().getLeggings())));
             equipment.add(new Equipment(EquipmentSlot.BOOTS, SpigotConversionUtil.fromBukkitItemStack(watched.getInventory().getBoots())));
 
-            sendEquipment(watched, equipment);
+            sendEquipment(observer, watched, equipment);
 
             Log.finest(() -> "Player " + watched.getName() + "'s equipment has been revealed to " + observer.getName());
         }
     }
 
-    private static void sendEquipment(Player player, List<Equipment> equipment)
+    private static void sendEquipment(Player observer, Player watched, List<Equipment> equipment)
     {
-        final int entityId = player.getEntityId();
+        final int entityId = watched.getEntityId();
         final var wrapper = new WrapperPlayServerEntityEquipment(entityId, equipment);
-        PacketEvents.getAPI().getPlayerManager().sendPacket(player, wrapper);
+        PacketEvents.getAPI().getPlayerManager().sendPacket(observer, wrapper);
     }
 
     @Override

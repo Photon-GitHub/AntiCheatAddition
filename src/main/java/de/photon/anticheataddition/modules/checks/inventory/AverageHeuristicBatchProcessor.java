@@ -47,6 +47,9 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
 
     private void varianceTest(User user, long[] timeOffsets, ViolationCounter misClickCounter)
     {
+        // Remove a single outlier that often happens after opening a new inventory.
+        timeOffsets = DataUtil.removeOutliers(1, timeOffsets);
+
         final double averageMillis = DataUtil.average(timeOffsets);
         final double variance = DataUtil.variance(averageMillis, timeOffsets);
 

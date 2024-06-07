@@ -73,7 +73,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
 
     private static int getVl(ViolationCounter misClickCounter, double variance, double averageMillis)
     {
-        double vl = 40000 / (variance + 1);
+        double vl = 20000 / (variance + 1);
 
         // Average below 1 tick is considered inhuman and increases vl.
         // / 50 to make sure the coefficients are big enough to avoid precision bugs.

@@ -83,7 +83,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
         vl /= (misClickCounter.getCounter() + 1);
 
         // Mitigation for possibly better players.
-        vl -= 10;
+        vl -= 15;
         return (int) vl;
     }
 }

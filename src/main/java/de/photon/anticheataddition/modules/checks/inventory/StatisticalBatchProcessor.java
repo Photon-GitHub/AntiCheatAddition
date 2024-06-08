@@ -6,6 +6,7 @@ import de.photon.anticheataddition.user.data.batch.InventoryBatch;
 import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
 import de.photon.anticheataddition.util.log.Log;
+import de.photon.anticheataddition.util.mathematics.DataUtil;
 import de.photon.anticheataddition.util.mathematics.KolmogorovSmirnow;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -71,8 +72,10 @@ public final class StatisticalBatchProcessor extends AsyncBatchProcessor<Invento
      */
     private void kolmogorowSmirnowTest(User user, long[] timeOffsets)
     {
+        final long[] timeOffsetsOutliersRemoved = DataUtil.removeOutliers(2, timeOffsets);
+
         // Normalize the clickOffsets to the [0, 1] range
-        final double[] normalizedOffsets = KolmogorovSmirnow.normalizeData(timeOffsets);
+        final double[] normalizedOffsets = KolmogorovSmirnow.normalizeData(timeOffsetsOutliersRemoved);
 
         Log.finest(() -> "Inventory-Debug | Statistical Player: %s | RAW-OFFSET: %s | SCALED-OFFSET: %s".formatted(user.getPlayer().getName(), Arrays.toString(timeOffsets), Arrays.toString(normalizedOffsets)));
 

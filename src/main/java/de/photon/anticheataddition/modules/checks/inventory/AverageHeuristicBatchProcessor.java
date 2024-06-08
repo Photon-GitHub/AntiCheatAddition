@@ -50,7 +50,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
         Log.finer(() -> "Inventory-Debug | Player: %s | Average-Heuristics | Raw: %s".formatted(user.getPlayer().getName(), Arrays.toString(timeOffsets)));
 
         // Remove a single outlier that often happens after opening a new inventory.
-        final long[] timeOffsetsOutlierRemoved = DataUtil.removeOutliers(1, timeOffsets);
+        final long[] timeOffsetsOutlierRemoved = DataUtil.removeOutliers(2, timeOffsets);
 
         final double averageMillis = DataUtil.average(timeOffsetsOutlierRemoved);
         final double variance = DataUtil.variance(averageMillis, timeOffsetsOutlierRemoved);

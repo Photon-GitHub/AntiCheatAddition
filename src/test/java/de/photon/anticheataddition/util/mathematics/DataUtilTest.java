@@ -22,7 +22,7 @@ class DataUtilTest
     }
 
     @Test
-    void testRemoveOutliers()
+    void testRemoveOutliersLong()
     {
         final long[] data = {30, 20, 200, 20, 10, 20, 40, 20, 10};
 
@@ -32,17 +32,67 @@ class DataUtilTest
         long[] actual = DataUtil.removeOutliers(1, data);
         Arrays.sort(actual);
 
-        Assertions.assertArrayEquals(expected, actual, "The outliers were not removed correctly.");
+        Assertions.assertArrayEquals(expected, actual);
     }
 
     @Test
-    void testRemoveOutliersDuplicates()
+    void testRemoveOutliersLongDuplicates()
     {
         final long[] data = {10, 20, 20, 20, 20, 20, 20, 20, 100, 100};
 
         long[] expected = {10, 20, 20, 20, 20, 20, 20, 20};
         long[] actual = DataUtil.removeOutliers(2, data);
 
-        Assertions.assertArrayEquals(expected, actual, "The outliers were not removed correctly.");
+        Assertions.assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    void testRemoveOutliersDouble()
+    {
+        final double[] data = {30, 20, 200, 20, 10, 20, 40, 20, 10};
+
+        double[] expected = {30, 20, 20, 10, 20, 40, 20, 10};
+        Arrays.sort(expected);
+
+        double[] actual = DataUtil.removeOutliers(1, data);
+        Arrays.sort(actual);
+
+        Assertions.assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    void testRemoveOutliersDuplicatesDouble()
+    {
+        final double[] data = {10, 20, 20, 20, 20, 20, 20, 20, 100, 100};
+
+        double[] expected = {10, 20, 20, 20, 20, 20, 20, 20};
+        double[] actual = DataUtil.removeOutliers(2, data);
+
+        Assertions.assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    void testRemoveOutliersInt()
+    {
+        final int[] data = {30, 20, 200, 20, 10, 20, 40, 20, 10};
+
+        int[] expected = {30, 20, 20, 10, 20, 40, 20, 10};
+        Arrays.sort(expected);
+
+        int[] actual = DataUtil.removeOutliers(1, data);
+        Arrays.sort(actual);
+
+        Assertions.assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    void testRemoveOutliersDuplicatesInt()
+    {
+        final int[] data = {10, 20, 20, 20, 20, 20, 20, 20, 100, 100};
+
+        int[] expected = {10, 20, 20, 20, 20, 20, 20, 20};
+        int[] actual = DataUtil.removeOutliers(2, data);
+
+        Assertions.assertArrayEquals(expected, actual);
     }
 }

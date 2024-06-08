@@ -5,7 +5,6 @@ import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.util.execute.Placeholders;
 import de.photon.anticheataddition.util.pluginmessage.ByteBufUtil;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
-import de.photon.anticheataddition.util.reflection.FieldReflect;
 import de.photon.anticheataddition.util.reflection.Reflect;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -19,7 +18,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public final class BrandHider extends Module implements Listener
 {
     public static final BrandHider INSTANCE = new BrandHider();
-    private static final FieldReflect PLAYER_CHANNELS_FIELD = Reflect.fromOBC("entity.CraftPlayer").field("channels");
 
     private String brand;
 
@@ -63,7 +61,7 @@ public final class BrandHider extends Module implements Listener
     public void onJoin(PlayerJoinEvent event)
     {
         // Add the mc brand channel to the player's channels.
-        PLAYER_CHANNELS_FIELD.from(event.getPlayer()).asSet(String.class).add(MessageChannel.MC_BRAND_CHANNEL.getChannel().orElseThrow());
+        Reflect.fromOBC("entity.CraftPlayer").field("channels").from(event.getPlayer()).asSet(String.class).add(MessageChannel.MC_BRAND_CHANNEL.getChannel().orElseThrow());
         updateBrand(event.getPlayer());
     }
 }

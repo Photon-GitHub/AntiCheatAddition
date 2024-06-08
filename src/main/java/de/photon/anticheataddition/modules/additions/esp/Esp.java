@@ -108,25 +108,6 @@ public final class Esp extends Module
         }, 100, ESP_INTERVAL_TICKS);
     }
 
-    private static int playerLookRange(Player player, int playerTrackingRange)
-    {
-        int lookRange = playerTrackingRange;
-
-        final var blindnessOpt = InternalPotion.BLINDNESS.getPotionEffect(player);
-        final var darknessOpt = InternalPotion.DARKNESS.getPotionEffect(player);
-
-        if (blindnessOpt.isPresent()) {
-            lookRange = Math.min(6, lookRange);
-            Log.finest(() -> "ESP | Observer: " + player.getName() + " | has blindness. Reduced lookrange to 6 blocks.");
-        }
-
-        if (darknessOpt.isPresent()) {
-            Log.finest(() -> "ESP | Observer: " + player.getName() + " | has blindness. Reduced lookrange to 16 blocks.");
-            lookRange = Math.min(16, lookRange);
-        }
-        return lookRange;
-    }
-
     private static void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, QuadTreeQueue<Player> playerQuadTree)
     {
         for (final var observerNode : playerQuadTree) {
@@ -142,9 +123,8 @@ public final class Esp extends Module
             final Set<Player> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
             final Set<Player> fullHiddenPlayers = new HashSet<>(worldPlayers);
 
-            final int lookRange = playerLookRange(observer, playerTrackingRange);
-
-            for (final var watchedNode : playerQuadTree.queryCircle(observerNode, lookRange)) {
+            // Blindness and darkness are already handled by canSee.
+            for (final var watchedNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
                 final Player watched = watchedNode.element();
 
                 // Different worlds (might be possible if the player changed world in just the right moment)

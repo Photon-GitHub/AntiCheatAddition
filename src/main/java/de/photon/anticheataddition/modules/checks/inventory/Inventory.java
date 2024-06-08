@@ -3,7 +3,6 @@ package de.photon.anticheataddition.modules.checks.inventory;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
-import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.ViolationAggregation;
@@ -73,11 +72,8 @@ public final class Inventory extends ViolationModule implements Listener
             hasMinTPS()) {
             if (event.getCurrentItem() == null || MaterialUtil.INSTANCE.isAir(event.getCurrentItem().getType())) user.getData().counter.inventoryAverageHeuristicsMisclicks.increment();
                 // Shift - Double - Click shortcut will generate a lot of clicks.
-            else if (user.getData().object.lastMaterialClicked != event.getCurrentItem().getType()) {
-                final var inventoryClick = InventoryBatch.InventoryClick.fromClickEvent(event);
-                Log.finer(() -> "Inventory-Debug | Player: %s | Average-Heuristics | Data | Time: %d, Inv: %d, ".formatted(user.getPlayer().getName(), inventoryClick.time(), inventoryClick.inventory().hashCode()));
-                user.getInventoryBatch().addDataPoint(inventoryClick);
-            }
+            else if (user.getData().object.lastMaterialClicked != event.getCurrentItem().getType())
+                user.getInventoryBatch().addDataPoint(InventoryBatch.InventoryClick.fromClickEvent(event));
         }
     }
 

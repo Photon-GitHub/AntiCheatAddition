@@ -11,6 +11,7 @@ import de.photon.anticheataddition.util.mathematics.DataUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -47,11 +48,13 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
 
     private void varianceTest(User user, long[] timeOffsets, ViolationCounter misClickCounter)
     {
-        // Remove a single outlier that often happens after opening a new inventory.
-        timeOffsets = DataUtil.removeOutliers(1, timeOffsets);
+        Log.finer(() -> "Inventory-Debug | Player: %s | Average-Heuristics | Raw: %s".formatted(user.getPlayer().getName(), Arrays.toString(timeOffsets)));
 
-        final double averageMillis = DataUtil.average(timeOffsets);
-        final double variance = DataUtil.variance(averageMillis, timeOffsets);
+        // Remove a single outlier that often happens after opening a new inventory.
+        final long[] timeOffsetsOutlierRemoved = DataUtil.removeOutliers(1, timeOffsets);
+
+        final double averageMillis = DataUtil.average(timeOffsetsOutlierRemoved);
+        final double variance = DataUtil.variance(averageMillis, timeOffsetsOutlierRemoved);
 
         // One time 2 ticks offset and 2 times 1 tick offset * 15 minimum vl = 168750
         // 2500 error sum is legit achievable.

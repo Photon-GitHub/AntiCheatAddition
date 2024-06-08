@@ -93,7 +93,7 @@ final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBloc
         final var simulator = new MovementSimulator(startLocation, currentVelocity, Movement.PLAYER);
         simulator.tick();
         simulator.tickUntil(sim -> sim.getVelocity().getY() <= 0, 200);
-        final double landingBlockY = simulator.getCurrent().getBlock().getY();
+        final double landingBlockY = Math.floor(simulator.getCurrent().getY());
         simulator.tickUntil(sim -> sim.getCurrent().getY() <= landingBlockY, 50);
 
         // If the result is lower here, the detection is more lenient.

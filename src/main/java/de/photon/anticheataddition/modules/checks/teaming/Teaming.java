@@ -101,6 +101,8 @@ public final class Teaming extends ViolationModule implements Listener
                     final var teamNodes = quadTree.queryCircle(firstNode, proximityRange).stream()
                                                   // The queryCircle function does not check the y-coords of a player, we need to do that here manually.
                                                   .filter(node -> node.element().getLocation().distanceSquared(firstNode.element().getLocation()) <= proximityRangeSquared)
+                                                  // Ignore vanished players.
+                                                  .filter(node -> node.element().canSee(firstNode.element()) && firstNode.element().canSee(node.element()))
                                                   .toList();
 
                     quadTree.removeAll(teamNodes);

@@ -2,6 +2,8 @@ package de.photon.anticheataddition.util.mathematics;
 
 import lombok.experimental.UtilityClass;
 
+import java.util.PriorityQueue;
+
 @UtilityClass
 public final class DataUtil
 {
@@ -80,4 +82,83 @@ public final class DataUtil
         return sum;
     }
 
+    /**
+     * Removes the numberOutliers farthest elements from the mean.
+     */
+    public static int[] removeOutliers(int numberOutliers, int... data)
+    {
+        if (data == null || data.length <= numberOutliers) throw new IllegalArgumentException("Not enough data to remove outliers.");
+
+        // Calculate the mean using predefined methods
+        final double mean = average(data);
+
+        // Priority queue to store the farthest elements from the mean
+        final PriorityQueue<Integer> outliers = new PriorityQueue<>((a, b) -> Double.compare(Math.abs(b - mean), Math.abs(a - mean)));
+
+        // Add all data points to the priority queue
+        for (int value : data) {
+            outliers.add(value);
+        }
+
+        // Remove the specified number of outliers
+        for (int i = 0; i < numberOutliers; i++) {
+            outliers.poll();
+        }
+        // Convert the remaining elements in the priority queue to an array
+        return outliers.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+    /**
+     * Removes the numberOutliers farthest elements from the mean.
+     */
+    public static long[] removeOutliers(int numberOutliers, long... data)
+    {
+        if (data == null || data.length <= numberOutliers) throw new IllegalArgumentException("Not enough data to remove outliers.");
+
+        // Calculate the mean using predefined methods
+        final double mean = average(data);
+
+        // Priority queue to store the farthest elements from the mean
+        final PriorityQueue<Long> outliers = new PriorityQueue<>((a, b) -> Double.compare(Math.abs(b - mean), Math.abs(a - mean)));
+
+        // Add all data points to the priority queue
+        for (long value : data) {
+            outliers.add(value);
+        }
+
+        // Remove the specified number of outliers
+        for (int i = 0; i < numberOutliers; i++) {
+            outliers.poll();
+        }
+
+        // Convert the remaining elements in the priority queue to an array
+        return outliers.stream().mapToLong(Long::longValue).toArray();
+    }
+
+    /**
+     * Removes the numberOutliers farthest elements from the mean.
+     */
+    public static double[] removeOutliers(int numberOutliers, double... data)
+    {
+        if (data == null || data.length <= numberOutliers) throw new IllegalArgumentException("Not enough data to remove outliers.");
+
+        // Calculate the mean using predefined methods
+        final double mean = average(data);
+
+        // Priority queue to store the farthest elements from the mean
+        final PriorityQueue<Double> outliers = new PriorityQueue<>((a, b) -> Double.compare(Math.abs(b - mean), Math.abs(a - mean)));
+
+        // Add all data points to the priority queue
+        for (double value : data) {
+            outliers.add(value);
+        }
+
+        // Remove the specified number of outliers
+        for (int i = 0; i < numberOutliers; i++) {
+            outliers.poll();
+        }
+
+        // Convert the remaining elements in the priority queue to an array
+        return outliers.stream().mapToDouble(Double::doubleValue).toArray();
+    }
 }

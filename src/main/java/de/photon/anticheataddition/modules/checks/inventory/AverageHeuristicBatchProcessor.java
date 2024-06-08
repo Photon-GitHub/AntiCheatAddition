@@ -8,16 +8,14 @@ import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
 import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.mathematics.DataUtil;
-import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
 public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<InventoryBatch.InventoryClick>
 {
-    private static final Polynomial AVERAGE_MULTIPLIER_CALCULATOR = new Polynomial(-0.000205762, 0.0141942, -0.342254, 3.3);
-
     AverageHeuristicBatchProcessor(ViolationModule module)
     {
         super(module, Set.of(InventoryBatch.INVENTORY_BATCH_EVENTBUS));
@@ -29,7 +27,9 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
         if (User.isUserInvalid(user, this.getModule())) return;
 
         final long[] timeOffsets = BatchPreprocessors.zipOffsetOne(batch).stream()
+                                                     // Same inventory, ignore pairs with different inventories.
                                                      .filter(pair -> pair.first().inventory().equals(pair.second().inventory()))
+                                                     // Calculate the time offset between the two clicks.
                                                      .mapToLong(pair -> pair.first().timeOffset(pair.second()))
                                                      .toArray();
 
@@ -47,8 +47,13 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
 
     private void varianceTest(User user, long[] timeOffsets, ViolationCounter misClickCounter)
     {
-        final double averageMillis = DataUtil.average(timeOffsets);
-        final double variance = DataUtil.variance(averageMillis, timeOffsets);
+        Log.finer(() -> "Inventory-Debug | Player: %s | Average-Heuristics | Raw: %s".formatted(user.getPlayer().getName(), Arrays.toString(timeOffsets)));
+
+        // Remove a single outlier that often happens after opening a new inventory.
+        final long[] timeOffsetsOutlierRemoved = DataUtil.removeOutliers(2, timeOffsets);
+
+        final double averageMillis = DataUtil.average(timeOffsetsOutlierRemoved);
+        final double variance = DataUtil.variance(averageMillis, timeOffsetsOutlierRemoved);
 
         // One time 2 ticks offset and 2 times 1 tick offset * 15 minimum vl = 168750
         // 2500 error sum is legit achievable.
@@ -58,7 +63,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
         Log.finer(() -> "Inventory-Debug | Player: %s | Average-Heuristics | (VAR: %f | AVG: %f | MISS: %d | VL: %d)".formatted(user.getPlayer().getName(), variance, averageMillis, misClickCounter.getCounter(), vl));
 
         // Too low vl.
-        if (vl < 10) return;
+        if (vl < 0) return;
 
         final int finalVl = Math.min(vl, 70);
         this.getModule().getManagement().flag(Flag.of(user)
@@ -74,13 +79,20 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
 
         // Average below 1 tick is considered inhuman and increases vl.
         // / 50 to make sure the coefficients are big enough to avoid precision bugs.
-        vl *= Math.max(AVERAGE_MULTIPLIER_CALCULATOR.apply(averageMillis / 50), 0.5);
+        vl *= averageMultiplier(averageMillis / 50);
 
         // Make sure that misclicks are applied correctly.
         vl /= (misClickCounter.getCounter() + 1);
 
         // Mitigation for possibly better players.
-        vl -= 10;
+        vl -= 25;
         return (int) vl;
+    }
+
+    private static double averageMultiplier(double averageTicks)
+    {
+        // This function assumes that large average values are more likely to be legit: lim x-> inf: f(x) = 0.5
+        // and models how the vl should increase with lower average values: https://www.wolframalpha.com/input?i=plot+-1.3*tanh%280.15x-1%29+%2B+1.8
+        return -1.3 * Math.tanh(0.15 * averageTicks - 1) + 1.8;
     }
 }

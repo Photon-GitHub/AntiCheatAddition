@@ -1,7 +1,9 @@
 package de.photon.anticheataddition.modules.additions;
 
 import de.photon.anticheataddition.AntiCheatAddition;
+import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.Module;
+import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.util.execute.Placeholders;
 import de.photon.anticheataddition.util.pluginmessage.ByteBufUtil;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
@@ -63,5 +65,13 @@ public final class BrandHider extends Module implements Listener
         // Add the mc brand channel to the player's channels.
         Reflect.fromOBC("entity.CraftPlayer").field("channels").from(event.getPlayer()).asSet(String.class).add(MessageChannel.MC_BRAND_CHANNEL.getChannel().orElseThrow());
         updateBrand(event.getPlayer());
+    }
+
+    @Override
+    protected ModuleLoader createModuleLoader()
+    {
+        return ModuleLoader.builder(this)
+                           .setAllowedServerVersions(ServerVersion.MC119.getSupVersionsTo())
+                           .build();
     }
 }

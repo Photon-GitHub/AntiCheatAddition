@@ -184,9 +184,9 @@
         </dependency>
         <!-- PacketEvents -->
         <dependency>
-            <groupId>com.github.retrooper.packetevents</groupId>
-            <artifactId>spigot</artifactId>
-            <version>2.3.0</version>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-spigot</artifactId>
+            <version>2.3.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -5,7 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 final class ModernInventoryViewUtil implements InventoryViewUtil
 {
@@ -40,6 +42,70 @@ final class ModernInventoryViewUtil implements InventoryViewUtil
             public InventoryType getType()
             {
                 return type;
+            }
+
+            @Override
+            public void setItem(int slot, @Nullable ItemStack item)
+            {
+
+            }
+
+            @Nullable
+            @Override
+            public ItemStack getItem(int slot)
+            {
+                return null;
+            }
+
+            @Override
+            public void setCursor(@Nullable ItemStack item)
+            {
+
+            }
+
+            @Nullable
+            @Override
+            public ItemStack getCursor()
+            {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public Inventory getInventory(int rawSlot)
+            {
+                return null;
+            }
+
+            @Override
+            public int convertSlot(int rawSlot)
+            {
+                return 0;
+            }
+
+            @NotNull
+            @Override
+            public InventoryType.SlotType getSlotType(int slot)
+            {
+                return InventoryType.SlotType.CONTAINER;
+            }
+
+            @Override
+            public void close()
+            {
+
+            }
+
+            @Override
+            public int countSlots()
+            {
+                return bottom.getSize() + top.getSize();
+            }
+
+            @Override
+            public boolean setProperty(@NotNull InventoryView.Property prop, int value)
+            {
+                return false;
             }
 
             @NotNull

@@ -5,7 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 final class ModernInventoryViewUtil implements InventoryViewUtil
 {
@@ -40,6 +42,70 @@ final class ModernInventoryViewUtil implements InventoryViewUtil
             public InventoryType getType()
             {
                 return type;
+            }
+
+            @Override
+            public void setItem(int i, @Nullable ItemStack itemStack)
+            {
+
+            }
+
+            @Nullable
+            @Override
+            public ItemStack getItem(int i)
+            {
+                return null;
+            }
+
+            @Override
+            public void setCursor(@Nullable ItemStack itemStack)
+            {
+
+            }
+
+            @Nullable
+            @Override
+            public ItemStack getCursor()
+            {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public Inventory getInventory(int i)
+            {
+                return null;
+            }
+
+            @Override
+            public int convertSlot(int i)
+            {
+                return 0;
+            }
+
+            @NotNull
+            @Override
+            public InventoryType.SlotType getSlotType(int i)
+            {
+                return null;
+            }
+
+            @Override
+            public void close()
+            {
+
+            }
+
+            @Override
+            public int countSlots()
+            {
+                return 0;
+            }
+
+            @Override
+            public boolean setProperty(@NotNull InventoryView.Property property, int i)
+            {
+                return false;
             }
 
             @NotNull

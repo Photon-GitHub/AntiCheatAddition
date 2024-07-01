@@ -1,13 +1,14 @@
 package de.photon.anticheataddition.commands.subcommands.internaltestcommands;
 
 import de.photon.anticheataddition.InternalPermission;
+import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.commands.CommandAttributes;
 import de.photon.anticheataddition.commands.InternalCommand;
 import de.photon.anticheataddition.commands.TabCompleteSupplier;
 import de.photon.anticheataddition.user.data.DataUpdaterEvents;
 import de.photon.anticheataddition.util.inventoryview.InventoryViewUtil;
-import de.photon.anticheataddition.util.messaging.ChatMessage;
 import de.photon.anticheataddition.util.log.Log;
+import de.photon.anticheataddition.util.messaging.ChatMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 
@@ -29,6 +30,11 @@ public class TestInventoryOpen extends InternalCommand
     {
         final var user = parseUser(sender, arguments.peek());
         if (user == null) return;
+
+        if (ServerVersion.ACTIVE == ServerVersion.MC120) {
+            ChatMessage.sendMessage(sender, "Due to various API changes this command is not available on Minecraft 1.20.");
+            return;
+        }
 
         final var view = InventoryViewUtil.INSTANCE.createTestView(user);
         DataUpdaterEvents.INSTANCE.onInventoryOpen(new InventoryOpenEvent(view));

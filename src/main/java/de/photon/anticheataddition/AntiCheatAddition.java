@@ -60,6 +60,8 @@ public class AntiCheatAddition extends JavaPlugin
     @Nullable
     private FloodgateApi floodgateApi;
 
+    private boolean usePAPI;
+
     private boolean bungeecord = false;
 
     /**
@@ -140,6 +142,7 @@ public class AntiCheatAddition extends JavaPlugin
             // Call is correct here as Bukkit always has a player api.
             if (checkForPlugin("ViaVersion", metrics)) viaAPI = Via.getAPI();
             if (checkForPlugin("floodgate", metrics)) floodgateApi = FloodgateApi.getInstance();
+            if (checkForPlugin("PlaceholderAPI", metrics)) usePAPI = getConfig().getBoolean("use-placeholderAPI");
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //

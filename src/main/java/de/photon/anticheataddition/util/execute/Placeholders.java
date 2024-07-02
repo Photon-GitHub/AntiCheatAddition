@@ -1,10 +1,12 @@
 package de.photon.anticheataddition.util.execute;
 
 import com.google.common.base.Preconditions;
+import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -17,6 +19,7 @@ import java.util.function.Supplier;
 @UtilityClass
 public final class Placeholders
 {
+
     /**
      * Applies a placeholder to a {@link String}.
      *
@@ -69,7 +72,8 @@ public final class Placeholders
             else result.append(c);
         }
 
-        return result.toString();
+        // If papi enable, we replace placeholders in command, else return result line.
+        return AntiCheatAddition.getInstance().isUsePAPI()? PlaceholderAPI.setPlaceholders(player, result.toString()) : result.toString();
     }
 
     @RequiredArgsConstructor

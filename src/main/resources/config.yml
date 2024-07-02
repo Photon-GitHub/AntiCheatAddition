@@ -22,6 +22,10 @@
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
+# Whether ACA should use placeholders from PlaceholderAPI when executing commands in thresholds.
+# https://wiki.placeholderapi.com/users/placeholder-list/
+use-placeholderAPI: true
+
 # BrandHider modifies the server brand on Minecraft’s debug screen.
 # Useful for custom messages or hiding your server software.
 BrandHider:

@@ -24,7 +24,7 @@ public final class AutoEat extends ViolationModule implements Listener
         super("AutoEat");
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onConsume(PlayerItemConsumeEvent event)
     {
         final var user = User.getUser(event.getPlayer());

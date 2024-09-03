@@ -62,6 +62,7 @@ public final class Data
         public final ViolationCounter inventoryFrequencyFails = new ViolationCounter(40);
         public final ViolationCounter inventoryPerfectExitFails = new ViolationCounter(6);
 
+        public final ViolationCounter packetAnalysisAimStepFails = new ViolationCounter(8);
         public final ViolationCounter packetAnalysisPerfectRotationYawFails = new ViolationCounter(4);
         public final ViolationCounter packetAnalysisPerfectRotationPitchFails = new ViolationCounter(4);
 

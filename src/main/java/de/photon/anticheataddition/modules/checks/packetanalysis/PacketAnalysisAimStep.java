@@ -36,7 +36,7 @@ public final class PacketAnalysisAimStep extends ViolationModule implements List
         final double pitchDelta = event.getTo().getPitch() - event.getFrom().getPitch();
 
         if (user.getData().counter.packetAnalysisAimStepFails.conditionallyIncDec(isAimStep(yawDelta, pitchDelta) || isAimStep(pitchDelta, yawDelta))) {
-            getManagement().flag(Flag.of(user).setAddedVl(30).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent step-like aim movements."));
+            getManagement().flag(Flag.of(user).setAddedVl(20).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent step-like aim movements."));
         }
     }
 

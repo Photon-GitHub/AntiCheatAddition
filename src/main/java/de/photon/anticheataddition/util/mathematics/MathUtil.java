@@ -1,6 +1,8 @@
 package de.photon.anticheataddition.util.mathematics;
 
 import lombok.experimental.UtilityClass;
+import org.bukkit.Location;
+import org.bukkit.util.Vector;
 
 @UtilityClass
 public final class MathUtil
@@ -108,5 +110,54 @@ public final class MathUtil
         double squareSum = 0;
         for (double n : ns) squareSum += n * n;
         return squareSum;
+    }
+
+    /**
+     * Computes the absolute shortest angular distance between two angles in the range [-180, 180].
+     * This applies for example to the Minecraft yaw angles.
+     *
+     * @param yaw1 the first angle in degrees
+     * @param yaw2 the second angle in degrees
+     *
+     * @return the absolute shortest angular distance in degrees
+     */
+    public static double yawDistance(double yaw1, double yaw2)
+    {
+        double diff = yaw1 - yaw2;
+        return Math.abs(((diff + 180) % 360 + 360) % 360 - 180);
+    }
+
+    /**
+     * Generates the direction - vector from yaw and pitch, basically a copy of {@link Location#getDirection()}
+     */
+    @SuppressWarnings("RedundantCast")
+    public static Vector getDirection(final float yaw, final float pitch)
+    {
+        final double yawRadians = Math.toRadians((double) yaw);
+        final double pitchRadians = Math.toRadians((double) pitch);
+
+        final var vector = new Vector();
+
+        vector.setY(-Math.sin(pitchRadians));
+
+        final double xz = Math.cos(pitchRadians);
+
+        vector.setX(-xz * Math.sin(yawRadians));
+        vector.setZ(xz * Math.cos(yawRadians));
+
+        return vector;
+    }
+
+    /**
+     * Calculates the angle between two rotations using {@link Vector}s.
+     *
+     * @return The angle between the two rotations in degrees.
+     */
+    public static float getAngleBetweenRotations(final float firstYaw, final float firstPitch, final float secondYaw, final float secondPitch)
+    {
+        final Vector first = getDirection(firstYaw, firstPitch);
+        final Vector second = getDirection(secondYaw, secondPitch);
+
+        return (float) Math.toDegrees(first.angle(second));
     }
 }

@@ -2,6 +2,7 @@ package de.photon.anticheataddition.modules.checks.packetanalysis;
 
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
+import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.minecraft.world.entity.EntityUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -32,8 +33,8 @@ public final class PacketAnalysisAimStep extends ViolationModule implements List
             || user.getPlayer().isFlying()
             || EntityUtil.INSTANCE.isFlyingWithElytra(user.getPlayer())) return;
 
-        final double yawDelta = event.getTo().getYaw() - event.getFrom().getYaw();
-        final double pitchDelta = event.getTo().getPitch() - event.getFrom().getPitch();
+        final double yawDelta = MathUtil.yawDistance(event.getTo().getYaw(), event.getFrom().getYaw());
+        final double pitchDelta = MathUtil.absDiff(event.getTo().getPitch(), event.getFrom().getPitch());
 
         if (user.getData().counter.packetAnalysisAimStepFails.conditionallyIncDec(isAimStep(yawDelta, pitchDelta) || isAimStep(pitchDelta, yawDelta))) {
             getManagement().flag(Flag.of(user).setAddedVl(20).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent step-like aim movements."));

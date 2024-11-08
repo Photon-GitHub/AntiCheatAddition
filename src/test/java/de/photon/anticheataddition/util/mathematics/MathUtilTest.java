@@ -51,7 +51,7 @@ class MathUtilTest
     void testFastHypotCalculatesCorrectly()
     {
         assertEquals(5, MathUtil.fastHypot(3, 4), DELTA);
-        assertEquals(Math.hypot(2,3), MathUtil.fastHypot(2, 3), DELTA);
+        assertEquals(Math.hypot(2, 3), MathUtil.fastHypot(2, 3), DELTA);
         assertEquals(0, MathUtil.fastHypot(0, 0), DELTA);
     }
 
@@ -87,5 +87,46 @@ class MathUtilTest
         assertEquals(30, MathUtil.squareSum(-1D, -2D, 3D, 4D), DELTA);
         assertEquals(30, MathUtil.squareSum(3D, 2D, 4D, 1D), DELTA);
         assertEquals(0, MathUtil.squareSum(0D, 0D, 0D, 0D), DELTA);
+    }
+
+    @Test
+    void testShortestAngleDistance()
+    {
+        // Basic cases
+        assertEquals(20.0, MathUtil.yawDistance(170, -170), DELTA);
+        assertEquals(180.0, MathUtil.yawDistance(90, -90), DELTA);
+        assertEquals(0.0, MathUtil.yawDistance(-180, 180), DELTA);
+        assertEquals(90.0, MathUtil.yawDistance(-45, 45), DELTA);
+
+        // Same angle
+        assertEquals(0.0, MathUtil.yawDistance(0, 0), DELTA);
+        assertEquals(0.0, MathUtil.yawDistance(45, 45), DELTA);
+        assertEquals(0.0, MathUtil.yawDistance(-90, -90), DELTA);
+
+        // Crossing the -180/180 boundary
+        assertEquals(10.0, MathUtil.yawDistance(-175, 175), DELTA);
+        assertEquals(10.0, MathUtil.yawDistance(175, -175), DELTA);
+
+        // Symmetry of angles
+        assertEquals(20.0, MathUtil.yawDistance(-170, 170), DELTA);
+        assertEquals(20.0, MathUtil.yawDistance(170, -170), DELTA);
+
+        // Large difference within range
+        assertEquals(180.0, MathUtil.yawDistance(180, 0), DELTA);
+        assertEquals(180.0, MathUtil.yawDistance(-180, 0), DELTA);
+
+        // Edge cases
+        assertEquals(180.0, MathUtil.yawDistance(0, 180), DELTA);
+        assertEquals(180.0, MathUtil.yawDistance(0, -180), DELTA);
+
+        // Small differences
+        assertEquals(1.0, MathUtil.yawDistance(179, -180), DELTA);
+        assertEquals(1.0, MathUtil.yawDistance(-180, 179), DELTA);
+        assertEquals(0.5, MathUtil.yawDistance(179.5, -180), DELTA);
+        assertEquals(0.5, MathUtil.yawDistance(-180, 179.5), DELTA);
+
+        // Opposite angles
+        assertEquals(180.0, MathUtil.yawDistance(-90, 90), DELTA);
+        assertEquals(180.0, MathUtil.yawDistance(90, -90), DELTA);
     }
 }

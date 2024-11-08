@@ -36,6 +36,9 @@ public final class PacketAnalysisAimStep extends ViolationModule implements List
         final double yawDelta = MathUtil.yawDistance(event.getTo().getYaw(), event.getFrom().getYaw());
         final double pitchDelta = MathUtil.absDiff(event.getTo().getPitch(), event.getFrom().getPitch());
 
+        // False positives as the pitch is capped if a player looks straight up or down.
+        if (pitchDelta < NO_MOVE_DELTA_THRESHOLD && (event.getTo().getPitch() == 90 || event.getTo().getPitch() == -90)) return;
+
         if (user.getData().counter.packetAnalysisAimStepFails.conditionallyIncDec(isAimStep(yawDelta, pitchDelta) || isAimStep(pitchDelta, yawDelta))) {
             getManagement().flag(Flag.of(user).setAddedVl(20).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent step-like aim movements."));
         }

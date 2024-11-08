@@ -283,6 +283,10 @@ Inventory:
 PacketAnalysis:
   enabled: true
   parts:
+    # This part checks for aim movements that are purely along one axis, which are present in bad aimbots or scaffolds.
+    # Adds 20 VL
+    AimStep:
+      enabled: true
     # This part checks that the client sends an arm animation packet following an attack.
     # This only detects the worst Killauras.
     # Adds 30 VL.

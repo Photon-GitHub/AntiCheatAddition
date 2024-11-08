@@ -90,7 +90,7 @@ public final class PacketAnalysisPerfectRotation extends ViolationModule impleme
         // Ignore invalid users and players in vehicles (boat false positive).
         if (User.isUserInvalid(user, this) || event.getTo() == null || user.getPlayer().isInsideVehicle()) return;
 
-        final double yawDiff = MathUtil.absDiff(event.getTo().getYaw(), event.getFrom().getYaw());
+        final double yawDiff = MathUtil.yawDistance(event.getTo().getYaw(), event.getFrom().getYaw());
         final double pitchDiff = MathUtil.absDiff(event.getTo().getPitch(), event.getFrom().getPitch());
 
         checkPatterns(user, yawDiff, user.getData().counter.packetAnalysisPerfectRotationYawFails);

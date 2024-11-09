@@ -7,19 +7,20 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ThreeDBallTreeTest {
-    private static final int NUM_ELEMENTS = 100;
+class ThreeDBallTreeTest
+{
+    private static final int NUM_ELEMENTS = 100000;
 
     @Test
-    void testTreeConstructionWithValidData() {
-        List<BallTreePoint> points = List.of(
-                new BallTreePoint(1, 2, 3, "A"),
-                new BallTreePoint(4, 5, 6, "B"),
-                new BallTreePoint(7, 8, 9, "C")
-                                            );
+    void testTreeConstructionWithValidData()
+    {
+        List<BallTreePoint<String>> points = List.of(new BallTreePoint<>(1, 2, 3, "A"),
+                                                     new BallTreePoint<>(4, 5, 6, "B"),
+                                                     new BallTreePoint<>(7, 8, 9, "C"));
 
         ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
@@ -27,8 +28,9 @@ class ThreeDBallTreeTest {
     }
 
     @Test
-    void testTreeConstructionWithEmptyData() {
-        List<BallTreePoint> points = List.of();
+    void testTreeConstructionWithEmptyData()
+    {
+        List<BallTreePoint<String>> points = List.of();
 
         ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
@@ -36,35 +38,33 @@ class ThreeDBallTreeTest {
     }
 
     @Test
-    void testInsertAddsNewPoint() {
-        List<BallTreePoint> points = List.of(
-                new BallTreePoint(1, 2, 3, "A"),
-                new BallTreePoint(4, 5, 6, "B"),
-                new BallTreePoint(7, 8, 9, "C")
-                                            );
+    void testInsertAddsNewPoint()
+    {
+        List<BallTreePoint<String>> points = List.of(new BallTreePoint<>(1, 2, 3, "A"),
+                                                     new BallTreePoint<>(4, 5, 6, "B"),
+                                                     new BallTreePoint<>(7, 8, 9, "C"));
 
         ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
-        BallTreePoint newPoint = new BallTreePoint(10, 10, 10, "D");
+        BallTreePoint<String> newPoint = new BallTreePoint<>(10, 10, 10, "D");
         tree.insert(newPoint);
 
-        List<BallTreePoint> result = tree.rangeSearch(10, 10, 10, 1.0);
+        Set<BallTreePoint<String>> result = tree.rangeSearch(10, 10, 10, 1.0);
         assertTrue(result.contains(newPoint), "Newly added point D should be found in the range search.");
     }
 
     @Test
-    void testRemoveDeletesPoint() {
-        List<BallTreePoint> points = List.of(
-                new BallTreePoint(1, 2, 3, "A"),
-                new BallTreePoint(4, 5, 6, "B"),
-                new BallTreePoint(7, 8, 9, "C")
-                                            );
+    void testRemoveDeletesPoint()
+    {
+        List<BallTreePoint<String>> points = List.of(new BallTreePoint<>(1, 2, 3, "A"),
+                                                     new BallTreePoint<>(4, 5, 6, "B"),
+                                                     new BallTreePoint<>(7, 8, 9, "C"));
 
         ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
-        BallTreePoint pointToRemove = new BallTreePoint(4, 5, 6, "B");
+        BallTreePoint<String> pointToRemove = new BallTreePoint<>(4, 5, 6, "B");
 
-        List<BallTreePoint> result = tree.rangeSearch(4, 5, 6, 1.0);
+        Set<BallTreePoint<String>> result = tree.rangeSearch(4, 5, 6, 1.0);
         assertTrue(result.contains(pointToRemove), "Point B should be in the tree initially.");
 
         tree.remove(pointToRemove);
@@ -74,16 +74,15 @@ class ThreeDBallTreeTest {
     }
 
     @Test
-    void testRemoveNonExistentPoint() {
-        List<BallTreePoint> points = List.of(
-                new BallTreePoint(1, 2, 3, "A"),
-                new BallTreePoint(4, 5, 6, "B"),
-                new BallTreePoint(7, 8, 9, "C")
-                                            );
+    void testRemoveNonExistentPoint()
+    {
+        List<BallTreePoint<String>> points = List.of(new BallTreePoint<>(1, 2, 3, "A"),
+                                                     new BallTreePoint<>(4, 5, 6, "B"),
+                                                     new BallTreePoint<>(7, 8, 9, "C"));
 
         ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
-        BallTreePoint nonExistentPoint = new BallTreePoint(10, 10, 10, "D");
+        BallTreePoint<String> nonExistentPoint = new BallTreePoint<>(10, 10, 10, "D");
 
         boolean result = tree.remove(nonExistentPoint);
 
@@ -91,17 +90,16 @@ class ThreeDBallTreeTest {
     }
 
     @Test
-    void testRangeSearchReturnsCorrectResults() {
-        List<BallTreePoint> points = List.of(
-                new BallTreePoint(1, 2, 3, "A"),
-                new BallTreePoint(4, 5, 6, "B"),
-                new BallTreePoint(10, 10, 10, "C"),
-                new BallTreePoint(3, 2, 1, "D")
-                                            );
+    void testRangeSearchReturnsCorrectResults()
+    {
+        List<BallTreePoint<String>> points = List.of(new BallTreePoint<>(1, 2, 3, "A"),
+                                                     new BallTreePoint<>(4, 5, 6, "B"),
+                                                     new BallTreePoint<>(10, 10, 10, "C"),
+                                                     new BallTreePoint<>(3, 2, 1, "D"));
 
         ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
-        List<BallTreePoint> result = tree.rangeSearch(3, 3, 3, 5.0);
+        Set<BallTreePoint<String>> result = tree.rangeSearch(3, 3, 3, 5.0);
 
         assertTrue(result.stream().anyMatch(p -> "A".equals(p.data())), "Result should include point A.");
         assertTrue(result.stream().anyMatch(p -> "B".equals(p.data())), "Result should include point B.");
@@ -110,29 +108,26 @@ class ThreeDBallTreeTest {
     }
 
     @Test
-    void testRangeSearchWithEmptyTree() {
-        List<BallTreePoint> points = List.of();
+    void testRangeSearchWithEmptyTree()
+    {
+        List<BallTreePoint<String>> points = List.of();
 
         ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
-        List<BallTreePoint> result = tree.rangeSearch(1, 1, 1, 5.0);
+        Set<BallTreePoint<String>> result = tree.rangeSearch(1, 1, 1, 5.0);
 
         assertTrue(result.isEmpty(), "Result should be empty for an empty tree.");
     }
 
     @Test
-    void testRangeSearchWithRandomizedData() {
+    void testRangeSearchWithRandomizedData()
+    {
         Random random = new Random();
 
         // Generate random points
-        List<BallTreePoint> points = new ArrayList<>();
+        List<BallTreePoint<String>> points = new ArrayList<>();
         for (int i = 0; i < NUM_ELEMENTS; i++) {
-            points.add(new BallTreePoint(
-                    random.nextDouble() * 100,
-                    random.nextDouble() * 100,
-                    random.nextDouble() * 100,
-                    "Point" + i
-            ));
+            points.add(new BallTreePoint<>(random.nextDouble() * 100, random.nextDouble() * 100, random.nextDouble() * 100, "Point" + i));
         }
 
         ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
@@ -143,32 +138,24 @@ class ThreeDBallTreeTest {
         double targetZ = random.nextDouble() * 100;
         double radius = Math.abs(random.nextGaussian() + 2) * 20;
 
-        List<BallTreePoint> result = tree.rangeSearch(targetX, targetY, targetZ, radius);
+        Set<BallTreePoint<String>> result = tree.rangeSearch(targetX, targetY, targetZ, radius);
 
         // Verify results
-        for (BallTreePoint point : result) {
-            double distance = Math.sqrt(
-                    Math.pow(point.x() - targetX, 2) +
-                    Math.pow(point.y() - targetY, 2) +
-                    Math.pow(point.z() - targetZ, 2)
-                                       );
+        for (BallTreePoint<String> point : result) {
+            double distance = Math.sqrt(Math.pow(point.x() - targetX, 2) + Math.pow(point.y() - targetY, 2) + Math.pow(point.z() - targetZ, 2));
             assertTrue(distance <= radius, "Point " + point.data() + " should be within the radius.");
         }
     }
 
     @Test
-    void testRangeSearchRemoveCombinationWithRandomizedData() {
+    void testRangeSearchRemoveCombinationWithRandomizedData()
+    {
         Random random = new Random();
 
         // Generate random points
-        List<BallTreePoint> points = new ArrayList<>();
+        List<BallTreePoint<String>> points = new ArrayList<>();
         for (int i = 0; i < NUM_ELEMENTS; i++) {
-            points.add(new BallTreePoint(
-                    random.nextDouble() * 100,
-                    random.nextDouble() * 100,
-                    random.nextDouble() * 100,
-                    "Point" + i
-            ));
+            points.add(new BallTreePoint<>(random.nextDouble() * 100, random.nextDouble() * 100, random.nextDouble() * 100, "Point" + i));
         }
 
         ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
@@ -179,13 +166,13 @@ class ThreeDBallTreeTest {
         double targetZ = random.nextDouble() * 100;
         double radius = Math.abs(random.nextGaussian() + 2) * 20;
 
-        List<BallTreePoint> result = tree.rangeSearch(targetX, targetY, targetZ, radius);
+        Set<BallTreePoint<String>> result = tree.rangeSearch(targetX, targetY, targetZ, radius);
 
-        for (BallTreePoint point : result) {
+        for (BallTreePoint<String> point : result) {
             tree.remove(point);
 
             // Ensure the removed point is no longer in range search results
-            List<BallTreePoint> updatedResult = tree.rangeSearch(targetX, targetY, targetZ, radius);
+            Set<BallTreePoint<String>> updatedResult = tree.rangeSearch(targetX, targetY, targetZ, radius);
             assertFalse(updatedResult.contains(point), "Removed point " + point.data() + " should not appear in subsequent range searches.");
         }
 

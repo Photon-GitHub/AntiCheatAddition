@@ -7,132 +7,10 @@ import java.util.*;
  *
  * @param <T> The type of the objects stored in the tree.
  */
-public class ThreeDBallTree<T>
+public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collection<T>
 {
-    public record BallTreePoint<T>(double x, double y, double z, T data)
-    {
-        double distanceSquared(BallTreePoint<T> other)
-        {
-            final double dx = other.x - x;
-            final double dy = other.y - y;
-            final double dz = other.z - z;
-            return dx * dx + dy * dy + dz * dz;
-        }
-    }
-
-    private static final int MAX_LEAF_SIZE = 8;
-
-    private static class Node<T>
-    {
-        double centerX;
-        double centerY;
-        double centerZ;
-
-        double radius;
-
-        Node<T> leftChild;
-        Node<T> rightChild;
-
-        List<BallTreePoint<T>> points; // Only for leaf nodes
-
-        public Node(List<BallTreePoint<T>> points)
-        {
-            this.points = points;
-            computeCenterAndRadius();
-        }
-
-        private void computeCenterAndRadius()
-        {
-            if (points == null || points.isEmpty()) {
-                // Internal node
-                if (leftChild != null && rightChild != null) {
-                    centerX = (leftChild.centerX + rightChild.centerX) / 2;
-                    centerY = (leftChild.centerY + rightChild.centerY) / 2;
-                    centerZ = (leftChild.centerZ + rightChild.centerZ) / 2;
-
-                    double distToLeft = distanceBetweenPoints(centerX, centerY, centerZ, leftChild.centerX, leftChild.centerY, leftChild.centerZ) + leftChild.radius;
-                    double distToRight = distanceBetweenPoints(centerX, centerY, centerZ, rightChild.centerX, rightChild.centerY, rightChild.centerZ) + rightChild.radius;
-                    radius = Math.max(distToLeft, distToRight);
-                }
-                return;
-            }
-
-            // Leaf node
-            final double[] sum = new double[3];
-
-            for (BallTreePoint<T> p : points) {
-                sum[0] += p.x();
-                sum[1] += p.y();
-                sum[2] += p.z();
-            }
-
-            final int n = points.size();
-            centerX = sum[0] / n;
-            centerY = sum[1] / n;
-            centerZ = sum[2] / n;
-
-            final double maxDistanceSquared = points.parallelStream()
-                                                    .mapToDouble(p -> distanceSquaredBetweenPoints(p.x(), p.y(), p.z(), centerX, centerY, centerZ))
-                                                    .max()
-                                                    .orElse(0);
-
-            radius = Math.sqrt(maxDistanceSquared);
-        }
-
-        public void splitNode()
-        {
-            if (points.size() <= 1) {
-                return; // Cannot split further
-            }
-
-            // Step 1: Choose the first point as the first seed.
-            BallTreePoint<T> seed1 = points.get(0);
-
-            // Step 2: Find the point furthest from seed1 to be seed2
-            BallTreePoint<T> seed2 = null;
-            double maxDistSquared = -1;
-            for (BallTreePoint<T> p : points) {
-                double distSquared = p.distanceSquared(seed1);
-                if (distSquared > maxDistSquared) {
-                    maxDistSquared = distSquared;
-                    seed2 = p;
-                }
-            }
-
-            if (seed2 == null || seed1.equals(seed2)) {
-                return; // Cannot split
-            }
-
-            // Step 3: Assign points to the nearest seed
-            List<BallTreePoint<T>> leftPoints = new ArrayList<>();
-            List<BallTreePoint<T>> rightPoints = new ArrayList<>();
-            for (BallTreePoint<T> p : points) {
-                double distToSeed1 = p.distanceSquared(seed1);
-                double distToSeed2 = p.distanceSquared(seed2);
-                if (distToSeed1 < distToSeed2) {
-                    leftPoints.add(p);
-                } else {
-                    rightPoints.add(p);
-                }
-            }
-
-            // Ensure that both child nodes have points
-            if (leftPoints.isEmpty() || rightPoints.isEmpty()) {
-                // If one child is empty, split at median distance
-                List<BallTreePoint<T>> sortedPoints = new ArrayList<>(points);
-                sortedPoints.sort(Comparator.comparingDouble(p -> p.distanceSquared(seed1)));
-                int medianIndex = sortedPoints.size() / 2;
-                leftPoints = sortedPoints.subList(0, medianIndex);
-                rightPoints = sortedPoints.subList(medianIndex, sortedPoints.size());
-            }
-
-            // Create child nodes
-            leftChild = new Node<>(leftPoints);
-            rightChild = new Node<>(rightPoints);
-            // Clear points to save memory
-            points = null;
-        }
-    }
+    public static final int EXPECTED_NODES = 128;
+    private static final int MAX_LEAF_SIZE = 4;
 
     private Node<T> root;
 
@@ -143,7 +21,7 @@ public class ThreeDBallTree<T>
 
     private void buildTreeIteratively(Collection<BallTreePoint<T>> points)
     {
-        root = new Node<T>(new ArrayList<>(points));
+        root = new Node<>(new ArrayList<>(points));
         Queue<Node<T>> queue = new ArrayDeque<>();
         queue.add(root);
 
@@ -246,7 +124,6 @@ public class ThreeDBallTree<T>
                     return true;
                 } else {
                     path.pop();
-                    continue;
                 }
             } else {
                 if (node.leftChild != null) stack.push(node.leftChild);
@@ -265,7 +142,7 @@ public class ThreeDBallTree<T>
     public Set<BallTreePoint<T>> rangeSearch(double x, double y, double z, double radius)
     {
         final Set<BallTreePoint<T>> result = new HashSet<>();
-        final Deque<Node<T>> stack = new ArrayDeque<>(256);
+        final Deque<Node<T>> stack = new ArrayDeque<>(EXPECTED_NODES);
         stack.push(root);
 
         final double radiusSquared = radius * radius;
@@ -273,13 +150,14 @@ public class ThreeDBallTree<T>
         while (!stack.isEmpty()) {
             final Node<T> node = stack.pop();
 
+            // Check if the radius intersects with the current sphere.
             final double distSquaredToNode = distanceSquaredBetweenPoints(x, y, z, node.centerX, node.centerY, node.centerZ);
             final double maxDist = node.radius + radius;
 
-            if (distSquaredToNode > maxDist * maxDist) {
-                continue;
-            }
+            // If not, drop this sphere as it will not contain any results.
+            if (distSquaredToNode > maxDist * maxDist) continue;
 
+            // Leaf node
             if (node.leftChild == null && node.rightChild == null) {
                 if (node.points != null) {
                     for (BallTreePoint<T> p : node.points) {
@@ -287,6 +165,7 @@ public class ThreeDBallTree<T>
                     }
                 }
             } else {
+                // Internal node, add the children to the stack.
                 if (node.leftChild != null) stack.push(node.leftChild);
                 if (node.rightChild != null) stack.push(node.rightChild);
             }
@@ -314,5 +193,197 @@ public class ThreeDBallTree<T>
         final double dy = y1 - y2;
         final double dz = z1 - z2;
         return dx * dx + dy * dy + dz * dz;
+    }
+
+    @Override
+    public Iterator<T> iterator()
+    {
+        return new Iterator<>()
+        {
+            final Deque<Node<T>> stack = new ArrayDeque<>(List.of(root));
+            Node<T> current;
+            int index = 0;
+
+            @Override
+            public boolean hasNext()
+            {
+                return !stack.isEmpty();
+            }
+
+            @Override
+            public T next()
+            {
+                if (index == 0) {
+                    do {
+                        current = stack.pop();
+
+                        if (current.leftChild != null) stack.push(current.leftChild);
+                        if (current.rightChild != null) stack.push(current.rightChild);
+                    } while (current.points == null && hasNext());
+                }
+
+                int size = current.points.size();
+                if (index < size) {
+                    return current.points.get(index++).data;
+                } else {
+                    index = 0;
+                    return next();
+                }
+            }
+        };
+    }
+
+    @Override
+    public int size()
+    {
+        int sum = 0;
+        final Deque<Node<T>> stack = new ArrayDeque<>(EXPECTED_NODES);
+        stack.push(root);
+
+        while (!stack.isEmpty()) {
+            Node<T> node = stack.pop();
+
+            if (node.leftChild != null) stack.push(node.leftChild);
+            if (node.rightChild != null) stack.push(node.rightChild);
+
+            if (node.points != null) sum += node.points.size();
+        }
+        return sum;
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return root == null || (root.points == null && root.leftChild == null && root.rightChild == null);
+    }
+
+    public record BallTreePoint<T>(double x, double y, double z, T data)
+    {
+        double distanceSquared(BallTreePoint<T> other)
+        {
+            final double dx = other.x - x;
+            final double dy = other.y - y;
+            final double dz = other.z - z;
+            return dx * dx + dy * dy + dz * dz;
+        }
+    }
+
+    private static class Node<T>
+    {
+        double centerX;
+        double centerY;
+        double centerZ;
+
+        double radius;
+
+        Node<T> leftChild;
+        Node<T> rightChild;
+
+        List<BallTreePoint<T>> points; // Only for leaf nodes
+
+        public Node(List<BallTreePoint<T>> points)
+        {
+            this.points = points;
+            computeCenterAndRadius();
+        }
+
+        private void computeCenterAndRadius()
+        {
+            if (points == null || points.isEmpty()) {
+                // Internal node.
+                if (leftChild != null && rightChild != null) {
+                    // As we have an internal node, we cover both children in our hypersphere
+                    // -> Center is between the children, radius the maximum to each of them and their radius.
+                    centerX = (leftChild.centerX + rightChild.centerX) / 2;
+                    centerY = (leftChild.centerY + rightChild.centerY) / 2;
+                    centerZ = (leftChild.centerZ + rightChild.centerZ) / 2;
+
+                    double distToLeft = this.distance(leftChild) + leftChild.radius;
+                    double distToRight = this.distance(rightChild) + rightChild.radius;
+                    radius = Math.max(distToLeft, distToRight);
+                }
+                return;
+            }
+
+            // Leaf node
+            // Here, we use all the points in the leaf to calculate the center and the radius of the sphere.
+            final double[] sum = new double[3];
+
+            for (BallTreePoint<T> p : points) {
+                sum[0] += p.x();
+                sum[1] += p.y();
+                sum[2] += p.z();
+            }
+
+            final int n = points.size();
+            centerX = sum[0] / n;
+            centerY = sum[1] / n;
+            centerZ = sum[2] / n;
+
+            final double maxDistanceSquared = points.stream()
+                                                    .mapToDouble(p -> distanceSquaredBetweenPoints(p.x(), p.y(), p.z(), centerX, centerY, centerZ))
+                                                    .max()
+                                                    .orElse(0);
+
+            radius = Math.sqrt(maxDistanceSquared);
+        }
+
+        public void splitNode()
+        {
+            // Cannot split further, must have at least 2 points.
+            if (points.size() <= 1) return;
+
+            // Step 1: Choose the first point as the first seed.
+            final BallTreePoint<T> seed1 = points.get(0);
+
+            // Step 2: Find the point furthest from seed1 to be seed2
+            BallTreePoint<T> seed2 = seed1;
+            double maxDistSquared = 0;
+            for (BallTreePoint<T> p : points) {
+                double distSquared = seed1.distanceSquared(p);
+                if (distSquared > maxDistSquared) {
+                    maxDistSquared = distSquared;
+                    seed2 = p;
+                }
+            }
+
+            // Cannot split if the points are the same.
+            if (seed1.equals(seed2)) return;
+
+            // Step 3: Assign points to the nearest seed
+            List<BallTreePoint<T>> leftPoints = new ArrayList<>();
+            List<BallTreePoint<T>> rightPoints = new ArrayList<>();
+            for (BallTreePoint<T> p : points) {
+                double distToSeed1 = p.distanceSquared(seed1);
+                double distToSeed2 = p.distanceSquared(seed2);
+                if (distToSeed1 < distToSeed2) {
+                    leftPoints.add(p);
+                } else {
+                    rightPoints.add(p);
+                }
+            }
+
+            // Ensure that both child nodes have points
+            // DO NOT USE THIS ALL THE TIME, THIS HAS O(n*log(n)) runtime, compared to the O(n) above!
+            if (leftPoints.isEmpty() || rightPoints.isEmpty()) {
+                // If one child is empty, split at median distance
+                List<BallTreePoint<T>> sortedPoints = new ArrayList<>(points);
+                sortedPoints.sort(Comparator.comparingDouble(p -> p.distanceSquared(seed1)));
+                int medianIndex = sortedPoints.size() / 2;
+                leftPoints = sortedPoints.subList(0, medianIndex);
+                rightPoints = sortedPoints.subList(medianIndex, sortedPoints.size());
+            }
+
+            // Create child nodes
+            leftChild = new Node<>(leftPoints);
+            rightChild = new Node<>(rightPoints);
+            // Clear points to save memory
+            points = null;
+        }
+
+        private double distance(Node<T> other)
+        {
+            return distanceBetweenPoints(this.centerX, this.centerY, this.centerZ, other.centerX, other.centerY, other.centerZ);
+        }
     }
 }

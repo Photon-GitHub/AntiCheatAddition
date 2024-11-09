@@ -7,7 +7,7 @@ import java.util.*;
  *
  * @param <T> The type of the objects stored in the tree.
  */
-public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collection<T>
+public class ThreeDBallTree<T> extends AbstractCollection<T> implements Set<T>
 {
     public static final int EXPECTED_NODES = 128;
     private static final int MAX_LEAF_SIZE = 4;

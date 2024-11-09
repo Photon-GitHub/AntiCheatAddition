@@ -152,7 +152,7 @@ class ThreeDBallTreeTest
                 random.nextDouble() * 100,
                 random.nextDouble() * 100
         );
-        final double radius = random.nextDouble() * 40;
+        final double radius = (random.nextGaussian() + 1) * 30;
 
         // Perform range search
         List<String> result = tree.rangeSearch(target, radius);
@@ -175,5 +175,50 @@ class ThreeDBallTreeTest
                 assertTrue(result.contains(points.get(i)), "Point " + points.get(i) + " should be in the result.");
             }
         }
+    }
+
+
+    @Test
+    void testRangeSearchRemoveCombinationWithRandomizedData()
+    {
+        Random random = new Random();
+
+        // Generate random points and coordinates
+        List<String> points = new ArrayList<>();
+        List<Vector> coordinates = new ArrayList<>();
+
+        for (int i = 0; i < NUM_ELEMENTS; i++) {
+            points.add("Point" + i);
+            coordinates.add(new Vector(
+                    random.nextDouble() * 100,
+                    random.nextDouble() * 100,
+                    random.nextDouble() * 100
+            ));
+        }
+
+        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points, coordinates);
+
+        // Define a random target and radius
+        Vector target = new Vector(
+                random.nextDouble() * 100,
+                random.nextDouble() * 100,
+                random.nextDouble() * 100
+        );
+        final double radius = (random.nextGaussian() + 1) * 30;
+
+        final List<String> result = tree.rangeSearch(target, radius);
+        List<String> updatedResult = List.of();
+
+        for (String point : result) {
+            Vector coordinateToRemove = coordinates.get(points.indexOf(point));
+
+            tree.remove(point, coordinateToRemove);
+
+            // Ensure the removed point is no longer in range search results
+            updatedResult = tree.rangeSearch(target, radius);
+            assertFalse(updatedResult.contains(point), "Removed point should not appear in subsequent range searches.");
+        }
+
+        assertTrue(updatedResult.isEmpty());
     }
 }

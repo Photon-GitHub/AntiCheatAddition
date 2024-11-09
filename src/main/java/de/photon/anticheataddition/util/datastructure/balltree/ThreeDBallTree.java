@@ -197,10 +197,7 @@ public class ThreeDBallTree<T>
         if (root == null) {
             root = new BallTreeNode<>(point, coordinate.clone(), 0, true, 1, null, null);
         } else {
-            // Optional: Check for duplicate point
-            if (!contains(point, coordinate)) {
-                insertIterative(point, coordinate);
-            }
+            insertIterative(point, coordinate);
         }
     }
 
@@ -270,32 +267,6 @@ public class ThreeDBallTree<T>
             double rightRadius = currentNode.rightChild.centroid.distance(currentNode.centroid) + currentNode.rightChild.radius;
             currentNode.radius = Math.max(leftRadius, rightRadius);
         }
-    }
-
-    /**
-     * Checks if the tree contains a point with the given coordinate.
-     *
-     * @param point      The point to check.
-     * @param coordinate The coordinate of the point.
-     *
-     * @return True if the point exists in the tree, false otherwise.
-     */
-    public boolean contains(T point, Vector coordinate)
-    {
-        BallTreeNode<T> node = root;
-
-        while (node != null) {
-            if (node.isLeaf) {
-                return node.point.equals(point);
-            }
-
-            double distToLeft = node.leftChild.centroid.distance(coordinate);
-            double distToRight = node.rightChild.centroid.distance(coordinate);
-
-            node = distToLeft <= distToRight ? node.leftChild : node.rightChild;
-        }
-
-        return false;
     }
 
     /**

@@ -20,7 +20,7 @@ public class ThreeDBallTree<T>
         }
     }
 
-    private static final int MAX_LEAF_SIZE = 2;
+    private static final int MAX_LEAF_SIZE = 8;
 
     private static class Node<T>
     {

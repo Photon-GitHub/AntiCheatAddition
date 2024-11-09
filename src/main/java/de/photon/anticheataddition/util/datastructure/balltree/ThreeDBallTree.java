@@ -1,12 +1,15 @@
 package de.photon.anticheataddition.util.datastructure.balltree;
 
 import com.google.common.base.Preconditions;
+import de.photon.anticheataddition.util.datastructure.Pair;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.bukkit.util.Vector;
 
-import java.util.*;
-import java.util.function.ToDoubleFunction;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
 /**
  * A 3D Ball Tree implementation for efficient spatial partitioning, range queries, and dynamic updates.
@@ -43,91 +46,82 @@ public class ThreeDBallTree<T>
             return null;
         }
 
-        Deque<NodeBuildTask<T>> stack = new ArrayDeque<>();
-        BallTreeNode<T> rootNode = new BallTreeNode<>();
-        stack.push(new NodeBuildTask<>(points, coordinates, rootNode));
+        BallTreeNode<T> node = new BallTreeNode<>();
 
-        while (!stack.isEmpty()) {
-            NodeBuildTask<T> task = stack.pop();
-            List<T> pts = task.points;
-            List<Vector> ptCoords = task.coordinates;
-            BallTreeNode<T> node = task.node;
-
-            Vector centroid = computeCentroid(ptCoords);
-            node.radius = ptCoords.stream().mapToDouble(centroid::distance).max().orElse(0);
-
+        if (points.size() == 1) {
+            // Base case: leaf node
+            node.point = points.get(0);
+            node.centroid = coordinates.get(0).clone();
+            node.radius = 0;
+            node.isLeaf = true;
+            node.pointCount = 1;
+        } else {
+            // Compute centroid and radius
+            Vector centroid = computeCentroid(coordinates);
+            double radius = coordinates.stream().mapToDouble(centroid::distance).max().orElse(0);
             node.centroid = centroid;
-            node.pointCount = pts.size();
+            node.radius = radius;
+            node.pointCount = points.size();
+            node.isLeaf = false;
 
-            if (pts.size() == 1) {
-                node.point = pts.get(0);
-                node.isLeaf = true;
-            } else {
-                Axis axis = chooseSplitAxis(ptCoords);
-                List<Integer> indices = new ArrayList<>();
-                for (int i = 0; i < ptCoords.size(); i++) {
-                    indices.add(i);
+            // Partition the points into two clusters
+            Pair<List<T>, List<Vector>> leftCluster;
+            Pair<List<T>, List<Vector>> rightCluster;
+
+            // Use a simple clustering method (e.g., farthest point clustering)
+            Pair<Vector, Vector> centers = selectInitialCenters(coordinates);
+            leftCluster = new Pair<>(new ArrayList<>(), new ArrayList<>());
+            rightCluster = new Pair<>(new ArrayList<>(), new ArrayList<>());
+
+            // Assign points to the nearest center
+            for (int i = 0; i < points.size(); i++) {
+                Vector coord = coordinates.get(i);
+                T point = points.get(i);
+
+                double distToCenter1 = coord.distance(centers.first());
+                double distToCenter2 = coord.distance(centers.second());
+
+                if (distToCenter1 <= distToCenter2) {
+                    leftCluster.first().add(point);
+                    leftCluster.second().add(coord);
+                } else {
+                    rightCluster.first().add(point);
+                    rightCluster.second().add(coord);
                 }
-                indices.sort(Comparator.comparingDouble(i -> getAxisValue(ptCoords.get(i), axis)));
+            }
 
-                int median = indices.size() / 2;
-                List<Integer> leftIndices = indices.subList(0, median);
-                List<Integer> rightIndices = indices.subList(median, indices.size());
+            // Recursively build child nodes
+            node.leftChild = buildTree(leftCluster.first(), leftCluster.second());
+            node.rightChild = buildTree(rightCluster.first(), rightCluster.second());
+        }
 
-                List<Vector> leftCoords = leftIndices.stream().map(ptCoords::get).toList();
-                List<Vector> rightCoords = rightIndices.stream().map(ptCoords::get).toList();
+        return node;
+    }
 
-                List<T> leftPoints = leftIndices.stream().map(pts::get).toList();
-                List<T> rightPoints = rightIndices.stream().map(pts::get).toList();
+    private Pair<Vector, Vector> selectInitialCenters(List<Vector> coordinates)
+    {
+        // Select two farthest points as initial centers
+        int n = coordinates.size();
+        int idx1 = 0;
+        int idx2 = 1;
+        double maxDistance = coordinates.get(0).distanceSquared(coordinates.get(1));
 
-                node.leftChild = new BallTreeNode<>();
-                node.rightChild = new BallTreeNode<>();
-
-                stack.push(new NodeBuildTask<>(rightPoints, rightCoords, node.rightChild));
-                stack.push(new NodeBuildTask<>(leftPoints, leftCoords, node.leftChild));
+        for (int i = 0; i < n; i++) {
+            Vector coord1 = coordinates.get(i);
+            for (int j = i + 1; j < n; j++) {
+                Vector coord2 = coordinates.get(j);
+                double dist = coord1.distanceSquared(coord2);
+                if (dist > maxDistance) {
+                    maxDistance = dist;
+                    idx1 = i;
+                    idx2 = j;
+                }
             }
         }
 
-        return rootNode;
+        return new Pair<>(coordinates.get(idx1), coordinates.get(idx2));
     }
 
-    private enum Axis
-    {
-        X, Y, Z
-    }
-
-    /**
-     * Chooses the axis with the largest range for splitting points.
-     *
-     * @param coordinates The list of coordinates.
-     *
-     * @return The axis to split on.
-     */
-    private Axis chooseSplitAxis(List<Vector> coordinates)
-    {
-        double rangeX = computeRange(coordinates, Vector::getX);
-        double rangeY = computeRange(coordinates, Vector::getY);
-        double rangeZ = computeRange(coordinates, Vector::getZ);
-
-        if (rangeX >= rangeY && rangeX >= rangeZ) return Axis.X;
-        else if (rangeY >= rangeZ) return Axis.Y;
-        else return Axis.Z;
-    }
-
-    private double computeRange(List<Vector> vectors, ToDoubleFunction<Vector> extractor)
-    {
-        DoubleSummaryStatistics stats = vectors.stream().mapToDouble(extractor).summaryStatistics();
-        return stats.getMax() - stats.getMin();
-    }
-
-    private double getAxisValue(Vector point, Axis axis)
-    {
-        return switch (axis) {
-            case X -> point.getX();
-            case Y -> point.getY();
-            case Z -> point.getZ();
-        };
-    }
 
     /**
      * Performs a range search to find all points within a given radius from a target point.
@@ -196,78 +190,70 @@ public class ThreeDBallTree<T>
         // Create a new root node if tree is empty
         if (root == null) {
             root = new BallTreeNode<>(point, coordinate.clone(), 0, true, 1, null, null);
-        } else {
-            insertIterative(point, coordinate);
+            return;
         }
-    }
 
-    private void insertIterative(T point, Vector coordinate)
-    {
         BallTreeNode<T> node = root;
-        final Deque<BallTreeNode<T>> pathStack = new ArrayDeque<>();
+        Deque<BallTreeNode<T>> pathStack = new ArrayDeque<>();
 
         while (true) {
             pathStack.push(node);
 
             // Update centroid and point count
-            double totalPoints = node.pointCount + 1.0;
-            Vector newCentroid = node.centroid.clone().multiply(node.pointCount).add(coordinate).multiply(1.0 / totalPoints);
+            node.centroid = node.centroid.clone().multiply(node.pointCount).add(coordinate).multiply(1.0 / (node.pointCount + 1));
             node.pointCount += 1;
 
             // Update radius
-            double distToNewPoint = newCentroid.distance(coordinate);
-            double distCentroidShift = newCentroid.distance(node.centroid);
-            node.radius = Math.max(node.radius + distCentroidShift, distToNewPoint);
-            node.centroid = newCentroid;
+            double distToNewPoint = node.centroid.distance(coordinate);
+            node.radius = Math.max(node.radius, distToNewPoint);
 
             if (node.isLeaf) {
-                // Break to split the leaf node
+                // If node is a leaf, split it
+                T existingPoint = node.point;
+                Vector existingCoordinate = node.centroid.clone();
+
+                // Create new child nodes
+                node.point = null;
+                node.isLeaf = false;
+
+                // Use the same clustering logic as in buildTree
+                Pair<Vector, Vector> centers = new Pair<>(existingCoordinate, coordinate);
+
+                // Assign points to the nearest center
+                double distToExisting = coordinate.distance(existingCoordinate);
+                double distToNew = coordinate.distance(coordinate);
+
+                if (distToExisting <= distToNew) {
+                    node.leftChild = new BallTreeNode<>(existingPoint, existingCoordinate, 0, true, 1, null, null);
+                    node.rightChild = new BallTreeNode<>(point, coordinate.clone(), 0, true, 1, null, null);
+                } else {
+                    node.leftChild = new BallTreeNode<>(point, coordinate.clone(), 0, true, 1, null, null);
+                    node.rightChild = new BallTreeNode<>(existingPoint, existingCoordinate, 0, true, 1, null, null);
+                }
+
+                // Update parent node's radius and centroid
+                node.centroid = computeCentroid(List.of(existingCoordinate, coordinate));
+                node.radius = Math.max(
+                        node.leftChild.centroid.distance(node.centroid) + node.leftChild.radius,
+                        node.rightChild.centroid.distance(node.centroid) + node.rightChild.radius
+                                      );
+                node.pointCount = 2;
+
                 break;
             } else {
-                // Decide which child to proceed
+                // Decide which child to proceed to
                 double distToLeft = node.leftChild.centroid.distance(coordinate);
                 double distToRight = node.rightChild.centroid.distance(coordinate);
 
-                node = distToLeft <= distToRight ? node.leftChild : node.rightChild;
+                if (distToLeft <= distToRight) {
+                    node = node.leftChild;
+                } else {
+                    node = node.rightChild;
+                }
             }
         }
-
-        // Split the leaf node
-        BallTreeNode<T> leafNode = node;
-        T existingPoint = leafNode.point;
-        Vector existingCoordinate = leafNode.centroid.clone();
-
-        leafNode.isLeaf = false;
-        leafNode.point = null;
-
-        Axis splitAxis = chooseSplitAxis(List.of(existingCoordinate, coordinate));
-
-        if (getAxisValue(existingCoordinate, splitAxis) < getAxisValue(coordinate, splitAxis)) {
-            // Existing point to left child
-            leafNode.leftChild = new BallTreeNode<>(existingPoint, existingCoordinate, 0, true, 1, null, null);
-            leafNode.rightChild = new BallTreeNode<>(point, coordinate.clone(), 0, true, 1, null, null);
-        } else {
-            leafNode.leftChild = new BallTreeNode<>(point, coordinate.clone(), 0, true, 1, null, null);
-            leafNode.rightChild = new BallTreeNode<>(existingPoint, existingCoordinate, 0, true, 1, null, null);
-        }
-
-        // Update the radii and centroids up the path
-        pathStack.pop(); // Already updated leaf node
-
-        while (!pathStack.isEmpty()) {
-            BallTreeNode<T> currentNode = pathStack.pop();
-
-            // Update centroid
-            currentNode.centroid = currentNode.leftChild.centroid.clone().multiply(currentNode.leftChild.pointCount)
-                                                                 .add(currentNode.rightChild.centroid.clone().multiply(currentNode.rightChild.pointCount))
-                                                                 .multiply(1.0 / currentNode.pointCount);
-
-            // Update radius
-            double leftRadius = currentNode.leftChild.centroid.distance(currentNode.centroid) + currentNode.leftChild.radius;
-            double rightRadius = currentNode.rightChild.centroid.distance(currentNode.centroid) + currentNode.rightChild.radius;
-            currentNode.radius = Math.max(leftRadius, rightRadius);
-        }
     }
+
 
     /**
      * Removes a point from the Ball Tree iteratively.
@@ -277,38 +263,32 @@ public class ThreeDBallTree<T>
      */
     public void remove(T point, Vector coordinate)
     {
-        if (root != null) {
-            removeIterative(point, coordinate);
-        }
-    }
+        if (root == null) return;
 
-    private void removeIterative(T point, Vector coordinate)
-    {
         BallTreeNode<T> node = root;
         BallTreeNode<T> parent = null;
         boolean isLeftChild = false;
 
         Deque<TraversalState<T>> pathStack = new ArrayDeque<>();
 
-        boolean found = false;
-
         while (node != null) {
             pathStack.push(new TraversalState<>(node, parent, isLeftChild));
 
             if (node.isLeaf) {
                 if (node.point.equals(point)) {
-                    found = true;
+                    // Found the point to remove
                     break;
+                } else {
+                    // Point not found
+                    return;
                 }
-                // Point not found
-                break;
             }
 
             parent = node;
 
-            // Decide which child to proceed
-            double distToLeft = node.leftChild.centroid.distance(coordinate);
-            double distToRight = node.rightChild.centroid.distance(coordinate);
+            // Decide which child to proceed to
+            double distToLeft = node.leftChild == null ? Double.POSITIVE_INFINITY : node.leftChild.centroid.distance(coordinate);
+            double distToRight = node.rightChild == null ? Double.POSITIVE_INFINITY : node.rightChild.centroid.distance(coordinate);
 
             if (distToLeft <= distToRight) {
                 node = node.leftChild;
@@ -319,78 +299,84 @@ public class ThreeDBallTree<T>
             }
         }
 
-        if (!found) {
-            // Point not found, no need to update pointCounts
+        // If point not found
+        if (node == null || !node.point.equals(point)) {
             return;
         }
 
-        // Now, decrement pointCounts along the path
-        for (TraversalState<T> state : pathStack) {
-            state.node.pointCount -= 1;
-        }
-
-        // Remove the node
-        TraversalState<T> leafState = pathStack.peek();
-        if (leafState.parent == null) {
+        // Remove the point
+        if (parent == null) {
             // Removing the root node
             root = null;
         } else {
-            if (leafState.isLeftChild) {
-                leafState.parent.leftChild = null;
+            if (isLeftChild) {
+                parent.leftChild = null;
             } else {
-                leafState.parent.rightChild = null;
+                parent.rightChild = null;
             }
         }
 
-        // Update the centroids and radii up the path
+        // Update centroids and radii up the path
         while (!pathStack.isEmpty()) {
             TraversalState<T> state = pathStack.pop();
             BallTreeNode<T> currentNode = state.node;
-            BallTreeNode<T> parentNode = state.parent;
-            boolean isLeft = state.isLeftChild;
 
-            if (currentNode.leftChild == null && currentNode.rightChild == null) {
-                // Node has no children, remove it from its parent
-                if (parentNode != null) {
-                    if (isLeft) {
-                        parentNode.leftChild = null;
+            currentNode.pointCount -= 1;
+
+            if (currentNode.pointCount == 0) {
+                // Remove this node
+                if (state.parent != null) {
+                    if (state.isLeftChild) {
+                        state.parent.leftChild = null;
                     } else {
-                        parentNode.rightChild = null;
+                        state.parent.rightChild = null;
                     }
                 } else {
-                    // Tree is now empty
                     root = null;
                 }
-            } else if (currentNode.leftChild == null) {
-                // Only right child exists, promote right child
-                BallTreeNode<T> promotedChild = currentNode.rightChild;
-                copyNodeData(currentNode, promotedChild);
-            } else if (currentNode.rightChild == null) {
-                // Only left child exists, promote left child
-                BallTreeNode<T> promotedChild = currentNode.leftChild;
-                copyNodeData(currentNode, promotedChild);
-            } else {
-                // Both children exist, update centroid and radius
-                currentNode.centroid = currentNode.leftChild.centroid.clone().multiply(currentNode.leftChild.pointCount)
-                                                                     .add(currentNode.rightChild.centroid.clone().multiply(currentNode.rightChild.pointCount))
-                                                                     .multiply(1.0 / currentNode.pointCount);
+                continue;
+            }
 
-                double leftRadius = currentNode.leftChild.centroid.distance(currentNode.centroid) + currentNode.leftChild.radius;
-                double rightRadius = currentNode.rightChild.centroid.distance(currentNode.centroid) + currentNode.rightChild.radius;
-                currentNode.radius = Math.max(leftRadius, rightRadius);
+            // Recompute centroid and radius
+            List<Vector> childCentroids = new ArrayList<>();
+            List<Integer> childPointCounts = new ArrayList<>();
+
+            if (currentNode.leftChild != null) {
+                childCentroids.add(currentNode.leftChild.centroid.clone().multiply(currentNode.leftChild.pointCount));
+                childPointCounts.add(currentNode.leftChild.pointCount);
+            }
+
+            if (currentNode.rightChild != null) {
+                childCentroids.add(currentNode.rightChild.centroid.clone().multiply(currentNode.rightChild.pointCount));
+                childPointCounts.add(currentNode.rightChild.pointCount);
+            }
+
+            if (!childCentroids.isEmpty()) {
+                Vector newCentroid = new Vector(0, 0, 0);
+                int totalPoints = 0;
+
+                for (int i = 0; i < childCentroids.size(); i++) {
+                    newCentroid.add(childCentroids.get(i));
+                    totalPoints += childPointCounts.get(i);
+                }
+
+                newCentroid.multiply(1.0 / totalPoints);
+                currentNode.centroid = newCentroid;
+                currentNode.pointCount = totalPoints;
+
+                // Update radius
+                double maxRadius = 0;
+                if (currentNode.leftChild != null) {
+                    double leftRadius = currentNode.leftChild.centroid.distance(currentNode.centroid) + currentNode.leftChild.radius;
+                    maxRadius = Math.max(maxRadius, leftRadius);
+                }
+                if (currentNode.rightChild != null) {
+                    double rightRadius = currentNode.rightChild.centroid.distance(currentNode.centroid) + currentNode.rightChild.radius;
+                    maxRadius = Math.max(maxRadius, rightRadius);
+                }
+                currentNode.radius = maxRadius;
             }
         }
-    }
-
-    private void copyNodeData(BallTreeNode<T> destination, BallTreeNode<T> source)
-    {
-        destination.point = source.point;
-        destination.centroid = source.centroid;
-        destination.radius = source.radius;
-        destination.isLeaf = source.isLeaf;
-        destination.pointCount = source.pointCount;
-        destination.leftChild = source.leftChild;
-        destination.rightChild = source.rightChild;
     }
 
     /**

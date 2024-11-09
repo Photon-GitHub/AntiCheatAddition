@@ -65,12 +65,13 @@ class ThreeDBallTreeTest
 
         String pointToRemove = "B";
         Vector coordinateToRemove = new Vector(4, 5, 6);
+
+        List<String> result = tree.rangeSearch(coordinateToRemove, 1);
+        assertTrue(result.contains(pointToRemove), "Point B should be in the tree in the beginning.");
+
         tree.remove(pointToRemove, coordinateToRemove);
 
-        Vector target = new Vector(4, 5, 6);
-        double radius = 1.0;
-
-        List<String> result = tree.rangeSearch(target, radius);
+        result = tree.rangeSearch(coordinateToRemove, 1);
         assertFalse(result.contains(pointToRemove), "Point B should no longer be found in the range search after removal.");
     }
 
@@ -204,9 +205,9 @@ class ThreeDBallTreeTest
                 random.nextDouble() * 100,
                 random.nextDouble() * 100
         );
-        final double radius = (random.nextGaussian() + 1) * 30;
+        final double radius = Math.abs(random.nextGaussian() + 2) * 20;
+        List<String> result = tree.rangeSearch(target, radius);
 
-        final List<String> result = tree.rangeSearch(target, radius);
         List<String> updatedResult = List.of();
 
         for (String point : result) {
@@ -216,7 +217,7 @@ class ThreeDBallTreeTest
 
             // Ensure the removed point is no longer in range search results
             updatedResult = tree.rangeSearch(target, radius);
-            assertFalse(updatedResult.contains(point), "Removed point should not appear in subsequent range searches.");
+            assertFalse(updatedResult.contains(point), "Removed point " + point + " should not appear in subsequent range searches of radius " + radius + "." + "\n Full list: " + result + " | " + updatedResult);
         }
 
         assertTrue(updatedResult.isEmpty());

@@ -1,7 +1,7 @@
 package de.photon.anticheataddition.util.datastructure;
 
 import de.photon.anticheataddition.util.datastructure.balltree.ThreeDBallTree;
-import org.bukkit.util.Vector;
+import de.photon.anticheataddition.util.datastructure.balltree.ThreeDBallTree.BallTreePoint;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -10,216 +10,185 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ThreeDBallTreeTest
-{
+class ThreeDBallTreeTest {
     private static final int NUM_ELEMENTS = 100;
 
     @Test
-    void testTreeConstructionWithValidData()
-    {
-        List<String> points = List.of("A", "B", "C");
-        List<Vector> coordinates = List.of(new Vector(1, 2, 3), new Vector(4, 5, 6), new Vector(7, 8, 9));
+    void testTreeConstructionWithValidData() {
+        List<BallTreePoint> points = List.of(
+                new BallTreePoint(1, 2, 3, "A"),
+                new BallTreePoint(4, 5, 6, "B"),
+                new BallTreePoint(7, 8, 9, "C")
+                                            );
 
-        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points, coordinates);
+        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
         assertNotNull(tree, "Tree should be constructed successfully.");
     }
 
     @Test
-    void testTreeConstructionWithMismatchedPointsAndCoordinates()
-    {
-        List<String> points = List.of("A", "B");
-        List<Vector> coordinates = List.of(new Vector(1, 2, 3));
+    void testTreeConstructionWithEmptyData() {
+        List<BallTreePoint> points = List.of();
 
-        final Exception exception = assertThrows(IllegalArgumentException.class, () -> new ThreeDBallTree<>(points, coordinates));
+        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
-        assertEquals("Each point must have one corresponding coordinate.", exception.getMessage());
+        assertNotNull(tree, "Tree should be constructed successfully even with empty data.");
     }
 
     @Test
-    void testInsertAddsNewPoint()
-    {
-        List<String> points = List.of("A", "B", "C");
-        List<Vector> coordinates = List.of(new Vector(1, 2, 3), new Vector(4, 5, 6), new Vector(7, 8, 9));
+    void testInsertAddsNewPoint() {
+        List<BallTreePoint> points = List.of(
+                new BallTreePoint(1, 2, 3, "A"),
+                new BallTreePoint(4, 5, 6, "B"),
+                new BallTreePoint(7, 8, 9, "C")
+                                            );
 
-        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points, coordinates);
+        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
-        String newPoint = "D";
-        Vector newCoordinate = new Vector(10, 10, 10);
-        tree.insert(newPoint, newCoordinate);
+        BallTreePoint newPoint = new BallTreePoint(10, 10, 10, "D");
+        tree.insert(newPoint);
 
-        Vector target = new Vector(10, 10, 10);
-        double radius = 1.0;
-
-        List<String> result = tree.rangeSearch(target, radius);
+        List<BallTreePoint> result = tree.rangeSearch(10, 10, 10, 1.0);
         assertTrue(result.contains(newPoint), "Newly added point D should be found in the range search.");
     }
 
     @Test
-    void testRemoveDeletesPoint()
-    {
-        List<String> points = List.of("A", "B", "C");
-        List<Vector> coordinates = List.of(new Vector(1, 2, 3), new Vector(4, 5, 6), new Vector(7, 8, 9));
+    void testRemoveDeletesPoint() {
+        List<BallTreePoint> points = List.of(
+                new BallTreePoint(1, 2, 3, "A"),
+                new BallTreePoint(4, 5, 6, "B"),
+                new BallTreePoint(7, 8, 9, "C")
+                                            );
 
-        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points, coordinates);
+        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
-        String pointToRemove = "B";
-        Vector coordinateToRemove = new Vector(4, 5, 6);
+        BallTreePoint pointToRemove = new BallTreePoint(4, 5, 6, "B");
 
-        List<String> result = tree.rangeSearch(coordinateToRemove, 1);
-        assertTrue(result.contains(pointToRemove), "Point B should be in the tree in the beginning.");
+        List<BallTreePoint> result = tree.rangeSearch(4, 5, 6, 1.0);
+        assertTrue(result.contains(pointToRemove), "Point B should be in the tree initially.");
 
-        tree.remove(pointToRemove, coordinateToRemove);
+        tree.remove(pointToRemove);
 
-        result = tree.rangeSearch(coordinateToRemove, 1);
+        result = tree.rangeSearch(4, 5, 6, 1.0);
         assertFalse(result.contains(pointToRemove), "Point B should no longer be found in the range search after removal.");
     }
 
     @Test
-    void testRemoveNonExistentPoint()
-    {
-        List<String> points = List.of("A", "B", "C");
-        List<Vector> coordinates = List.of(new Vector(1, 2, 3), new Vector(4, 5, 6), new Vector(7, 8, 9));
+    void testRemoveNonExistentPoint() {
+        List<BallTreePoint> points = List.of(
+                new BallTreePoint(1, 2, 3, "A"),
+                new BallTreePoint(4, 5, 6, "B"),
+                new BallTreePoint(7, 8, 9, "C")
+                                            );
 
-        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points, coordinates);
+        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
-        String nonExistentPoint = "D";
-        Vector nonExistentCoordinate = new Vector(10, 10, 10);
+        BallTreePoint nonExistentPoint = new BallTreePoint(10, 10, 10, "D");
 
-        tree.remove(nonExistentPoint, nonExistentCoordinate);
+        boolean result = tree.remove(nonExistentPoint);
 
-        assertEquals(3, tree.rangeSearch(new Vector(0, 0, 0), 100.0).size(),
-                     "Tree size should remain the same when attempting to remove a non-existent point.");
+        assertFalse(result, "Removing a non-existent point should return false.");
     }
 
     @Test
-    void testRangeSearchReturnsCorrectResults()
-    {
-        List<String> points = List.of("A", "B", "C", "D");
-        List<Vector> coordinates = List.of(new Vector(1, 2, 3), new Vector(4, 5, 6), new Vector(10, 10, 10), new Vector(3, 2, 1));
+    void testRangeSearchReturnsCorrectResults() {
+        List<BallTreePoint> points = List.of(
+                new BallTreePoint(1, 2, 3, "A"),
+                new BallTreePoint(4, 5, 6, "B"),
+                new BallTreePoint(10, 10, 10, "C"),
+                new BallTreePoint(3, 2, 1, "D")
+                                            );
 
-        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points, coordinates);
+        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
-        Vector target = new Vector(3, 3, 3);
-        double radius = 5.0;
+        List<BallTreePoint> result = tree.rangeSearch(3, 3, 3, 5.0);
 
-        List<String> result = tree.rangeSearch(target, radius);
-
-        assertTrue(result.contains("A"), "Result should include point A.");
-        assertTrue(result.contains("B"), "Result should include point B.");
-        assertTrue(result.contains("D"), "Result should include point D.");
-        assertFalse(result.contains("C"), "Result should not include point C.");
+        assertTrue(result.stream().anyMatch(p -> "A".equals(p.data())), "Result should include point A.");
+        assertTrue(result.stream().anyMatch(p -> "B".equals(p.data())), "Result should include point B.");
+        assertTrue(result.stream().anyMatch(p -> "D".equals(p.data())), "Result should include point D.");
+        assertFalse(result.stream().anyMatch(p -> "C".equals(p.data())), "Result should not include point C.");
     }
 
     @Test
-    void testRangeSearchWithEmptyTree()
-    {
-        List<String> points = List.of();
-        List<Vector> coordinates = List.of();
+    void testRangeSearchWithEmptyTree() {
+        List<BallTreePoint> points = List.of();
 
-        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points, coordinates);
+        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
-        Vector target = new Vector(1, 1, 1);
-        double radius = 5.0;
-
-        List<String> result = tree.rangeSearch(target, radius);
+        List<BallTreePoint> result = tree.rangeSearch(1, 1, 1, 5.0);
 
         assertTrue(result.isEmpty(), "Result should be empty for an empty tree.");
     }
 
     @Test
-    void testRangeSearchWithRandomizedData()
-    {
+    void testRangeSearchWithRandomizedData() {
         Random random = new Random();
 
-        // Generate random points and coordinates
-        List<String> points = new ArrayList<>();
-        List<Vector> coordinates = new ArrayList<>();
-
+        // Generate random points
+        List<BallTreePoint> points = new ArrayList<>();
         for (int i = 0; i < NUM_ELEMENTS; i++) {
-            points.add("Point" + i);
-            coordinates.add(new Vector(
+            points.add(new BallTreePoint(
                     random.nextDouble() * 100,
                     random.nextDouble() * 100,
-                    random.nextDouble() * 100
+                    random.nextDouble() * 100,
+                    "Point" + i
             ));
         }
 
-        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points, coordinates);
+        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
         // Define random target and radius
-        Vector target = new Vector(
-                random.nextDouble() * 100,
-                random.nextDouble() * 100,
-                random.nextDouble() * 100
-        );
-        final double radius = (random.nextGaussian() + 1) * 30;
+        double targetX = random.nextDouble() * 100;
+        double targetY = random.nextDouble() * 100;
+        double targetZ = random.nextDouble() * 100;
+        double radius = Math.abs(random.nextGaussian() + 2) * 20;
 
-        // Perform range search
-        List<String> result = tree.rangeSearch(target, radius);
+        List<BallTreePoint> result = tree.rangeSearch(targetX, targetY, targetZ, radius);
 
-        // Verify results (ensure all returned points are within the radius)
-        for (String point : result) {
-            int index = points.indexOf(point);
-            Vector coord = coordinates.get(index);
-            double distance = coord.distance(target);
-
-            assertTrue(distance <= radius, "Point " + point + " should be within the radius.");
-        }
-
-        // Verify no additional points are within the radius but not in the result
-        for (int i = 0; i < NUM_ELEMENTS; i++) {
-            Vector coord = coordinates.get(i);
-            double distance = coord.distance(target);
-
-            if (distance <= radius) {
-                assertTrue(result.contains(points.get(i)), "Point " + points.get(i) + " should be in the result.");
-            }
+        // Verify results
+        for (BallTreePoint point : result) {
+            double distance = Math.sqrt(
+                    Math.pow(point.x() - targetX, 2) +
+                    Math.pow(point.y() - targetY, 2) +
+                    Math.pow(point.z() - targetZ, 2)
+                                       );
+            assertTrue(distance <= radius, "Point " + point.data() + " should be within the radius.");
         }
     }
 
-
     @Test
-    void testRangeSearchRemoveCombinationWithRandomizedData()
-    {
+    void testRangeSearchRemoveCombinationWithRandomizedData() {
         Random random = new Random();
 
-        // Generate random points and coordinates
-        List<String> points = new ArrayList<>();
-        List<Vector> coordinates = new ArrayList<>();
-
+        // Generate random points
+        List<BallTreePoint> points = new ArrayList<>();
         for (int i = 0; i < NUM_ELEMENTS; i++) {
-            points.add("Point" + i);
-            coordinates.add(new Vector(
+            points.add(new BallTreePoint(
                     random.nextDouble() * 100,
                     random.nextDouble() * 100,
-                    random.nextDouble() * 100
+                    random.nextDouble() * 100,
+                    "Point" + i
             ));
         }
 
-        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points, coordinates);
+        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
-        // Define a random target and radius
-        Vector target = new Vector(
-                random.nextDouble() * 100,
-                random.nextDouble() * 100,
-                random.nextDouble() * 100
-        );
-        final double radius = Math.abs(random.nextGaussian() + 2) * 20;
-        List<String> result = tree.rangeSearch(target, radius);
+        // Define random target and radius
+        double targetX = random.nextDouble() * 100;
+        double targetY = random.nextDouble() * 100;
+        double targetZ = random.nextDouble() * 100;
+        double radius = Math.abs(random.nextGaussian() + 2) * 20;
 
-        List<String> updatedResult = List.of();
+        List<BallTreePoint> result = tree.rangeSearch(targetX, targetY, targetZ, radius);
 
-        for (String point : result) {
-            Vector coordinateToRemove = coordinates.get(points.indexOf(point));
-
-            tree.remove(point, coordinateToRemove);
+        for (BallTreePoint point : result) {
+            tree.remove(point);
 
             // Ensure the removed point is no longer in range search results
-            updatedResult = tree.rangeSearch(target, radius);
-            assertFalse(updatedResult.contains(point), "Removed point " + point + " should not appear in subsequent range searches of radius " + radius + "." + "\n Full list: " + result + " | " + updatedResult);
+            List<BallTreePoint> updatedResult = tree.rangeSearch(targetX, targetY, targetZ, radius);
+            assertFalse(updatedResult.contains(point), "Removed point " + point.data() + " should not appear in subsequent range searches.");
         }
 
-        assertTrue(updatedResult.isEmpty());
+        assertTrue(tree.rangeSearch(targetX, targetY, targetZ, radius).isEmpty(), "After removing all points, the range search should return an empty list.");
     }
 }

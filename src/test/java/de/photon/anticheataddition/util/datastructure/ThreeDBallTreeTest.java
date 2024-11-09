@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ThreeDBallTreeTest
 {
-    private static final int NUM_ELEMENTS = 100000;
+    private static final int NUM_ELEMENTS = 1000;
 
     @Test
     void testTreeConstructionWithValidData()

@@ -327,7 +327,7 @@ class ThreeDBallTreeTest
             BallTreePoint<String> point = new BallTreePoint<>(i, i, i, "Point" + i);
             tree.insert(point);
             points.add(point);
-            assertEquals(i + 1, tree.size(), "Tree size should be " + (i + 1) + " after insertion.");
+            assertEquals(points.size(), tree.size(), "Tree size should be " + (points.size()) + " after insertion.");
 
             if (i % 10 == 0 && i > 0) {
                 // Remove a point

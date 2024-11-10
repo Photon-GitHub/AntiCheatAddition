@@ -119,19 +119,17 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
     @Override
     public boolean removeAll(Collection<?> points)
     {
-        Preconditions.checkNotNull(points, "Points to remove must be non-null.");
-        if (points.isEmpty()) return false;
+        throw new UnsupportedOperationException();
+    }
 
+    public boolean removeAllPoints(Collection<BallTreePoint<T>> points)
+    {
+        Preconditions.checkNotNull(points, "Points to remove must be non-null.");
         boolean modified = false;
 
-        for (Object p : points) {
-            if (p instanceof BallTreePoint) {
-                modified |= remove(p);
-            } else {
-                throw new IllegalArgumentException("Points must be of type BallTreePoint.");
-            }
+        for (BallTreePoint<T> p : points) {
+            modified |= remove(p);
         }
-
         return modified;
     }
 

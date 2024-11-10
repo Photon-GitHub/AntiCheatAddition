@@ -1,5 +1,7 @@
 package de.photon.anticheataddition.util.datastructure.balltree;
 
+import com.google.common.base.Preconditions;
+
 import java.util.*;
 
 /**
@@ -13,7 +15,13 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
     private static final int MAX_LEAF_SIZE = 4;
 
     private Node<T> root;
-    private int size = 0;
+    private int size;
+
+    public ThreeDBallTree()
+    {
+        root = new Node<>(new ArrayList<>());
+        size = 0;
+    }
 
     public ThreeDBallTree(Collection<BallTreePoint<T>> points)
     {
@@ -101,6 +109,32 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         return null;
     }
 
+    @Override
+    public boolean remove(Object o)
+    {
+        // Use the remove method below.
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> points)
+    {
+        Preconditions.checkNotNull(points, "Points to remove must be non-null.");
+        if (points.isEmpty()) return false;
+
+        boolean modified = false;
+
+        for (Object p : points) {
+            if (p instanceof BallTreePoint) {
+                modified |= remove(p);
+            } else {
+                throw new IllegalArgumentException("Points must be of type BallTreePoint.");
+            }
+        }
+
+        return modified;
+    }
+
     public boolean remove(BallTreePoint<T> point)
     {
         final Deque<Node<T>> stack = new ArrayDeque<>();
@@ -141,6 +175,11 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
     public boolean contains(BallTreePoint<T> point)
     {
         return get(point.x(), point.y(), point.z()) != null;
+    }
+
+    public Set<BallTreePoint<T>> rangeSearch(BallTreePoint<T> point, double radius)
+    {
+        return rangeSearch(point.x(), point.y(), point.z(), radius);
     }
 
     public Set<BallTreePoint<T>> rangeSearch(double x, double y, double z, double radius)
@@ -199,9 +238,21 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         return dx * dx + dy * dy + dz * dz;
     }
 
+    public BallTreePoint<T> getAny()
+    {
+        // We assume that for every internal node, both the left and the right child nodes have a populated leaf at some point.
+        var node = root;
+        while (node.points == null) {
+            node = node.leftChild;
+        }
+        return node.points.get(0);
+    }
+
     @Override
-    public Iterator<T> iterator() {
-        return new Iterator<>() {
+    public Iterator<T> iterator()
+    {
+        return new Iterator<>()
+        {
             private final Deque<Node<T>> stack = new ArrayDeque<>();
             private Iterator<BallTreePoint<T>> pointIterator = null;
 
@@ -212,7 +263,8 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
                 }
             }
 
-            private void advanceToNextLeaf() {
+            private void advanceToNextLeaf()
+            {
                 while (!stack.isEmpty()) {
                     Node<T> node = stack.pop();
                     if (node.leftChild == null && node.rightChild == null) {
@@ -229,7 +281,8 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             }
 
             @Override
-            public boolean hasNext() {
+            public boolean hasNext()
+            {
                 if (pointIterator != null && pointIterator.hasNext()) {
                     return true;
                 } else {
@@ -239,7 +292,8 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             }
 
             @Override
-            public T next() {
+            public T next()
+            {
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }

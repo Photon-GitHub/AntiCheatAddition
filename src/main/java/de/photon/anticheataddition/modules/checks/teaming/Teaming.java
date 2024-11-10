@@ -5,7 +5,7 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
-import de.photon.anticheataddition.util.datastructure.quadtree.QuadTreeSet;
+import de.photon.anticheataddition.util.datastructure.balltree.ThreeDBallTree;
 import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.minecraft.world.region.Region;
@@ -80,7 +80,7 @@ public final class Teaming extends ViolationModule implements Listener
 
         Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), () -> {
             // Set for fast removeAll calls.
-            final var quadTree = new QuadTreeSet<Player>();
+            final var ballTree = new ThreeDBallTree<Player>();
 
             for (World world : enabledWorlds) {
                 for (Player player : world.getPlayers()) {
@@ -92,29 +92,34 @@ public final class Teaming extends ViolationModule implements Listener
                         && user.getTimeMap().at(TimeKey.COMBAT).notRecentlyUpdated(noPvpTime)) {
                         final var loc = player.getLocation();
                         // Not in a bypassed region.
-                        if (safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(loc))) quadTree.add(loc.getX(), loc.getZ(), player);
+                        if (safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(loc))) ballTree.insert(fromPlayer(player));
                     }
                 }
 
-                while (!quadTree.isEmpty()) {
-                    final var firstNode = quadTree.getAny();
-                    final var teamNodes = quadTree.queryCircle(firstNode, proximityRange).stream()
-                                                  // The queryCircle function does not check the y-coords of a player, we need to do that here manually.
-                                                  .filter(node -> node.element().getLocation().distanceSquared(firstNode.element().getLocation()) <= proximityRangeSquared)
-                                                  // Ignore vanished players.
-                                                  .filter(node -> node.element().canSee(firstNode.element()) && firstNode.element().canSee(node.element()))
+                while (!ballTree.isEmpty()) {
+                    final var firstNode = ballTree.getAny();
+                    final var teamNodes = ballTree.rangeSearch(firstNode, proximityRange).stream()
+                                                  // Ignore vanished players
+                                                  .filter(node -> node.data().canSee(firstNode.data()) && firstNode.data().canSee(node.data()))
                                                   .toList();
 
-                    quadTree.removeAll(teamNodes);
+                    //noinspection SuspiciousMethodCalls
+                    ballTree.removeAll(teamNodes);
 
                     // Team is too big
                     final int vl = teamNodes.size() - allowedSize;
                     if (vl <= 0) continue;
 
-                    for (final var node : teamNodes) this.getManagement().flag(Flag.of(node.element()).setAddedVl(vl));
+                    for (final var node : teamNodes) this.getManagement().flag(Flag.of(node.data()).setAddedVl(vl));
                 }
             }
         }, 1L, CHECK_INTERVAL);
+    }
+
+    private static ThreeDBallTree.BallTreePoint<Player> fromPlayer(final Player player)
+    {
+        final var loc = player.getLocation();
+        return new ThreeDBallTree.BallTreePoint<>(loc.getX(), loc.getY(), loc.getZ(), player);
     }
 
     @Override

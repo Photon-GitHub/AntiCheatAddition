@@ -7,16 +7,18 @@ import java.util.*;
  *
  * @param <T> The type of the objects stored in the tree.
  */
-public class ThreeDBallTree<T> extends AbstractCollection<T> implements Set<T>
+public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collection<T>
 {
     public static final int EXPECTED_NODES = 128;
     private static final int MAX_LEAF_SIZE = 4;
 
     private Node<T> root;
+    private int size = 0;
 
     public ThreeDBallTree(Collection<BallTreePoint<T>> points)
     {
         buildTreeIteratively(points);
+        size = points.size();
     }
 
     private void buildTreeIteratively(Collection<BallTreePoint<T>> points)
@@ -55,6 +57,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Set<T>
 
         // Leaf node
         current.points.add(point);
+        ++this.size;
         current.computeCenterAndRadius();
 
         if (current.points.size() > MAX_LEAF_SIZE) {
@@ -116,6 +119,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Set<T>
 
             if (node.leftChild == null && node.rightChild == null) {
                 if (node.points != null && node.points.remove(point)) {
+                    --this.size;
                     node.computeCenterAndRadius();
                     while (!path.isEmpty()) {
                         Node<T> n = path.pop();
@@ -196,65 +200,59 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Set<T>
     }
 
     @Override
-    public Iterator<T> iterator()
-    {
-        return new Iterator<>()
-        {
-            final Deque<Node<T>> stack = new ArrayDeque<>(List.of(root));
-            Node<T> current;
-            int index = 0;
+    public Iterator<T> iterator() {
+        return new Iterator<>() {
+            private final Deque<Node<T>> stack = new ArrayDeque<>();
+            private Iterator<BallTreePoint<T>> pointIterator = null;
 
-            @Override
-            public boolean hasNext()
             {
-                return !stack.isEmpty();
+                if (root != null) {
+                    stack.push(root);
+                    advanceToNextLeaf();
+                }
+            }
+
+            private void advanceToNextLeaf() {
+                while (!stack.isEmpty()) {
+                    Node<T> node = stack.pop();
+                    if (node.leftChild == null && node.rightChild == null) {
+                        if (node.points != null && !node.points.isEmpty()) {
+                            pointIterator = node.points.iterator();
+                            return;
+                        }
+                    } else {
+                        if (node.rightChild != null) stack.push(node.rightChild);
+                        if (node.leftChild != null) stack.push(node.leftChild);
+                    }
+                }
+                pointIterator = null;
             }
 
             @Override
-            public T next()
-            {
-                if (index == 0) {
-                    do {
-                        current = stack.pop();
-
-                        if (current.leftChild != null) stack.push(current.leftChild);
-                        if (current.rightChild != null) stack.push(current.rightChild);
-                    } while (current.points == null && hasNext());
-                }
-
-                int size = current.points.size();
-                if (index < size) {
-                    return current.points.get(index++).data;
+            public boolean hasNext() {
+                if (pointIterator != null && pointIterator.hasNext()) {
+                    return true;
                 } else {
-                    index = 0;
-                    return next();
+                    advanceToNextLeaf();
+                    return pointIterator != null && pointIterator.hasNext();
                 }
+            }
+
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                return pointIterator.next().data;
             }
         };
     }
 
+
     @Override
     public int size()
     {
-        int sum = 0;
-        final Deque<Node<T>> stack = new ArrayDeque<>(EXPECTED_NODES);
-        stack.push(root);
-
-        while (!stack.isEmpty()) {
-            Node<T> node = stack.pop();
-
-            if (node.leftChild != null) stack.push(node.leftChild);
-            if (node.rightChild != null) stack.push(node.rightChild);
-
-            if (node.points != null) sum += node.points.size();
-        }
-        return sum;
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return root == null || (root.points == null && root.leftChild == null && root.rightChild == null);
+        return size;
     }
 
     public record BallTreePoint<T>(double x, double y, double z, T data)

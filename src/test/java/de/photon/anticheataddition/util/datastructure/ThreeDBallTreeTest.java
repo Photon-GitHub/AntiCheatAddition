@@ -4,10 +4,7 @@ import de.photon.anticheataddition.util.datastructure.balltree.ThreeDBallTree;
 import de.photon.anticheataddition.util.datastructure.balltree.ThreeDBallTree.BallTreePoint;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -148,6 +145,39 @@ class ThreeDBallTreeTest
     }
 
     @Test
+    void testVerifyRangeSearchWithRandomizedData()
+    {
+        Random random = new Random();
+
+        // Generate random points
+        List<BallTreePoint<String>> points = new ArrayList<>();
+        for (int i = 0; i < NUM_ELEMENTS; i++) {
+            points.add(new BallTreePoint<>(random.nextDouble() * 100, random.nextDouble() * 100, random.nextDouble() * 100, "Point" + i));
+        }
+
+        ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
+
+        // Define random target and radius
+        double targetX = random.nextDouble() * 100;
+        double targetY = random.nextDouble() * 100;
+        double targetZ = random.nextDouble() * 100;
+        double radius = Math.abs(random.nextGaussian() + 2) * 20;
+
+        Set<BallTreePoint<String>> result = tree.rangeSearch(targetX, targetY, targetZ, radius);
+
+        // Verify results
+        Set<BallTreePoint<String>> expectedResult = new HashSet<>();
+        for (BallTreePoint<String> point : points) {
+            final double distance = Math.sqrt(Math.pow(point.x() - targetX, 2) + Math.pow(point.y() - targetY, 2) + Math.pow(point.z() - targetZ, 2));
+            if (distance <= radius) {
+                expectedResult.add(point);
+            }
+        }
+
+        assertEquals(expectedResult, result, "The rangeSearch result does not match the manual distance search results.");
+    }
+
+    @Test
     void testRangeSearchRemoveCombinationWithRandomizedData()
     {
         Random random = new Random();
@@ -283,15 +313,13 @@ class ThreeDBallTreeTest
 
         List<BallTreePoint<String>> points = new ArrayList<>();
 
-        int largeNumber = 100_000; // Adjust the number based on performance considerations
-
-        for (int i = 0; i < largeNumber; i++) {
+        for (int i = 0; i < NUM_ELEMENTS; i++) {
             points.add(new BallTreePoint<>(random.nextDouble() * 1000, random.nextDouble() * 1000, random.nextDouble() * 1000, "Point" + i));
         }
 
         ThreeDBallTree<String> tree = new ThreeDBallTree<>(points);
 
-        assertEquals(largeNumber, tree.size(), "Tree should contain all inserted points.");
+        assertEquals(NUM_ELEMENTS, tree.size(), "Tree should contain all inserted points.");
 
         // Perform a range search in the middle of the coordinate space
         double targetX = 500;
@@ -313,7 +341,7 @@ class ThreeDBallTreeTest
             tree.remove(points.get(i));
         }
 
-        assertEquals(largeNumber - pointsToRemove, tree.size(), "Tree size should decrease after removals.");
+        assertEquals(NUM_ELEMENTS - pointsToRemove, tree.size(), "Tree size should decrease after removals.");
     }
 
     @Test
@@ -419,6 +447,7 @@ class ThreeDBallTreeTest
         assertEquals(0, tree.size(), "Tree should be empty after removing all points.");
     }
 
+    @SuppressWarnings("UseBulkOperation")
     @Test
     void testIterator()
     {

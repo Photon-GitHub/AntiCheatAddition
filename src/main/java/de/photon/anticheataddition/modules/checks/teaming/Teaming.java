@@ -71,7 +71,6 @@ public final class Teaming extends ViolationModule implements Listener
         final var safeZones = Set.copyOf(safeZonesLoading);
 
         final double proximityRange = loadDouble(".proximity_range", 4.5);
-        final double proximityRangeSquared = proximityRange * proximityRange;
 
         final int noPvpTime = loadInt(".no_pvp_time", 6000);
 

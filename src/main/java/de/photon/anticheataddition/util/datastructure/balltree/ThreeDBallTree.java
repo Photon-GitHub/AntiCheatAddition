@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.util.datastructure.balltree;
 
 import com.google.common.base.Preconditions;
+import org.bukkit.Location;
 
 import java.util.*;
 
@@ -180,6 +181,11 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         return rangeSearch(point.x(), point.y(), point.z(), radius);
     }
 
+    public Set<BallTreePoint<T>> rangeSearch(Location location, double radius)
+    {
+        return rangeSearch(location.getX(), location.getY(), location.getZ(), radius);
+    }
+
     public Set<BallTreePoint<T>> rangeSearch(double x, double y, double z, double radius)
     {
         final Set<BallTreePoint<T>> result = new HashSet<>();
@@ -309,12 +315,17 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
 
     public record BallTreePoint<T>(double x, double y, double z, T data)
     {
-        double distanceSquared(BallTreePoint<T> other)
+        public double distanceSquared(BallTreePoint<T> other)
         {
             final double dx = other.x - x;
             final double dy = other.y - y;
             final double dz = other.z - z;
             return dx * dx + dy * dy + dz * dz;
+        }
+
+        public BallTreePoint(Location location, T data)
+        {
+            this(location.getX(), location.getY(), location.getZ(), data);
         }
     }
 

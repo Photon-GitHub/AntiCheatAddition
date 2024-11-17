@@ -16,7 +16,7 @@ public final class ModernPlayerEquipmentHider extends PacketInformationHider
 {
     private static final ItemStack AIR_STACK = new ItemStack(Material.AIR);
 
-    /** Needed as the full values include BODY, which is used for horse and dog armor */
+    /** Needed as the full values include BODY, which is used for horse and dog armor, and can throw an error. */
     private static final Set<EquipmentSlot> PLAYER_SLOTS = EnumSet.of(EquipmentSlot.HAND,
                                                                       EquipmentSlot.OFF_HAND,
                                                                       EquipmentSlot.FEET,

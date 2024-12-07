@@ -3,6 +3,7 @@ package de.photon.anticheataddition.util.datastructure.balltree;
 import com.google.common.base.Preconditions;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -151,7 +152,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             Node<T> node = stack.pop();
 
             // Check if the current node includes the coordinates to search for, and omit the node if not.
-            if (distanceBetweenPoints(x, y, z, node.centerX, node.centerY, node.centerZ) > node.radius) continue;
+            if (distanceSquaredBetweenPoints(x, y, z, node.centerX, node.centerY, node.centerZ) > node.getRadiusSquared()) continue;
 
             if (node.isLeaf()) {
                 if (node.points != null) {
@@ -183,7 +184,17 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         throw new UnsupportedOperationException();
     }
 
-    public boolean removeAllPoints(Collection<BallTreePoint<T>> points)
+    /**
+     * Removes all points in the specified collection from the tree.
+     * <p>
+     * Iterates over the collection and removes each point individually.
+     *
+     * @param points A collection of points to remove.
+     *
+     * @return {@code true} if any points were removed, {@code false} otherwise.
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean removePoints(Collection<BallTreePoint<T>> points)
     {
         Preconditions.checkNotNull(points, "Points to remove must be non-null.");
         boolean modified = false;
@@ -194,6 +205,15 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         return modified;
     }
 
+    /**
+     * Removes a specific point from the tree.
+     * <p>
+     * Searches for the specified point in the tree, removes it if found, and updates parent nodes.
+     *
+     * @param point The {@link BallTreePoint} to remove from the tree.
+     *
+     * @return {@code true} if the point was successfully removed, {@code false} otherwise.
+     */
     public boolean remove(BallTreePoint<T> point)
     {
         // Create the stack and path list for the removal
@@ -209,7 +229,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             Node<T> node = stack.pop();
 
             // Check if the node is in the radius.
-            if (distanceBetweenPoints(point.x(), point.y(), point.z(), node.centerX, node.centerY, node.centerZ) > node.radius) continue;
+            if (distanceSquaredBetweenPoints(point.x(), point.y(), point.z(), node.centerX, node.centerY, node.centerZ) > node.getRadiusSquared()) continue;
 
             // Add this node as a part of the path.
             path.push(node);
@@ -237,27 +257,66 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         return false;
     }
 
+    /**
+     * Checks whether a specific point exists in the tree.
+     *
+     * @param point The point to check for existence.
+     *
+     * @return {@code true} if the point exists in the tree, {@code false} otherwise.
+     */
     public boolean contains(BallTreePoint<T> point)
     {
         return get(point.x(), point.y(), point.z()) != null;
     }
 
+    /**
+     * Performs a range search to find all {@link BallTreePoint}s within a specified radius from a given point.
+     * <p>
+     * Searches the tree for points that lie within the radius from the specified target point.
+     *
+     * @param point  The target point for the range search.
+     * @param radius The radius within which to search for points.
+     *
+     * @return A set of points within the specified radius.
+     */
     public Set<BallTreePoint<T>> rangeSearch(BallTreePoint<T> point, double radius)
     {
         return rangeSearch(point.x(), point.y(), point.z(), radius);
     }
 
+    /**
+     * Performs a range search to find all points within a specified radius from a given location.
+     * <p>
+     * This method is specifically designed to work with {@link Location}s.
+     *
+     * @param location The location representing the center of the search radius.
+     * @param radius   The radius within which to search for points.
+     *
+     * @return A set of points within the specified radius.
+     */
     public Set<BallTreePoint<T>> rangeSearch(Location location, double radius)
     {
         return rangeSearch(location.getX(), location.getY(), location.getZ(), radius);
     }
 
+    /**
+     * Performs a range search to find all {@link BallTreePoint}s within a specified radius from a given coordinate.
+     *
+     * @param x      The x-coordinate of the search center.
+     * @param y      The y-coordinate of the search center.
+     * @param z      The z-coordinate of the search center.
+     * @param radius The radius within which to search for points.
+     *
+     * @return A set of points within the specified radius.
+     */
     public Set<BallTreePoint<T>> rangeSearch(double x, double y, double z, double radius)
     {
+        // Create the result set, the stack and push the root node.
         final Set<BallTreePoint<T>> result = new HashSet<>();
         final Deque<Node<T>> stack = new ArrayDeque<>(EXPECTED_NODES);
         stack.push(root);
 
+        // Calculate the squared radius to avoid calculating roots.
         final double radiusSquared = radius * radius;
 
         while (!stack.isEmpty()) {
@@ -287,6 +346,14 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         return result;
     }
 
+    /**
+     * Computes the squared distance from a {@link BallTreePoint} to a tree node.
+     *
+     * @param point The point for which to compute the distance.
+     * @param node  The node to which the distance is computed.
+     *
+     * @return The squared distance from the point to the node.
+     */
     private double distanceSquaredToNode(BallTreePoint<T> point, Node<T> node)
     {
         final double dx = point.x() - node.centerX;
@@ -295,11 +362,35 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         return dx * dx + dy * dy + dz * dz;
     }
 
+    /**
+     * Computes the distance between two 3D points.
+     *
+     * @param x1 The x-coordinate of the first point.
+     * @param y1 The y-coordinate of the first point.
+     * @param z1 The z-coordinate of the first point.
+     * @param x2 The x-coordinate of the second point.
+     * @param y2 The y-coordinate of the second point.
+     * @param z2 The z-coordinate of the second point.
+     *
+     * @return The Euclidean distance between the two points.
+     */
     private static double distanceBetweenPoints(double x1, double y1, double z1, double x2, double y2, double z2)
     {
         return Math.sqrt(distanceSquaredBetweenPoints(x1, y1, z1, x2, y2, z2));
     }
 
+    /**
+     * Computes the squared distance between two 3D points.
+     *
+     * @param x1 The x-coordinate of the first point.
+     * @param y1 The y-coordinate of the first point.
+     * @param z1 The z-coordinate of the first point.
+     * @param x2 The x-coordinate of the second point.
+     * @param y2 The y-coordinate of the second point.
+     * @param z2 The z-coordinate of the second point.
+     *
+     * @return The squared Euclidean distance between the two points.
+     */
     private static double distanceSquaredBetweenPoints(double x1, double y1, double z1, double x2, double y2, double z2)
     {
         final double dx = x1 - x2;
@@ -308,11 +399,22 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         return dx * dx + dy * dy + dz * dz;
     }
 
+    /**
+     * Retrieves an arbitrary point from the tree.
+     * <p>
+     * This method assumes that the tree contains at least one point and retrieves a point from a populated leaf.
+     *
+     * @return An arbitrary point from the tree.
+     *
+     * @throws NoSuchElementException If the tree is empty.
+     */
     public BallTreePoint<T> getAny()
     {
+        if (root == null) throw new NoSuchElementException();
+
         // We assume that for every internal node, both the left and the right child nodes have a populated leaf at some point.
         var node = root;
-        while (node.points == null) {
+        while (!node.isLeaf()) {
             node = node.leftChild;
         }
         return node.points.get(0);
@@ -380,8 +482,20 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         return size;
     }
 
+    /**
+     * Represents a 3D point with associated data in the ball tree.
+     *
+     * @param <T> The type of the data associated with the point.
+     */
     public record BallTreePoint<T>(double x, double y, double z, T data)
     {
+        /**
+         * Computes the squared distance between this point and another point.
+         *
+         * @param other The other point to which the distance is computed.
+         *
+         * @return The squared distance between the two points.
+         */
         public double distanceSquared(BallTreePoint<T> other)
         {
             final double dx = other.x - x;
@@ -396,20 +510,28 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         }
     }
 
+    /**
+     * Represents a node in the 3D Ball Tree.
+     * <p>
+     * A node can either be a leaf node (containing a list of points) or an internal node
+     * (with references to left and right child nodes and a bounding sphere).
+     *
+     * @param <T> The type of the data associated with points in the tree.
+     */
     private static class Node<T>
     {
-        double centerX;
-        double centerY;
-        double centerZ;
+        private double centerX;
+        private double centerY;
+        private double centerZ;
 
-        double radius;
+        private double radius;
 
-        Node<T> leftChild;
-        Node<T> rightChild;
+        private Node<T> leftChild;
+        private Node<T> rightChild;
 
-        List<BallTreePoint<T>> points; // Only for leaf nodes
+        @Nullable private List<BallTreePoint<T>> points; // Only for leaf nodes
 
-        public Node(List<BallTreePoint<T>> points)
+        public Node(@Nullable List<BallTreePoint<T>> points)
         {
             this.points = points;
             computeCenterAndRadius();
@@ -420,21 +542,24 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             return this.leftChild == null || this.rightChild == null;
         }
 
+        public double getRadiusSquared()
+        {
+            return radius * radius;
+        }
+
         private void computeCenterAndRadius()
         {
-            if (points == null || points.isEmpty()) {
-                // Internal node.
-                if (!this.isLeaf()) {
-                    // As we have an internal node, we cover both children in our hypersphere
-                    // -> Center is between the children, radius the maximum to each of them and their radius.
-                    centerX = (leftChild.centerX + rightChild.centerX) / 2;
-                    centerY = (leftChild.centerY + rightChild.centerY) / 2;
-                    centerZ = (leftChild.centerZ + rightChild.centerZ) / 2;
+            // Check for an internal node.
+            if (!this.isLeaf()) {
+                // As we have an internal node, we cover both children in our hypersphere
+                // -> Center is between the children, radius the maximum to each of them and their radius.
+                centerX = (leftChild.centerX + rightChild.centerX) / 2;
+                centerY = (leftChild.centerY + rightChild.centerY) / 2;
+                centerZ = (leftChild.centerZ + rightChild.centerZ) / 2;
 
-                    double distToLeft = this.distance(leftChild) + leftChild.radius;
-                    double distToRight = this.distance(rightChild) + rightChild.radius;
-                    radius = Math.max(distToLeft, distToRight);
-                }
+                final double distToLeft = this.distance(leftChild) + leftChild.radius;
+                final double distToRight = this.distance(rightChild) + rightChild.radius;
+                radius = Math.max(distToLeft, distToRight);
                 return;
             }
 
@@ -461,7 +586,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         public void splitNode()
         {
             // Cannot split further, must have at least 2 points.
-            if (points.size() <= 1) return;
+            if (points == null || points.size() <= 1) throw new IllegalStateException("To split a node, at least two points are required.");
 
             // Step 1: Choose the first point as the first seed.
             final BallTreePoint<T> seed1 = points.get(0);
@@ -483,22 +608,23 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             // Step 3: Assign points to the nearest seed
             List<BallTreePoint<T>> leftPoints = new ArrayList<>();
             List<BallTreePoint<T>> rightPoints = new ArrayList<>();
+
             for (BallTreePoint<T> p : points) {
-                double distToSeed1 = p.distanceSquared(seed1);
-                double distToSeed2 = p.distanceSquared(seed2);
-                if (distToSeed1 < distToSeed2) {
-                    leftPoints.add(p);
-                } else {
-                    rightPoints.add(p);
-                }
+                final double distToSeed1 = p.distanceSquared(seed1);
+                final double distToSeed2 = p.distanceSquared(seed2);
+
+                if (distToSeed1 < distToSeed2) leftPoints.add(p);
+                else rightPoints.add(p);
             }
 
             // Ensure that both child nodes have points
-            // DO NOT USE THIS ALL THE TIME, THIS HAS O(n*log(n)) runtime, compared to the O(n) above!
+            // DO NOT USE THIS ALL THE TIME, THIS HAS O(n*log(n)) runtime, compared to the O(n) above, and also DOES NOT GUARANTEE PERFECT RESULTS!
             if (leftPoints.isEmpty() || rightPoints.isEmpty()) {
-                // If one child is empty, split at median distance
-                List<BallTreePoint<T>> sortedPoints = new ArrayList<>(points);
+                // The initial seed choice was bad -> sorting for optimal choice.
+                final List<BallTreePoint<T>> sortedPoints = new ArrayList<>(points);
                 sortedPoints.sort(Comparator.comparingDouble(p -> p.distanceSquared(seed1)));
+
+                // Split the sorted list directly.
                 int medianIndex = sortedPoints.size() / 2;
                 leftPoints = sortedPoints.subList(0, medianIndex);
                 rightPoints = sortedPoints.subList(medianIndex, sortedPoints.size());
@@ -507,6 +633,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             // Create child nodes
             leftChild = new Node<>(leftPoints);
             rightChild = new Node<>(rightPoints);
+
             // Clear points to save memory
             points = null;
         }

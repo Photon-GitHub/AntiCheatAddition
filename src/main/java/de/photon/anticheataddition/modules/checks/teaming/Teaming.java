@@ -102,7 +102,7 @@ public final class Teaming extends ViolationModule implements Listener
                                                   .filter(node -> node.data().canSee(firstNode.data()) && firstNode.data().canSee(node.data()))
                                                   .toList();
 
-                    ballTree.removeAllPoints(teamNodes);
+                    ballTree.removePoints(teamNodes);
 
                     // Team is too big
                     final int vl = teamNodes.size() - allowedSize;

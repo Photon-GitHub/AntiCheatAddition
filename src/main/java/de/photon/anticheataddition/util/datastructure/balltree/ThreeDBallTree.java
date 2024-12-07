@@ -2,13 +2,19 @@ package de.photon.anticheataddition.util.datastructure.balltree;
 
 import com.google.common.base.Preconditions;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 /**
  * A 3D Ball Tree implementation for efficient spatial partitioning, range queries, and dynamic updates.
+ * <p>
+ * The Ball Tree is a binary tree-based data structure that organizes points in a 3D space.
+ * Each node in the tree represents a sphere (or "ball") defined by a center point and a radius,
+ * which either contains points (for leaf nodes) or references to child nodes (for internal nodes).
+ * This data structure supports operations such as insertion, range search, and point removal efficiently.
  *
- * @param <T> The type of the objects stored in the tree.
+ * @param <T> The type of the data associated with each point in the tree.
  */
 public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collection<T>
 {
@@ -18,39 +24,62 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
     private Node<T> root;
     private int size;
 
+    /**
+     * Constructs an empty 3D Ball Tree.
+     */
     public ThreeDBallTree()
     {
         root = new Node<>(new ArrayList<>());
         size = 0;
     }
 
+    /**
+     * Constructs a 3D Ball Tree from a collection of points.
+     *
+     * @param points The initial collection of points to populate the tree.
+     */
     public ThreeDBallTree(Collection<BallTreePoint<T>> points)
     {
         buildTreeIteratively(points);
         size = points.size();
     }
 
+    /**
+     * Builds the tree structure iteratively using a collection of points.
+     * <p>
+     * This method constructs the tree by creating a root node containing all points
+     * and repeatedly splitting nodes until all nodes satisfy the maximum leaf size constraint.
+     *
+     * @param points The collection of points to add to the tree.
+     */
     private void buildTreeIteratively(Collection<BallTreePoint<T>> points)
     {
+        // Create the root node and add all the points (most likely larger than the max leaf size.
         root = new Node<>(new ArrayList<>(points));
-        Queue<Node<T>> queue = new ArrayDeque<>();
+
+        // Create the node queue.
+        final Queue<Node<T>> queue = new ArrayDeque<>();
         queue.add(root);
 
+        // Start the splitting process
         while (!queue.isEmpty()) {
             Node<T> node = queue.poll();
+
+            // If a node is overfull, split it and add the new children to the queue.
             if (node.points.size() > MAX_LEAF_SIZE) {
                 node.splitNode();
-                if (node.leftChild != null) queue.add(node.leftChild);
-                if (node.rightChild != null) queue.add(node.rightChild);
-                node.points = null; // Clear points to save memory
+                queue.add(node.leftChild);
+                queue.add(node.rightChild);
             }
         }
     }
 
     /**
-     * This method is used to update the path after a change in a child node.
+     * Recomputes the center and radius of nodes along a given path.
+     * <p>
+     * This is used to update the tree structure after modifications such as insertion or removal.
      *
-     * @param path all parent nodes of the child node
+     * @param path A stack representing the path of nodes to update, starting from a leaf and ending at the root.
      */
     private void recomputeCenterAndRadii(Deque<Node<T>> path)
     {
@@ -62,7 +91,13 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
     }
 
     /**
-     * Inserts a new {@link BallTreePoint} into the tree and recomputes the parent node values.
+     * Inserts a new {@link BallTreePoint} into the tree.
+     * <p>
+     * The insertion process finds the appropriate leaf node for the new point,
+     * adds the point to the node, and splits the node if necessary.
+     * After insertion, parent node values are updated to reflect the changes.
+     *
+     * @param point The point to insert into the tree.
      */
     public void insert(BallTreePoint<T> point)
     {
@@ -71,7 +106,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         Node<T> current = root;
 
         // Search for a leaf node
-        while (current.leftChild != null && current.rightChild != null) {
+        while (!current.isLeaf()) {
             // Add the current node to the path
             path.push(current);
 
@@ -90,24 +125,35 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         // If needed, split the node
         if (current.points.size() > MAX_LEAF_SIZE) current.splitNode();
 
-        // Update centers and radii
+        // Update centers and radii for all parent nodes that have been affected by this insertion.
         recomputeCenterAndRadii(path);
     }
 
+    /**
+     * Retrieves a {@link BallTreePoint} with the specified coordinates from the tree.
+     * <p>
+     * The method performs a search to locate a point with the exact coordinates (x, y, z).
+     *
+     * @param x The x-coordinate of the point.
+     * @param y The y-coordinate of the point.
+     * @param z The z-coordinate of the point.
+     *
+     * @return The point if found, or {@code null} if no such point exists.
+     */
     public BallTreePoint<T> get(double x, double y, double z)
     {
+        // Create the stack for the search and add the root node.
         final Deque<Node<T>> stack = new ArrayDeque<>();
         stack.push(root);
 
+        // Start the search
         while (!stack.isEmpty()) {
             Node<T> node = stack.pop();
 
-            double distToNode = distanceBetweenPoints(x, y, z, node.centerX, node.centerY, node.centerZ);
-            if (distToNode > node.radius) {
-                continue;
-            }
+            // Check if the current node includes the coordinates to search for, and omit the node if not.
+            if (distanceBetweenPoints(x, y, z, node.centerX, node.centerY, node.centerZ) > node.radius) continue;
 
-            if (node.leftChild == null && node.rightChild == null) {
+            if (node.isLeaf()) {
                 if (node.points != null) {
                     for (BallTreePoint<T> p : node.points) {
                         if (p.x() == x && p.y() == y && p.z() == z) {
@@ -116,8 +162,8 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
                     }
                 }
             } else {
-                if (node.leftChild != null) stack.push(node.leftChild);
-                if (node.rightChild != null) stack.push(node.rightChild);
+                stack.push(node.leftChild);
+                stack.push(node.rightChild);
             }
         }
 
@@ -132,7 +178,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
     }
 
     @Override
-    public boolean removeAll(Collection<?> points)
+    public boolean removeAll(@NotNull Collection<?> points)
     {
         throw new UnsupportedOperationException();
     }
@@ -168,8 +214,8 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             // Add this node as a part of the path.
             path.push(node);
 
-            // We have found a child.
-            if (node.leftChild == null && node.rightChild == null) {
+            // We have found a leaf.
+            if (node.isLeaf()) {
                 // Can we remove the point from that child?
                 if (node.points != null && node.points.remove(point)) {
                     // If yes, remove the point.
@@ -225,7 +271,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             if (distSquaredToNode > maxDist * maxDist) continue;
 
             // Leaf node
-            if (node.leftChild == null && node.rightChild == null) {
+            if (node.isLeaf()) {
                 if (node.points != null) {
                     for (BallTreePoint<T> p : node.points) {
                         if (distanceSquaredBetweenPoints(x, y, z, p.x(), p.y(), p.z()) <= radiusSquared) result.add(p);
@@ -273,7 +319,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
     }
 
     @Override
-    public Iterator<T> iterator()
+    public @NotNull Iterator<T> iterator()
     {
         return new Iterator<>()
         {
@@ -291,7 +337,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             {
                 while (!stack.isEmpty()) {
                     Node<T> node = stack.pop();
-                    if (node.leftChild == null && node.rightChild == null) {
+                    if (node.isLeaf()) {
                         if (node.points != null && !node.points.isEmpty()) {
                             pointIterator = node.points.iterator();
                             return;
@@ -368,11 +414,16 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             computeCenterAndRadius();
         }
 
+        public boolean isLeaf()
+        {
+            return this.leftChild == null || this.rightChild == null;
+        }
+
         private void computeCenterAndRadius()
         {
             if (points == null || points.isEmpty()) {
                 // Internal node.
-                if (leftChild != null && rightChild != null) {
+                if (!this.isLeaf()) {
                     // As we have an internal node, we cover both children in our hypersphere
                     // -> Center is between the children, radius the maximum to each of them and their radius.
                     centerX = (leftChild.centerX + rightChild.centerX) / 2;

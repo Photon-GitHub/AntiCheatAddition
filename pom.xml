@@ -192,7 +192,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-buffer</artifactId>
-            <version>4.1.114.Final</version>
+            <version>4.1.115.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -205,12 +205,6 @@
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>LATEST</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.danilopianini</groupId>
-            <artifactId>java-quadtree</artifactId>
-            <version>0.2.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

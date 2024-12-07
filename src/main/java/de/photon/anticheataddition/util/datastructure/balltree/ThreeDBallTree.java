@@ -152,7 +152,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             Node<T> node = stack.pop();
 
             // Check if the current node includes the coordinates to search for, and omit the node if not.
-            if (distanceSquaredBetweenPoints(x, y, z, node.centerX, node.centerY, node.centerZ) > node.getRadiusSquared()) continue;
+            if (distanceBetweenPoints(x, y, z, node.centerX, node.centerY, node.centerZ) > node.radius) continue;
 
             if (node.isLeaf()) {
                 if (node.points != null) {
@@ -229,7 +229,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             Node<T> node = stack.pop();
 
             // Check if the node is in the radius.
-            if (distanceSquaredBetweenPoints(point.x(), point.y(), point.z(), node.centerX, node.centerY, node.centerZ) > node.getRadiusSquared()) continue;
+            if (distanceBetweenPoints(point.x(), point.y(), point.z(), node.centerX, node.centerY, node.centerZ) > node.radius) continue;
 
             // Add this node as a part of the path.
             path.push(node);
@@ -540,11 +540,6 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         public boolean isLeaf()
         {
             return this.leftChild == null || this.rightChild == null;
-        }
-
-        public double getRadiusSquared()
-        {
-            return radius * radius;
         }
 
         private void computeCenterAndRadius()

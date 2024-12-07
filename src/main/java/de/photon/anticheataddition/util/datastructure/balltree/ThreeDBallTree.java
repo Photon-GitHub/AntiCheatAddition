@@ -47,6 +47,19 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         }
     }
 
+    /**
+     * This method is used to update the path after a change in a child node.
+     *
+     * @param path all parent nodes of the child node
+     */
+    private void recomputeCenterAndRadii(Deque<Node<T>> path)
+    {
+        while (!path.isEmpty()) {
+            Node<T> node = path.pop();
+            node.computeCenterAndRadius();
+        }
+    }
+
     public void insert(BallTreePoint<T> point)
     {
         final Deque<Node<T>> path = new ArrayDeque<>();
@@ -74,10 +87,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         }
 
         // Update centers and radii
-        while (!path.isEmpty()) {
-            Node<T> node = path.pop();
-            node.computeCenterAndRadius();
-        }
+        recomputeCenterAndRadii(path);
     }
 
     public BallTreePoint<T> get(double x, double y, double z)
@@ -136,33 +146,39 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
 
     public boolean remove(BallTreePoint<T> point)
     {
+        // Create the stack and path list for the removal
         final Deque<Node<T>> stack = new ArrayDeque<>();
         final Deque<Node<T>> path = new ArrayDeque<>();
+
+        // Start with the root node
         stack.push(root);
 
+        // Go through the stack
         while (!stack.isEmpty()) {
+            // Get the first element and push it as a part of the current path.
             Node<T> node = stack.pop();
+
+            // Check if the node is in the radius.
+            if (distanceBetweenPoints(point.x(), point.y(), point.z(), node.centerX, node.centerY, node.centerZ) > node.radius) continue;
+
+            // Add this node as a part of the path.
             path.push(node);
 
-            double distToNode = distanceBetweenPoints(point.x(), point.y(), point.z(), node.centerX, node.centerY, node.centerZ);
-            if (distToNode > node.radius) {
-                path.pop();
-                continue;
-            }
-
+            // We have found a child.
             if (node.leftChild == null && node.rightChild == null) {
+                // Can we remove the point from that child?
                 if (node.points != null && node.points.remove(point)) {
+                    // If yes, remove the point.
                     --this.size;
-                    node.computeCenterAndRadius();
-                    while (!path.isEmpty()) {
-                        Node<T> n = path.pop();
-                        n.computeCenterAndRadius();
-                    }
+                    // Recompute the parent nodes after removal.
+                    recomputeCenterAndRadii(path);
                     return true;
                 } else {
+                    // We cannot remove the child here -> This is not the correct node.
                     path.pop();
                 }
             } else {
+                // Not a child node -> Add both successors.
                 if (node.leftChild != null) stack.push(node.leftChild);
                 if (node.rightChild != null) stack.push(node.rightChild);
             }
@@ -381,10 +397,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             centerY = sum[1] / n;
             centerZ = sum[2] / n;
 
-            final double maxDistanceSquared = points.stream()
-                                                    .mapToDouble(p -> distanceSquaredBetweenPoints(p.x(), p.y(), p.z(), centerX, centerY, centerZ))
-                                                    .max()
-                                                    .orElse(0);
+            final double maxDistanceSquared = points.stream().mapToDouble(p -> distanceSquaredBetweenPoints(p.x(), p.y(), p.z(), centerX, centerY, centerZ)).max().orElse(0);
 
             radius = Math.sqrt(maxDistanceSquared);
         }

@@ -54,37 +54,41 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
      */
     private void recomputeCenterAndRadii(Deque<Node<T>> path)
     {
+        Node<T> node;
         while (!path.isEmpty()) {
-            Node<T> node = path.pop();
+            node = path.pop();
             node.computeCenterAndRadius();
         }
     }
 
+    /**
+     * Inserts a new {@link BallTreePoint} into the tree and recomputes the parent node values.
+     */
     public void insert(BallTreePoint<T> point)
     {
+        // Create the path stack for later recalculation of the parent nodes.
         final Deque<Node<T>> path = new ArrayDeque<>();
         Node<T> current = root;
 
+        // Search for a leaf node
         while (current.leftChild != null && current.rightChild != null) {
+            // Add the current node to the path
             path.push(current);
+
+            // Go to the child which has the nearest distance to the point to add
             double distToLeft = distanceSquaredToNode(point, current.leftChild);
             double distToRight = distanceSquaredToNode(point, current.rightChild);
-
-            if (distToLeft < distToRight) {
-                current = current.leftChild;
-            } else {
-                current = current.rightChild;
-            }
+            current = distToLeft < distToRight ? current.leftChild : current.rightChild;
         }
 
-        // Leaf node
+        // Leaf node:
+        // Add the point to the point list, increase the tree size and recompute the current node.
         current.points.add(point);
         ++this.size;
         current.computeCenterAndRadius();
 
-        if (current.points.size() > MAX_LEAF_SIZE) {
-            current.splitNode();
-        }
+        // If needed, split the node
+        if (current.points.size() > MAX_LEAF_SIZE) current.splitNode();
 
         // Update centers and radii
         recomputeCenterAndRadii(path);

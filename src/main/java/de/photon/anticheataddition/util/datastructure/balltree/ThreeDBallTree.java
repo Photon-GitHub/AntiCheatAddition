@@ -228,9 +228,9 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
                     path.pop();
                 }
             } else {
-                // Not a child node -> Add both successors.
-                if (node.leftChild != null) stack.push(node.leftChild);
-                if (node.rightChild != null) stack.push(node.rightChild);
+                // Not a leaf node -> Add both successors.
+                stack.push(node.leftChild);
+                stack.push(node.rightChild);
             }
         }
 
@@ -279,8 +279,8 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
                 }
             } else {
                 // Internal node, add the children to the stack.
-                if (node.leftChild != null) stack.push(node.leftChild);
-                if (node.rightChild != null) stack.push(node.rightChild);
+                stack.push(node.leftChild);
+                stack.push(node.rightChild);
             }
         }
 
@@ -343,8 +343,9 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
                             return;
                         }
                     } else {
-                        if (node.rightChild != null) stack.push(node.rightChild);
-                        if (node.leftChild != null) stack.push(node.leftChild);
+                        // Push in this order to first process the left child (correct ordering with stacks).
+                        stack.push(node.rightChild);
+                        stack.push(node.leftChild);
                     }
                 }
                 pointIterator = null;

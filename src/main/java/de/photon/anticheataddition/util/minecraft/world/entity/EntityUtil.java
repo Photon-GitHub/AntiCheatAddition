@@ -17,11 +17,6 @@ public sealed interface EntityUtil permits LegacyEntityUtil, ModernEntityUtil
     boolean isFlyingWithElytra(@NotNull final LivingEntity livingEntity);
 
     /**
-     * Gets the maximum health of an {@link LivingEntity}.
-     */
-    double getMaxHealth(@NotNull LivingEntity livingEntity);
-
-    /**
      * Gets the passengers of an entity.
      * This method solves the compatibility issues of the newer APIs with server version 1.8.8
      */

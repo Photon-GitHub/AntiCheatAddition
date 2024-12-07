@@ -17,13 +17,6 @@ final class LegacyEntityUtil implements EntityUtil
     }
 
     @Override
-    public double getMaxHealth(@NotNull LivingEntity livingEntity)
-    {
-        // No attribute method.
-        return livingEntity.getMaxHealth();
-    }
-
-    @Override
     public List<Entity> getPassengers(@NotNull Entity entity)
     {
         final var passenger = entity.getPassenger();

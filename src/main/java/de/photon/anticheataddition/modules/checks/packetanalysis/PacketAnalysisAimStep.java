@@ -40,7 +40,7 @@ public final class PacketAnalysisAimStep extends ViolationModule implements List
         if (pitchDelta < NO_MOVE_DELTA_THRESHOLD && (event.getTo().getPitch() == 90 || event.getTo().getPitch() == -90)) return;
 
         if (user.getData().counter.packetAnalysisAimStepFails.conditionallyIncDec(isAimStep(yawDelta, pitchDelta) || isAimStep(pitchDelta, yawDelta))) {
-            getManagement().flag(Flag.of(user).setAddedVl(20).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent step-like aim movements."));
+            getManagement().flag(Flag.of(user).setAddedVl(20).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent step-like aim movements (d_yaw: " + yawDelta + ", d_pitch: " + pitchDelta + ")"));
         }
     }
 

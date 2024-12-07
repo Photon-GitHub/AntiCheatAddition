@@ -1,7 +1,5 @@
 package de.photon.anticheataddition.util.minecraft.world.entity;
 
-import com.google.common.base.Preconditions;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -14,12 +12,6 @@ final class ModernEntityUtil implements EntityUtil
     public boolean isFlyingWithElytra(@NotNull LivingEntity livingEntity)
     {
         return livingEntity.isGliding();
-    }
-
-    @Override
-    public double getMaxHealth(@NotNull LivingEntity livingEntity)
-    {
-        return Preconditions.checkNotNull(livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH), "Tried to get max health of an entity without health.").getValue();
     }
 
     @Override

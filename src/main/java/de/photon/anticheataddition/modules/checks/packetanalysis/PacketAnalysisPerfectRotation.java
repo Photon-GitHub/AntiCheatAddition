@@ -78,7 +78,7 @@ public final class PacketAnalysisPerfectRotation extends ViolationModule impleme
         for (double pattern : MULTIPLE_PATTERNS) {
             // Normal players sometimes have a multiple, but not consistently -> counter.
             if (counter.conditionallyIncDec(isIntegerMultiple(pattern, rotationDiff))) {
-                getManagement().flag(Flag.of(user).setAddedVl(5).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotation diff (" + rotationDiff + ")."));
+                getManagement().flag(Flag.of(user).setAddedVl(3).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotation diff (" + rotationDiff + ")."));
             }
         }
     }
@@ -103,6 +103,6 @@ public final class PacketAnalysisPerfectRotation extends ViolationModule impleme
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(100, 1).build();
+                                       .withDecay(100, 2).build();
     }
 }

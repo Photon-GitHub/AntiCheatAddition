@@ -302,7 +302,7 @@ PacketAnalysis:
     IllegalPitch:
       enabled: true
     # PerfectRotation checks for very precise rotations that some cheats exhibit.
-    # Adds 5 VL.
+    # Adds 4 to 5 VL.
     PerfectRotation:
       enabled: true
   # Commands to execute at specific violation levels.

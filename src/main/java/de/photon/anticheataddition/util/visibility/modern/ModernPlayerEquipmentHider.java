@@ -9,11 +9,20 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 public final class ModernPlayerEquipmentHider extends PacketInformationHider
 {
     private static final ItemStack AIR_STACK = new ItemStack(Material.AIR);
+
+    /** Needed as the full values include BODY, which is used for horse and dog armor, and can throw an error. */
+    private static final Set<EquipmentSlot> PLAYER_SLOTS = EnumSet.of(EquipmentSlot.HAND,
+                                                                      EquipmentSlot.OFF_HAND,
+                                                                      EquipmentSlot.FEET,
+                                                                      EquipmentSlot.LEGS,
+                                                                      EquipmentSlot.CHEST,
+                                                                      EquipmentSlot.HEAD);
 
     public ModernPlayerEquipmentHider()
     {
@@ -24,10 +33,8 @@ public final class ModernPlayerEquipmentHider extends PacketInformationHider
     protected void onPreHide(@NotNull Player observer, @NotNull Set<Player> toHide)
     {
         for (Player player : toHide) {
-            for (EquipmentSlot slot : EquipmentSlot.values()) {
-                observer.sendEquipmentChange(player, slot, AIR_STACK);
-                Log.finest(() -> "Player " + player.getName() + "'s equipment has been hidden from " + observer.getName());
-            }
+            for (EquipmentSlot slot : PLAYER_SLOTS) observer.sendEquipmentChange(player, slot, AIR_STACK);
+            Log.finest(() -> "Player " + player.getName() + "'s equipment has been hidden from " + observer.getName());
         }
     }
 
@@ -35,7 +42,7 @@ public final class ModernPlayerEquipmentHider extends PacketInformationHider
     protected void onReveal(@NotNull Player observer, @NotNull Set<Player> revealed)
     {
         for (Player watched : revealed) {
-            for (EquipmentSlot slot : EquipmentSlot.values()) {
+            for (EquipmentSlot slot : PLAYER_SLOTS) {
                 final var stack = watched.getInventory().getItem(slot);
                 // Only send non-null stacks, as the null stacks are air, and we sent that upon hiding.
                 if (stack != null) observer.sendEquipmentChange(watched, slot, stack);

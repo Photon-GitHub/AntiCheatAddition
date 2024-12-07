@@ -72,6 +72,6 @@ public class WorldGuardRegionUtil
     {
         final var min = region.getMinimumPoint();
         final var max = region.getMaximumPoint();
-        return new Region(world, min.getX(), min.getZ(), max.getX(), max.getZ());
+        return new Region(world, min.x(), min.z(), max.x(), max.z());
     }
 }

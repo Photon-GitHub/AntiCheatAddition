@@ -4,9 +4,8 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.config.Configs;
-import de.photon.anticheataddition.util.datastructure.quadtree.QuadTreeQueue;
+import de.photon.anticheataddition.util.datastructure.balltree.ThreeDBallTree;
 import de.photon.anticheataddition.util.log.Log;
-import de.photon.anticheataddition.util.minecraft.world.entity.InternalPotion;
 import de.photon.anticheataddition.util.visibility.PlayerVisibility;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -100,32 +99,33 @@ public final class Esp extends Module
                                               .map(User::getPlayer)
                                               .collect(Collectors.toUnmodifiableSet());
 
-                final var playerQuadTree = new QuadTreeQueue<Player>();
-                for (Player player : worldPlayers) playerQuadTree.add(player.getLocation().getX(), player.getLocation().getZ(), player);
+                final var ballTree = new ThreeDBallTree<Player>();
+                for (Player player : worldPlayers) ballTree.insert(new ThreeDBallTree.BallTreePoint<>(player.getLocation(), player));
 
-                processWorldQuadTree(playerTrackingRange, worldPlayers, playerQuadTree);
+                processWorldQuadTree(playerTrackingRange, worldPlayers, ballTree);
             }
         }, 100, ESP_INTERVAL_TICKS);
     }
 
-    private static void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, QuadTreeQueue<Player> playerQuadTree)
+    private static void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, ThreeDBallTree<Player> ballTree)
     {
-        for (final var observerNode : playerQuadTree) {
-            final Player observer = observerNode.element();
+        for (final var observer : ballTree) {
+            final var observerLoc = observer.getLocation();
 
             // Special case for creative and spectator mode observers to make sure that they can see all players.
             if (!User.inAdventureOrSurvivalMode(observer)) {
                 Log.finest(() -> "ESP | Observer: " + observer.getName() + " | In creative or spectator mode, no hidden players.");
-                PlayerVisibility.INSTANCE.setHidden(observerNode.element(), Set.of(), Set.of());
+                PlayerVisibility.INSTANCE.setHidden(observer, Set.of(), Set.of());
                 continue;
             }
+
 
             final Set<Player> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
             final Set<Player> fullHiddenPlayers = new HashSet<>(worldPlayers);
 
             // Blindness and darkness are already handled by canSee.
-            for (final var watchedNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
-                final Player watched = watchedNode.element();
+            for (final var watchedNode : ballTree.rangeSearch(observerLoc, playerTrackingRange)) {
+                final Player watched = watchedNode.data();
 
                 // Different worlds (might be possible if the player changed world in just the right moment)
                 if (!observer.getWorld().getUID().equals(watched.getWorld().getUID())
@@ -133,7 +133,7 @@ public final class Esp extends Module
                     || !User.inAdventureOrSurvivalMode(observer)
                     || !User.inAdventureOrSurvivalMode(watched)
                     // Less than 1 block distance (removes the player themselves and any very close player)
-                    || observerNode.distanceSquared(watchedNode) < 1
+                    || observerLoc.distanceSquared(watched.getLocation()) < 1
                     || watched.isDead()
                     || CanSee.canSee(observer, watched)) {
                     // No hiding case
@@ -146,11 +146,11 @@ public final class Esp extends Module
                 // Full hiding (due to the default adding to fullHiddenPlayers.)
             }
 
-            Log.finest(() -> "ESP | Observer: " + observerNode.element().getName() +
+            Log.finest(() -> "ESP | Observer: " + observer.getName() +
                              " | FULL: " + fullHiddenPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")) +
                              " | EQUIP: " + equipHiddenPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")));
 
-            PlayerVisibility.INSTANCE.setHidden(observerNode.element(), fullHiddenPlayers, equipHiddenPlayers);
+            PlayerVisibility.INSTANCE.setHidden(observer, fullHiddenPlayers, equipHiddenPlayers);
         }
     }
 }

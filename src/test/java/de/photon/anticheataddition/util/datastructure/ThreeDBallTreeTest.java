@@ -601,8 +601,8 @@ class ThreeDBallTreeTest
         // Verify that all points have been removed
         assertEquals(numberOfClusters * pointsPerCluster, removedPoints.size(), "All points should have been removed from the tree.");
         assertTrue(removedPoints.containsAll(allPoints), "All points should have been removed from the tree.");
-        assertTrue(tree.isEmpty(), "The tree should be empty after all clusters are removed.");
         assertEquals(0, tree.size(), "The tree size should be 0 after all clusters are removed.");
+        assertTrue(tree.isEmpty(), "The tree should be empty after all clusters are removed.");
     }
 
     @SuppressWarnings("UseBulkOperation")

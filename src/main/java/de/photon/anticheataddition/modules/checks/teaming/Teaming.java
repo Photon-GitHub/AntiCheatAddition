@@ -1,11 +1,12 @@
 package de.photon.anticheataddition.modules.checks.teaming;
 
+import com.github.davidmoten.rtreemulti.RTree;
+import com.github.davidmoten.rtreemulti.geometry.Point;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
-import de.photon.anticheataddition.util.datastructure.balltree.ThreeDBallTree;
 import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.minecraft.world.region.Region;
@@ -18,7 +19,9 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public final class Teaming extends ViolationModule implements Listener
@@ -79,7 +82,7 @@ public final class Teaming extends ViolationModule implements Listener
 
         Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), () -> {
             // Set for fast removeAll calls.
-            final var ballTree = new ThreeDBallTree<Player>();
+            final RTree<Player, Point> rTree = RTree.create(3);
 
             for (World world : enabledWorlds) {
                 for (Player player : world.getPlayers()) {
@@ -91,33 +94,42 @@ public final class Teaming extends ViolationModule implements Listener
                         && user.getTimeMap().at(TimeKey.COMBAT).notRecentlyUpdated(noPvpTime)) {
                         final var loc = player.getLocation();
                         // Not in a bypassed region.
-                        if (safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(loc))) ballTree.insert(fromPlayer(player));
+                        if (safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(loc))) rTree.add(player, pointFromPlayer(player));
                     }
                 }
 
-                while (!ballTree.isEmpty()) {
-                    final var firstNode = ballTree.getAny();
-                    final var teamNodes = ballTree.rangeSearch(firstNode, proximityRange).stream()
-                                                  // Ignore vanished players
-                                                  .filter(node -> node.data().canSee(firstNode.data()) && firstNode.data().canSee(node.data()))
-                                                  .toList();
+                final var origin = Point.create(0, 0, 0);
+                final List<Player> team = new ArrayList<>();
 
-                    ballTree.removePoints(teamNodes);
+                while (!rTree.isEmpty()) {
+                    final var firstNode = rTree.nearest(origin, Double.POSITIVE_INFINITY, 1).iterator().next();
+                    final var teamNodes = rTree.nearest(firstNode.geometry(), proximityRange, 1000);
+
+
+                    team.add(firstNode.value());
+
+                    for (final var node : teamNodes) {
+                        if (firstNode.value().canSee(node.value()) && node.value().canSee(firstNode.value())) {
+                            team.add(node.value());
+                        }
+                    }
+
+                    rTree.delete(teamNodes);
 
                     // Team is too big
-                    final int vl = teamNodes.size() - allowedSize;
+                    final int vl = team.size() - allowedSize;
                     if (vl <= 0) continue;
 
-                    for (final var node : teamNodes) this.getManagement().flag(Flag.of(node.data()).setAddedVl(vl));
+                    for (final var player : team) this.getManagement().flag(Flag.of(player).setAddedVl(vl));
                 }
             }
         }, 1L, CHECK_INTERVAL);
     }
 
-    private static ThreeDBallTree.BallTreePoint<Player> fromPlayer(final Player player)
+    private static Point pointFromPlayer(final Player player)
     {
         final var loc = player.getLocation();
-        return new ThreeDBallTree.BallTreePoint<>(loc.getX(), loc.getY(), loc.getZ(), player);
+        return Point.create(loc.getX(), loc.getY(), loc.getZ());
     }
 
     @Override

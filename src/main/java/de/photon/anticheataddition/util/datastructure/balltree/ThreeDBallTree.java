@@ -75,6 +75,31 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
     }
 
     /**
+     * Gathers all points contained anywhere in the subtree rooted at {@code node}.
+     */
+    private List<BallTreePoint<T>> breadthFirstSearch(@NotNull Node<T> node)
+    {
+        final List<BallTreePoint<T>> collected = new ArrayList<>();
+        final Deque<Node<T>> stack = new ArrayDeque<>();
+        stack.push(node);
+
+        while (!stack.isEmpty()) {
+            Node<T> current = stack.pop();
+
+            if (current.isLeaf()) {
+                collected.addAll(current.points);
+            } else {
+                // Descend
+                stack.push(current.leftChild);
+                stack.push(current.rightChild);
+            }
+        }
+
+        return collected;
+    }
+
+
+    /**
      * Recomputes the center and radius of nodes along a given path.
      * <p>
      * This is used to update the tree structure after modifications such as insertion or removal.
@@ -89,6 +114,101 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             node.computeCenterAndRadius();
         }
     }
+
+    /**
+     * Recomputes the center and radius of nodes along a given path.
+     * If the given leaf node is empty, attempts to merge it with its sibling.
+     *
+     * @param path A stack of nodes from leaf -> parent -> grandparent ... up to root.
+     */
+    private void mergeAndRecompute(@NotNull Deque<Node<T>> path)
+    {
+        Preconditions.checkArgument(!path.isEmpty(), "Path must not be empty.");
+
+        // 'node' is the leaf that just became empty.
+        final Node<T> node = path.peek();
+
+        // We can only merge if the node is an empty leaf (and not the root).
+        if (!node.isLeaf() || node == root || !node.points.isEmpty()) {
+            // If any of these conditions fail, just recompute up the path and bail out.
+            recomputeCenterAndRadii(path);
+            return;
+        }
+
+        // 1) Pop 'node' off the path
+        path.pop();
+        if (path.isEmpty()) {
+            // That would mean 'node' was root, but we already checked node != root, so this “shouldn’t” happen.
+            return;
+        }
+
+        // 2) The parent is now at the top of the path
+        final Node<T> parent = path.pop();
+
+        // Identify the sibling (the other child of 'parent')
+        final Node<T> sibling = (parent.leftChild == node)
+                                ? parent.rightChild
+                                : parent.leftChild;
+
+        // 3) If the sibling is an internal node, gather its points and re-insert them.
+        if (!sibling.isLeaf()) {
+            // Gather *all* points from the sibling’s subtree
+            final List<BallTreePoint<T>> allSiblingPoints = breadthFirstSearch(sibling);
+
+            // We now remove the sibling from the parent so that it no longer references that subtree.
+            parent.leftChild = null;
+            parent.rightChild = null;
+
+            // The parent is effectively a new leaf with one element.
+            parent.points.clear();
+            parent.points.add(allSiblingPoints.removeLast());
+
+            // Recompute the parent's bounding sphere.
+            parent.computeCenterAndRadius();
+
+            // Re-insert all those sibling points into the *root* of this ball-tree.
+            // (We call `insert(...)` for each. If you want to be more efficient, you might do a bulk build.)
+            for (BallTreePoint<T> p : allSiblingPoints) {
+                this.insert(p);
+            }
+            return;
+        }
+
+        // 4) Now we can treat 'sibling' as a leaf. If sibling was an internal node,
+        //    we've already reinserted and effectively emptied that subtree—so it might now be empty too.
+        //    But let's check if sibling is truly a leaf with non-empty points.
+
+        // If the sibling is STILL an internal node with points, that implies the reinsert code above
+        // didn't remove them. (But we took them all, so in practice sibling should now be empty.)
+        // We'll assume the sibling is leaf or empty for a simpler merge.
+
+        // 5) The next step is to link 'sibling' directly to the grandparent (bypassing the empty parent).
+        final Node<T> grandparent = path.isEmpty() ? null : path.pop();
+
+        if (grandparent == null) {
+            // That means 'parent' was the root, so just replace root with sibling.
+            root = sibling;
+        } else {
+            // If the grandparent's leftChild is 'parent', replace it with 'sibling'
+            // otherwise replace the rightChild.
+            if (grandparent.leftChild == parent) {
+                grandparent.leftChild = sibling;
+            } else {
+                grandparent.rightChild = sibling;
+            }
+
+            // Clean up the removed parent node
+            parent.points.clear();
+            parent.leftChild = null;
+            parent.rightChild = null;
+
+            // 6) Recompute from sibling upward
+            path.push(grandparent);
+            path.push(sibling);
+            recomputeCenterAndRadii(path);
+        }
+    }
+
 
     /**
      * Inserts a new {@link BallTreePoint} into the tree.
@@ -234,7 +354,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
                     // If yes, remove the point.
                     --this.size;
                     // Recompute the parent nodes after removal.
-                    recomputeCenterAndRadii(path);
+                    mergeAndRecompute(path);
                     return true;
                 } else {
                     // We cannot remove the child here -> This is not the correct node.

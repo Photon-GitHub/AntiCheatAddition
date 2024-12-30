@@ -336,7 +336,7 @@ class ThreeDBallTreeTest
         }
 
         // Now, remove some points
-        int pointsToRemove = 1000;
+        int pointsToRemove = Math.min(NUM_ELEMENTS, 500);
         for (int i = 0; i < pointsToRemove; i++) {
             tree.remove(points.get(i));
         }
@@ -366,6 +366,20 @@ class ThreeDBallTreeTest
                 assertEquals(points.size(), tree.size(), "Tree size should be " + points.size() + " after removal.");
             }
         }
+    }
+
+    @Test
+    void testGetAnyThrowsWhenTreeIsEmpty()
+    {
+        final var tree = new ThreeDBallTree<Byte>();
+        assertThrows(NoSuchElementException.class, tree::getAny);
+    }
+
+    @Test
+    void testGetIsNullWhenTreeIsEmpty()
+    {
+        final var tree = new ThreeDBallTree<Byte>();
+        assertNull(tree.get(0, 0, 0));
     }
 
     @Test

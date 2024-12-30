@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.datastructure.balltree;
 import com.google.common.base.Preconditions;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -155,11 +154,9 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             if (distanceBetweenPoints(x, y, z, node.centerX, node.centerY, node.centerZ) > node.radius) continue;
 
             if (node.isLeaf()) {
-                if (node.points != null) {
-                    for (BallTreePoint<T> p : node.points) {
-                        if (p.x() == x && p.y() == y && p.z() == z) {
-                            return p;
-                        }
+                for (BallTreePoint<T> p : node.points) {
+                    if (p.x() == x && p.y() == y && p.z() == z) {
+                        return p;
                     }
                 }
             } else {
@@ -174,14 +171,10 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
     @Override
     public boolean remove(Object o)
     {
-        // Use the remove method below.
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean removeAll(@NotNull Collection<?> points)
-    {
-        throw new UnsupportedOperationException();
+        if (o instanceof BallTreePoint<?> p) {
+            return remove((BallTreePoint<T>) p);
+        }
+        throw new IllegalArgumentException("Object must be a BallTreePoint of generic type T.");
     }
 
     /**
@@ -237,7 +230,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             // We have found a leaf.
             if (node.isLeaf()) {
                 // Can we remove the point from that child?
-                if (node.points != null && node.points.remove(point)) {
+                if (node.points.remove(point)) {
                     // If yes, remove the point.
                     --this.size;
                     // Recompute the parent nodes after removal.
@@ -331,10 +324,8 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
 
             // Leaf node
             if (node.isLeaf()) {
-                if (node.points != null) {
-                    for (BallTreePoint<T> p : node.points) {
-                        if (distanceSquaredBetweenPoints(x, y, z, p.x(), p.y(), p.z()) <= radiusSquared) result.add(p);
-                    }
+                for (BallTreePoint<T> p : node.points) {
+                    if (distanceSquaredBetweenPoints(x, y, z, p.x(), p.y(), p.z()) <= radiusSquared) result.add(p);
                 }
             } else {
                 // Internal node, add the children to the stack.
@@ -410,7 +401,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
      */
     public BallTreePoint<T> getAny()
     {
-        if (root == null) throw new NoSuchElementException();
+        if (root == null || size < 1) throw new NoSuchElementException();
 
         // We assume that for every internal node, both the left and the right child nodes have a populated leaf at some point.
         var node = root;
@@ -440,7 +431,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
                 while (!stack.isEmpty()) {
                     Node<T> node = stack.pop();
                     if (node.isLeaf()) {
-                        if (node.points != null && !node.points.isEmpty()) {
+                        if (!node.points.isEmpty()) {
                             pointIterator = node.points.iterator();
                             return;
                         }
@@ -529,9 +520,10 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         private Node<T> leftChild;
         private Node<T> rightChild;
 
-        @Nullable private List<BallTreePoint<T>> points; // Only for leaf nodes
+        // This list is only filled in leaf nodes.
+        @NotNull private final List<BallTreePoint<T>> points;
 
-        public Node(@Nullable List<BallTreePoint<T>> points)
+        protected Node(@NotNull List<BallTreePoint<T>> points)
         {
             this.points = points;
             computeCenterAndRadius();
@@ -539,7 +531,9 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
 
         public boolean isLeaf()
         {
-            return this.leftChild == null || this.rightChild == null;
+            // There should be no case where this only has one child (illegal state).
+            // Either both children are null (leaf) or both are not null (internal node).
+            return this.leftChild == null && this.rightChild == null;
         }
 
         private void computeCenterAndRadius()
@@ -581,7 +575,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
         public void splitNode()
         {
             // Cannot split further, must have at least 2 points.
-            if (points == null || points.size() <= 1) throw new IllegalStateException("To split a node, at least two points are required.");
+            if (points.size() <= 1) throw new IllegalStateException("To split a node, at least two points are required.");
 
             // Step 1: Choose the first point as the first seed.
             final BallTreePoint<T> seed1 = points.get(0);
@@ -630,7 +624,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
             rightChild = new Node<>(rightPoints);
 
             // Clear points to save memory
-            points = null;
+            points.clear();
         }
 
         private double distance(Node<T> other)

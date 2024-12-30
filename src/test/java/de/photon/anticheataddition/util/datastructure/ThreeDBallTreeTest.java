@@ -461,6 +461,150 @@ class ThreeDBallTreeTest
         assertEquals(0, tree.size(), "Tree should be empty after removing all points.");
     }
 
+    @Test
+    void testIterativeClusterRemovalUsingGetAny()
+    {
+        // Define clusters with distinct centers
+        List<BallTreePoint<String>> cluster1 = Arrays.asList(
+                new BallTreePoint<>(0, 0, 0, "C1P1"),
+                new BallTreePoint<>(1, 1, 1, "C1P2"),
+                new BallTreePoint<>(-1, -1, -1, "C1P3")
+                                                            );
+
+        List<BallTreePoint<String>> cluster2 = Arrays.asList(
+                new BallTreePoint<>(100, 100, 100, "C2P1"),
+                new BallTreePoint<>(101, 101, 101, "C2P2"),
+                new BallTreePoint<>(99, 99, 99, "C2P3")
+                                                            );
+
+        List<BallTreePoint<String>> cluster3 = Arrays.asList(
+                new BallTreePoint<>(-100, -100, -100, "C3P1"),
+                new BallTreePoint<>(-101, -101, -101, "C3P2"),
+                new BallTreePoint<>(-99, -99, -99, "C3P3")
+                                                            );
+
+        // Combine all clusters into a single list
+        List<BallTreePoint<String>> allPoints = new ArrayList<>();
+        allPoints.addAll(cluster1);
+        allPoints.addAll(cluster2);
+        allPoints.addAll(cluster3);
+
+        // Initialize the Ball Tree with all points
+        ThreeDBallTree<String> tree = new ThreeDBallTree<>(allPoints);
+
+        // Define the cluster radius (should be large enough to include all points within a cluster)
+        double clusterRadius = 5.0;
+
+        // Expected number of clusters
+        int expectedClusters = 3;
+        int removedClusters = 0;
+
+        // Keep track of removed points to ensure all are removed correctly
+        Set<BallTreePoint<String>> removedPoints = new HashSet<>();
+
+        // Loop until the tree is empty
+        while (!tree.isEmpty()) {
+            // Retrieve an arbitrary point from the tree
+            BallTreePoint<String> anyPoint = tree.getAny();
+            assertNotNull(anyPoint, "getAny() should return a non-null point when the tree is not empty.");
+
+            // Perform a range search around the retrieved point
+            Set<BallTreePoint<String>> clusterPoints = tree.rangeSearch(anyPoint, clusterRadius);
+            assertFalse(clusterPoints.isEmpty(), "Range search should return at least one point.");
+
+            // Remove all points found in the range search
+            boolean modified = tree.removePoints(clusterPoints);
+            assertTrue(modified, "removePoints should return true when points are removed.");
+
+            // Add removed points to the tracking set
+            removedPoints.addAll(clusterPoints);
+
+            // Increment the cluster removal count
+            removedClusters++;
+        }
+
+        // Verify that all clusters have been removed
+        assertEquals(expectedClusters, removedClusters, "The number of removed clusters should match the expected number.");
+
+        // Verify that all points have been removed
+        assertTrue(removedPoints.containsAll(allPoints), "All points should have been removed from the tree.");
+        assertEquals(0, tree.size(), "The tree size should be 0 after all clusters are removed.");
+        assertTrue(tree.isEmpty(), "The tree should be empty after all clusters are removed.");
+    }
+
+    @Test
+    void testIterativeClusterRemovalWithLargeNumberOfPoints()
+    {
+        // Define parameters for cluster creation
+        int numberOfClusters = 100;
+        int pointsPerCluster = 10;
+        double clusterSpacing = 100.0; // Distance between cluster centers to avoid overlap
+        double clusterRadius = 10.0;   // Radius for range searches to encompass the entire cluster
+
+        List<BallTreePoint<String>> allPoints = new ArrayList<>();
+
+        // Create 100 clusters, each with 10 points
+        for (int clusterIndex = 0; clusterIndex < numberOfClusters; clusterIndex++) {
+            double centerX = clusterIndex * clusterSpacing;
+            double centerY = clusterIndex * clusterSpacing;
+            double centerZ = clusterIndex * clusterSpacing;
+
+            for (int pointIndex = 0; pointIndex < pointsPerCluster; pointIndex++) {
+                // Distribute points around the cluster center within a small offset to form a tight cluster
+                double offsetX = (pointIndex % 3) * 1.0; // 0, 1, or 2
+                double offsetY = (pointIndex / 3 % 3) * 1.0; // 0, 1, or 2
+                double offsetZ = (pointIndex / 9) * 1.0; // 0 or 1
+
+                allPoints.add(new BallTreePoint<>(
+                        centerX + offsetX,
+                        centerY + offsetY,
+                        centerZ + offsetZ,
+                        "Cluster" + clusterIndex + "Point" + pointIndex
+                ));
+            }
+        }
+
+        // Initialize the Ball Tree with all points
+        ThreeDBallTree<String> tree = new ThreeDBallTree<>(allPoints);
+
+        // Verify initial tree size
+        assertEquals(numberOfClusters * pointsPerCluster, tree.size(), "Tree should contain all inserted points initially.");
+
+        // Keep track of removed points to ensure all are removed correctly
+        int removedClusters = 0;
+        Set<BallTreePoint<String>> removedPoints = new HashSet<>();
+
+        // Loop until the tree is empty
+        while (!tree.isEmpty()) {
+            // Retrieve an arbitrary point from the tree
+            BallTreePoint<String> anyPoint = tree.getAny();
+            assertNotNull(anyPoint, "getAny() should return a non-null point when the tree is not empty.");
+
+            // Perform a range search around the retrieved point
+            Set<BallTreePoint<String>> clusterPoints = tree.rangeSearch(anyPoint, clusterRadius);
+            assertFalse(clusterPoints.isEmpty(), "Range search should return at least one point.");
+
+            // Remove all points found in the range search
+            boolean modified = tree.removePoints(clusterPoints);
+            assertTrue(modified, "removePoints should return true when points are removed.");
+
+            // Add removed points to the tracking set
+            removedPoints.addAll(clusterPoints);
+
+            // Increment the cluster removal count
+            removedClusters++;
+        }
+
+        // Verify that all clusters have been removed
+        assertEquals(numberOfClusters, removedClusters, "The number of removed clusters should match the expected number.");
+
+        // Verify that all points have been removed
+        assertEquals(numberOfClusters * pointsPerCluster, removedPoints.size(), "All points should have been removed from the tree.");
+        assertTrue(removedPoints.containsAll(allPoints), "All points should have been removed from the tree.");
+        assertTrue(tree.isEmpty(), "The tree should be empty after all clusters are removed.");
+        assertEquals(0, tree.size(), "The tree size should be 0 after all clusters are removed.");
+    }
+
     @SuppressWarnings("UseBulkOperation")
     @Test
     void testIterator()

@@ -161,7 +161,7 @@ public class ThreeDBallTree<T> extends AbstractCollection<T> implements Collecti
 
             // The parent is effectively a new leaf with one element.
             parent.points.clear();
-            parent.points.add(allSiblingPoints.removeLast());
+            parent.points.add(allSiblingPoints.remove(allSiblingPoints.size() - 1));
 
             // Recompute the parent's bounding sphere.
             parent.computeCenterAndRadius();

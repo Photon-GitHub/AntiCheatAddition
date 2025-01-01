@@ -30,9 +30,9 @@ public sealed interface MaterialUtil permits AncientMaterialUtil, ModernMaterial
 
     Set<Material> getLiquids();
 
-    Set<Material> getSigns();
-
     Set<Material> getNonOpenableInventories();
+
+    Set<Material> getSigns();
 
     default Material getExpBottle()
     {
@@ -64,18 +64,13 @@ public sealed interface MaterialUtil permits AncientMaterialUtil, ModernMaterial
 
     static Set<Material> getMaterialsEndingWith(String... ends)
     {
-        return Arrays.stream(values())
-                     .filter(material -> Arrays.stream(ends).anyMatch(material.name()::endsWith))
-                     .collect(SetUtil.toImmutableEnumSet());
+        return Arrays.stream(values()).filter(material -> Arrays.stream(ends).anyMatch(material.name()::endsWith)).collect(SetUtil.toImmutableEnumSet());
     }
 
     @SafeVarargs
     static Set<Material> ofTags(Tag<Material>... tags)
     {
-        return Arrays.stream(tags)
-                     .map(Tag::getValues)
-                     .flatMap(Set::stream)
-                     .collect(SetUtil.toImmutableEnumSet());
+        return Arrays.stream(tags).map(Tag::getValues).flatMap(Set::stream).collect(SetUtil.toImmutableEnumSet());
     }
 
     /**

@@ -27,7 +27,7 @@ public final class SkinBlinkerSprinting extends ViolationModule
                                 * -> As of the render-debug-cycle which can be done in the game (F3 + F) I need to check for the change of the skin.
                                 */
                                final WrapperPlayClientSettings settings = new WrapperPlayClientSettings(event);
-                               final byte skinMask = settings.getVisibleSkinSectionMask();
+                               final byte skinMask = settings.getSkinMask();
 
                                // Sprinting or sneaking (detection)
                                if ((user.getPlayer().isSprinting() || user.getPlayer().isSneaking())

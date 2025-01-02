@@ -1,5 +1,7 @@
 package de.photon.anticheataddition.user;
 
+import com.github.davidmoten.rtreemulti.Entry;
+import com.github.davidmoten.rtreemulti.geometry.Point;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.google.common.base.Preconditions;
@@ -48,8 +50,7 @@ public final class User implements Permissible
     private static final Set<User> FLOODGATE_USERS = ConcurrentHashMap.newKeySet(AntiCheatAddition.SERVER_EXPECTED_PLAYERS);
     private static final Set<User> DEBUG_USERS = new CopyOnWriteArraySet<>();
 
-    @Delegate(types = Permissible.class)
-    @EqualsAndHashCode.Include private final Player player;
+    @Delegate(types = Permissible.class) @EqualsAndHashCode.Include private final Player player;
 
     private final Data data = new Data();
     private final TimestampMap timeMap = new TimestampMap();
@@ -161,6 +162,16 @@ public final class User implements Permissible
             case ADVENTURE, SURVIVAL -> true;
             default -> false;
         };
+    }
+
+    /**
+     * Creates an {@link Entry} of the {@link Player} and their location.
+     * This is a convenience method for RTree operations.
+     */
+    public static Entry<Player, Point> rTreeEntryFromPlayer(Player player)
+    {
+        final var location = player.getLocation();
+        return Entry.entry(player, Point.create(location.getX(), location.getY(), location.getZ()));
     }
 
     /**
@@ -314,6 +325,14 @@ public final class User implements Permissible
         return this.timeMap.at(TimeKey.WORLD_CHANGE).recentlyUpdated(milliseconds);
     }
 
+    /**
+     * Creates an {@link Entry} of this {@link User} and their location.
+     * This is a convenience method for RTree operations.
+     */
+    public Entry<Player, Point> rTreeEntry()
+    {
+        return rTreeEntryFromPlayer(this.player);
+    }
 
     // Skin
 

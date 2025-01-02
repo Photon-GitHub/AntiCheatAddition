@@ -99,10 +99,9 @@ public final class Esp extends Module
                                               .collect(Collectors.toUnmodifiableSet());
 
                 // Create the entries upfront to avoid creating the tree multiple times.
-                final List<Entry<Player, Point>> entries = worldPlayers.stream().map(player -> {
-                    final var loc = player.getLocation();
-                    return Entry.entry(player, Point.create(loc.getX(), loc.getY(), loc.getZ()));
-                }).toList();
+                final List<Entry<Player, Point>> entries = worldPlayers.stream()
+                                                                       .map(User::rTreeEntryFromPlayer)
+                                                                       .toList();
 
                 // Create the RTree for the world.
                 RTree<Player, Point> rTree = RTree.dimensions(3).create(entries);

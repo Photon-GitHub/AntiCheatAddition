@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.modules.checks.teaming;
 
+import com.github.davidmoten.rtreemulti.Entry;
 import com.github.davidmoten.rtreemulti.RTree;
 import com.github.davidmoten.rtreemulti.geometry.Point;
 import com.google.common.base.Preconditions;
@@ -81,10 +82,9 @@ public final class Teaming extends ViolationModule implements Listener
         Preconditions.checkArgument(allowedSize > 0, "The Teaming allowed_size must be greater than 0.");
 
         Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), () -> {
-            // Set for fast removeAll calls.
-            RTree<Player, Point> rTree = RTree.dimensions(3).create();
 
             for (World world : enabledWorlds) {
+                final List<Entry<Player, Point>> entries = new ArrayList<>();
                 for (Player player : world.getPlayers()) {
                     final User user = User.getUser(player);
                     if (!User.isUserInvalid(user, Teaming.INSTANCE)
@@ -95,10 +95,13 @@ public final class Teaming extends ViolationModule implements Listener
                         final var loc = player.getLocation();
                         // Not in a bypassed region.
                         if (safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(loc))) {
-                            rTree = rTree.add(player, pointFromPlayer(player));
+                            entries.add(User.rTreeEntryFromPlayer(player));
                         }
                     }
                 }
+
+                // Create an RTree for the players in the world.
+                RTree<Player, Point> rTree = RTree.dimensions(3).create(entries);
 
                 final var origin = Point.create(0, 0, 0);
                 final List<Player> team = new ArrayList<>();
@@ -125,12 +128,6 @@ public final class Teaming extends ViolationModule implements Listener
                 }
             }
         }, 1L, CHECK_INTERVAL);
-    }
-
-    private static Point pointFromPlayer(final Player player)
-    {
-        final var loc = player.getLocation();
-        return Point.create(loc.getX(), loc.getY(), loc.getZ());
     }
 
     @Override

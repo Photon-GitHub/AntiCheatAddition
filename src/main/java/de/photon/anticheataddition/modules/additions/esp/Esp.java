@@ -64,7 +64,7 @@ public final class Esp extends Module
             final int trackingRange = worlds.getInt(key + ENTITY_TRACKING_RANGE_PLAYERS);
 
             // Is the tracking range smaller than the max tracking range?
-            if (trackingRange < MAX_TRACKING_RANGE) playerTrackingRanges.put(Bukkit.getWorld(key), trackingRange);
+            if (trackingRange < MAX_TRACKING_RANGE) playerTrackingRanges.put(world, trackingRange);
         }
         return Map.copyOf(playerTrackingRanges);
     }

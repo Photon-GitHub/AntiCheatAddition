@@ -82,7 +82,7 @@ public final class Teaming extends ViolationModule implements Listener
 
         Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), () -> {
             // Set for fast removeAll calls.
-            RTree<Player, Point> rTree = RTree.create(3);
+            RTree<Player, Point> rTree = RTree.dimensions(3).create();
 
             for (World world : enabledWorlds) {
                 for (Player player : world.getPlayers()) {

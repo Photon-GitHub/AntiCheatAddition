@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.modules.additions.esp;
 
+import com.github.davidmoten.rtreemulti.Entry;
 import com.github.davidmoten.rtreemulti.RTree;
 import com.github.davidmoten.rtreemulti.geometry.Point;
 import de.photon.anticheataddition.AntiCheatAddition;
@@ -14,10 +15,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class Esp extends Module
@@ -100,11 +98,14 @@ public final class Esp extends Module
                                               .map(User::getPlayer)
                                               .collect(Collectors.toUnmodifiableSet());
 
-                RTree<Player, Point> rTree = RTree.create(3);
-                for (Player player : worldPlayers) {
+                // Create the entries upfront to avoid creating the tree multiple times.
+                final List<Entry<Player, Point>> entries = worldPlayers.stream().map(player -> {
                     final var loc = player.getLocation();
-                    rTree = rTree.add(player, Point.create(loc.getX(), loc.getY(), loc.getZ()));
-                }
+                    return Entry.entry(player, Point.create(loc.getX(), loc.getY(), loc.getZ()));
+                }).toList();
+
+                // Create the RTree for the world.
+                RTree<Player, Point> rTree = RTree.dimensions(3).create(entries);
 
                 processWorldRTree(playerTrackingRange, worldPlayers, rTree);
             }

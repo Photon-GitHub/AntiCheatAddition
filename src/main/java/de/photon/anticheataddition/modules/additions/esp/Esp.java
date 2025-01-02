@@ -100,20 +100,20 @@ public final class Esp extends Module
                                               .map(User::getPlayer)
                                               .collect(Collectors.toUnmodifiableSet());
 
-                final RTree<Player, Point> rTree = RTree.create(3);
+                RTree<Player, Point> rTree = RTree.create(3);
                 for (Player player : worldPlayers) {
                     final var loc = player.getLocation();
-                    rTree.add(player, Point.create(loc.getX(), loc.getY(), loc.getZ()));
+                    rTree = rTree.add(player, Point.create(loc.getX(), loc.getY(), loc.getZ()));
                 }
 
-                processWorldQuadTree(playerTrackingRange, worldPlayers, rTree);
+                processWorldRTree(playerTrackingRange, worldPlayers, rTree);
             }
         }, 100, ESP_INTERVAL_TICKS);
     }
 
-    private static void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, RTree<Player, Point> ballTree)
+    private static void processWorldRTree(int playerTrackingRange, Set<Player> worldPlayers, RTree<Player, Point> rTree)
     {
-        for (final var observerNode : ballTree.entries()) {
+        for (final var observerNode : rTree.entries()) {
             final var observer = observerNode.value();
             final var observerPoint = observerNode.geometry();
             final var observerLoc = observer.getLocation();
@@ -129,7 +129,7 @@ public final class Esp extends Module
             final Set<Player> fullHiddenPlayers = new HashSet<>(worldPlayers);
 
             // Blindness and darkness are already handled by canSee.
-            for (final var watchedNode : ballTree.nearest(observerPoint, playerTrackingRange, 10000)) {
+            for (final var watchedNode : rTree.nearest(observerPoint, playerTrackingRange, 10000)) {
                 final Player watched = watchedNode.value();
 
                 // Different worlds (might be possible if the player changed world in just the right moment)

@@ -82,7 +82,7 @@ public final class Teaming extends ViolationModule implements Listener
 
         Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), () -> {
             // Set for fast removeAll calls.
-            final RTree<Player, Point> rTree = RTree.create(3);
+            RTree<Player, Point> rTree = RTree.create(3);
 
             for (World world : enabledWorlds) {
                 for (Player player : world.getPlayers()) {
@@ -94,7 +94,7 @@ public final class Teaming extends ViolationModule implements Listener
                         && user.getTimeMap().at(TimeKey.COMBAT).notRecentlyUpdated(noPvpTime)) {
                         final var loc = player.getLocation();
                         // Not in a bypassed region.
-                        if (safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(loc))) rTree.add(player, pointFromPlayer(player));
+                        if (safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(loc))) rTree = rTree.add(player, pointFromPlayer(player));
                     }
                 }
 
@@ -114,7 +114,7 @@ public final class Teaming extends ViolationModule implements Listener
                         }
                     }
 
-                    rTree.delete(teamNodes);
+                    rTree = rTree.delete(teamNodes);
 
                     // Team is too big
                     final int vl = team.size() - allowedSize;

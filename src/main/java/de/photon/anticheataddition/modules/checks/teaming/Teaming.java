@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class Teaming extends ViolationModule implements Listener
 {
@@ -111,13 +112,13 @@ public final class Teaming extends ViolationModule implements Listener
                     final var firstNode = rTree.nearest(origin, Double.POSITIVE_INFINITY, 1).iterator().next();
                     final var teamNodes = rTree.nearest(firstNode.geometry(), proximityRange, 1000);
 
-                    team.add(firstNode.value());
-
                     for (final var node : teamNodes) {
                         if (firstNode.value().canSee(node.value()) && node.value().canSee(firstNode.value())) {
                             team.add(node.value());
                         }
                     }
+
+                    Log.finer(() -> "Teaming | Team: " + team.stream().map(Player::getName).collect(Collectors.joining(", ")));
 
                     rTree = rTree.delete(teamNodes);
 

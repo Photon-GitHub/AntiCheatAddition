@@ -94,7 +94,9 @@ public final class Teaming extends ViolationModule implements Listener
                         && user.getTimeMap().at(TimeKey.COMBAT).notRecentlyUpdated(noPvpTime)) {
                         final var loc = player.getLocation();
                         // Not in a bypassed region.
-                        if (safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(loc))) rTree = rTree.add(player, pointFromPlayer(player));
+                        if (safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(loc))) {
+                            rTree = rTree.add(player, pointFromPlayer(player));
+                        }
                     }
                 }
 
@@ -104,7 +106,6 @@ public final class Teaming extends ViolationModule implements Listener
                 while (!rTree.isEmpty()) {
                     final var firstNode = rTree.nearest(origin, Double.POSITIVE_INFINITY, 1).iterator().next();
                     final var teamNodes = rTree.nearest(firstNode.geometry(), proximityRange, 1000);
-
 
                     team.add(firstNode.value());
 

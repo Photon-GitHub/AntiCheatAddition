@@ -133,11 +133,8 @@ public final class Esp extends Module
             for (final var watchedNode : rTree.nearest(observerPoint, playerTrackingRange, 10000)) {
                 final Player watched = watchedNode.value();
 
-                // Different worlds (might be possible if the player changed world in just the right moment)
-                if (!observer.getWorld().getUID().equals(watched.getWorld().getUID())
-                    // Either of the two players is not in adventure or survival mode
-                    || !User.inAdventureOrSurvivalMode(observer)
-                    || !User.inAdventureOrSurvivalMode(watched)
+                // Either of the two players is not in adventure or survival mode (observer is already checked above)
+                if (!User.inAdventureOrSurvivalMode(watched)
                     // Less than 1 block distance (removes the player themselves and any very close player)
                     || observerLoc.distanceSquared(watched.getLocation()) < 1
                     || watched.isDead()

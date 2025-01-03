@@ -29,13 +29,14 @@ public final class DamageIndicator extends Module
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.of(this, PacketAdapterBuilder
+                // The UPDATE_HEALTH packet is only sent to the player themselves, therefore we don't need to handle it.
                 .of(this, PacketType.Play.Server.ENTITY_METADATA)
                 .priority(PacketListenerPriority.HIGH)
                 .onSending((event, user) -> {
                     if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) {
                         final var wrapper = new WrapperPlayServerEntityMetadata(event);
 
-                        final Player player = (Player) event.getPlayer();
+                        final Player player = event.getPlayer();
                         final int entityId = wrapper.getEntityId();
 
                         // Player can get their own metadata.

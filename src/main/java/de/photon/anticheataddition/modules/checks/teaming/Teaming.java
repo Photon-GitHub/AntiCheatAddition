@@ -106,12 +106,12 @@ public final class Teaming extends ViolationModule implements Listener
                 RTree<Player, Point> rTree = RTree.dimensions(3).create(entries);
 
                 final var origin = Point.create(0, 0, 0);
-                final List<Player> team = new ArrayList<>();
 
                 while (!rTree.isEmpty()) {
                     final var firstNode = rTree.nearest(origin, Double.POSITIVE_INFINITY, 1).iterator().next();
                     final var teamNodes = rTree.nearest(firstNode.geometry(), proximityRange, 1000);
 
+                    final var team = new ArrayList<Player>();
                     for (final var node : teamNodes) {
                         if (firstNode.value().canSee(node.value()) && node.value().canSee(firstNode.value())) {
                             team.add(node.value());

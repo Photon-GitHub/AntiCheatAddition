@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public final class Teaming extends ViolationModule implements Listener
 {
@@ -104,19 +105,18 @@ public final class Teaming extends ViolationModule implements Listener
 
                 // Create an RTree for the players in the world.
                 RTree<Player, Point> rTree = RTree.dimensions(3).create(entries);
-
                 final var origin = Point.create(0, 0, 0);
 
                 while (!rTree.isEmpty()) {
                     final var firstNode = rTree.nearest(origin, Double.POSITIVE_INFINITY, 1).iterator().next();
                     final var teamNodes = rTree.nearest(firstNode.geometry(), proximityRange, 1000);
 
-                    final var team = new ArrayList<Player>();
-                    for (final var node : teamNodes) {
-                        if (firstNode.value().canSee(node.value()) && node.value().canSee(firstNode.value())) {
-                            team.add(node.value());
-                        }
-                    }
+                    final var team = StreamSupport.stream(teamNodes.spliterator(), false)
+                                                  // Players need to see each other to be considered to be in a team.
+                                                  .filter(node -> firstNode.value().canSee(node.value()) && node.value().canSee(firstNode.value()))
+                                                  // Get the players.
+                                                  .map(Entry::value)
+                                                  .toList();
 
                     Log.finer(() -> "Teaming | Team: " + team.stream().map(Player::getName).collect(Collectors.joining(", ")));
 

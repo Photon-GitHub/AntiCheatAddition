@@ -28,7 +28,7 @@ public final class SkinBlinkerUnusedBit extends ViolationModule
                                 * Some custom clients like LabyMod use that bit for their cosmetics.
                                 */
                                final WrapperPlayClientSettings settings = new WrapperPlayClientSettings(event);
-                               final byte skinMask = settings.getVisibleSkinSectionMask();
+                               final byte skinMask = settings.getSkinMask();
 
                                // Unused skin bit used (detection)
                                if ((skinMask & 0x80) != 0) getManagement().flag(Flag.of(user).setAddedVl(100));

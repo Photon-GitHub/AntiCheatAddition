@@ -1,10 +1,12 @@
 package de.photon.anticheataddition.modules.additions.esp;
 
+import com.github.davidmoten.rtreemulti.Entry;
+import com.github.davidmoten.rtreemulti.RTree;
+import com.github.davidmoten.rtreemulti.geometry.Point;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.config.Configs;
-import de.photon.anticheataddition.util.datastructure.balltree.ThreeDBallTree;
 import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.visibility.PlayerVisibility;
 import org.bukkit.Bukkit;
@@ -13,10 +15,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class Esp extends Module
@@ -65,7 +64,7 @@ public final class Esp extends Module
             final int trackingRange = worlds.getInt(key + ENTITY_TRACKING_RANGE_PLAYERS);
 
             // Is the tracking range smaller than the max tracking range?
-            if (trackingRange < MAX_TRACKING_RANGE) playerTrackingRanges.put(Bukkit.getWorld(key), trackingRange);
+            if (trackingRange < MAX_TRACKING_RANGE) playerTrackingRanges.put(world, trackingRange);
         }
         return Map.copyOf(playerTrackingRanges);
     }
@@ -99,17 +98,24 @@ public final class Esp extends Module
                                               .map(User::getPlayer)
                                               .collect(Collectors.toUnmodifiableSet());
 
-                final var ballTree = new ThreeDBallTree<Player>();
-                for (Player player : worldPlayers) ballTree.insert(new ThreeDBallTree.BallTreePoint<>(player.getLocation(), player));
+                // Create the entries upfront to avoid creating the tree multiple times.
+                final List<Entry<Player, Point>> entries = worldPlayers.stream()
+                                                                       .map(User::rTreeEntryFromPlayer)
+                                                                       .toList();
 
-                processWorldQuadTree(playerTrackingRange, worldPlayers, ballTree);
+                // Create the RTree for the world.
+                RTree<Player, Point> rTree = RTree.dimensions(3).create(entries);
+
+                processWorldRTree(playerTrackingRange, worldPlayers, rTree);
             }
         }, 100, ESP_INTERVAL_TICKS);
     }
 
-    private static void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, ThreeDBallTree<Player> ballTree)
+    private static void processWorldRTree(int playerTrackingRange, Set<Player> worldPlayers, RTree<Player, Point> rTree)
     {
-        for (final var observer : ballTree) {
+        for (final var observerNode : rTree.entries()) {
+            final var observer = observerNode.value();
+            final var observerPoint = observerNode.geometry();
             final var observerLoc = observer.getLocation();
 
             // Special case for creative and spectator mode observers to make sure that they can see all players.
@@ -119,19 +125,15 @@ public final class Esp extends Module
                 continue;
             }
 
-
             final Set<Player> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
             final Set<Player> fullHiddenPlayers = new HashSet<>(worldPlayers);
 
             // Blindness and darkness are already handled by canSee.
-            for (final var watchedNode : ballTree.rangeSearch(observerLoc, playerTrackingRange)) {
-                final Player watched = watchedNode.data();
+            for (final var watchedNode : rTree.nearest(observerPoint, playerTrackingRange, 10000)) {
+                final Player watched = watchedNode.value();
 
-                // Different worlds (might be possible if the player changed world in just the right moment)
-                if (!observer.getWorld().getUID().equals(watched.getWorld().getUID())
-                    // Either of the two players is not in adventure or survival mode
-                    || !User.inAdventureOrSurvivalMode(observer)
-                    || !User.inAdventureOrSurvivalMode(watched)
+                // Either of the two players is not in adventure or survival mode (observer is already checked above)
+                if (!User.inAdventureOrSurvivalMode(watched)
                     // Less than 1 block distance (removes the player themselves and any very close player)
                     || observerLoc.distanceSquared(watched.getLocation()) < 1
                     || watched.isDead()

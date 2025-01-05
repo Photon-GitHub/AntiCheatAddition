@@ -101,7 +101,8 @@ public final class Esp extends Module
                 // Create the entries upfront to avoid creating the tree multiple times.
                 final List<Entry<Player, Point>> entries = worldPlayers.stream()
                                                                        .map(User::rTreeEntryFromPlayer)
-                                                                       .toList();
+                                                                       // No .toList() as the list needs to be mutable.
+                                                                       .collect(Collectors.toCollection(ArrayList::new));
 
                 // Create the RTree for the world.
                 RTree<Player, Point> rTree = RTree.dimensions(3).create(entries);

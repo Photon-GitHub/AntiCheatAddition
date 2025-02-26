@@ -29,8 +29,11 @@ public class SetVlCommand extends InternalCommand
         final var player = parsePlayer(sender, arguments.poll());
         if (player == null) return;
 
-        final var module = ModuleManager.getViolationModuleMap().getModule(arguments.poll());
-        if (checkNotNullElseSend(module, sender, "The given module_id does not refer to a known module.")) return;
+
+        final var moduleId = arguments.poll();
+        if (checkNotNullElseSend(moduleId, sender, "Please specify a module id.")) return;
+
+        final var module = ModuleManager.getViolationModuleMap().getModule(moduleId);
 
         final var vlString = arguments.poll();
         if (checkNotNullElseSend(vlString, sender, "Please specify the new vl you want to set for the module.")) return;

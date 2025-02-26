@@ -41,16 +41,20 @@ final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBloc
         final double calcAvg = statistics.get(0).getAverage();
         final double actAvg = statistics.get(1).getAverage();
 
-        if (actAvg < calcAvg) {
-            final int vlToAdd = Math.min(VL_CALCULATOR.apply(calcAvg - actAvg).intValue(), 1000);
-            this.getModule().getManagement().flag(Flag.of(user)
-                                                      .setAddedVl(vlToAdd)
-                                                      .setCancelAction(cancelVl, () -> {
-                                                          user.getTimeMap().at(TimeKey.TOWER_TIMEOUT).update();
-                                                          InventoryUtil.syncUpdateInventory(user.getPlayer());
-                                                      })
-                                                      .setDebug(() -> "Tower-Debug | Player: %s | Expected: %f | Actual: %f | Vl: %d".formatted(user.getPlayer().getName(), calcAvg, actAvg, vlToAdd)));
-        }
+        // Not faster than expected.
+        if (actAvg >= calcAvg) return;
+
+        // Calculate vl to add.
+        final int vlToAdd = Math.min(VL_CALCULATOR.apply(calcAvg - actAvg).intValue(), 1000);
+        if (vlToAdd <= 0) return;
+
+        this.getModule().getManagement().flag(Flag.of(user)
+                                                  .setAddedVl(vlToAdd)
+                                                  .setCancelAction(cancelVl, () -> {
+                                                      user.getTimeMap().at(TimeKey.TOWER_TIMEOUT).update();
+                                                      InventoryUtil.syncUpdateInventory(user.getPlayer());
+                                                  })
+                                                  .setDebug(() -> "Tower-Debug | Player: %s | Expected: %f | Actual: %f | Vl: %d".formatted(user.getPlayer().getName(), calcAvg, actAvg, vlToAdd)));
     }
 
     /**

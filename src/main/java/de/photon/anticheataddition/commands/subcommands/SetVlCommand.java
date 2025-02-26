@@ -38,6 +38,9 @@ public class SetVlCommand extends InternalCommand
         final Integer vl = parseIntElseSend(sender, vlString);
         if (vl == null) return;
 
+        // Reset the vl of the player to 0.
+        module.getManagement().setVL(player, 0);
+
         // Actually flag the player for debug messages.
         module.getManagement().flag(Flag.of(player).setAddedVl(vl));
     }

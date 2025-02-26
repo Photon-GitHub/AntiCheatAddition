@@ -63,7 +63,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
         Log.finer(() -> "Inventory-Debug | Player: %s | Average-Heuristics | (VAR: %f | AVG: %f | MISS: %d | VL: %d)".formatted(user.getPlayer().getName(), variance, averageMillis, misClickCounter.getCounter(), vl));
 
         // Too low vl.
-        if (vl < 0) return;
+        if (vl <= 0) return;
 
         final int finalVl = Math.min(vl, 70);
         this.getModule().getManagement().flag(Flag.of(user)

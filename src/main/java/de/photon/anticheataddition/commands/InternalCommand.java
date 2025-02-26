@@ -48,6 +48,11 @@ public abstract class InternalCommand
     @Nullable
     protected static Player parsePlayer(CommandSender sender, String nameOfPlayer)
     {
+        if (nameOfPlayer == null) {
+            ChatMessage.sendMessage(sender, "Please specify a player.");
+            return null;
+        }
+
         final var player = Bukkit.getServer().getPlayer(nameOfPlayer);
         if (player == null) ChatMessage.sendMessage(sender, "The specified player could not be found.");
         return player;

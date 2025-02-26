@@ -29,8 +29,12 @@ public class SetVlCommand extends InternalCommand
         final var player = parsePlayer(sender, arguments.poll());
         if (player == null) return;
 
-        final var module = ModuleManager.getViolationModuleMap().getModule(arguments.poll());
-        if (checkNotNullElseSend(module, sender, "The given module_id does not refer to a known module.")) return;
+
+        final var moduleId = arguments.poll();
+        if (checkNotNullElseSend(moduleId, sender, "Please specify a module id.")) return;
+
+        final var module = ModuleManager.getViolationModuleMap().getModule(moduleId);
+        if (checkNotNullElseSend(module, sender, "The specified module was not found.")) return;
 
         final var vlString = arguments.poll();
         if (checkNotNullElseSend(vlString, sender, "Please specify the new vl you want to set for the module.")) return;
@@ -38,7 +42,14 @@ public class SetVlCommand extends InternalCommand
         final Integer vl = parseIntElseSend(sender, vlString);
         if (vl == null) return;
 
-        // Actually flag the player for debug messages.
-        module.getManagement().flag(Flag.of(player).setAddedVl(vl));
+        try {
+            // Reset the vl of the player to 0.
+            module.getManagement().setVL(player, 0);
+
+            // Actually flag the player for debug messages.
+            module.getManagement().flag(Flag.of(player).setAddedVl(vl));
+        } catch (UnsupportedOperationException e) {
+            sender.sendMessage("This module does not support setting the vl of a player. Please use the individual parts of a module instead.");
+        }
     }
 }

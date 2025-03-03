@@ -41,7 +41,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -49,18 +49,18 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <minimizeJar>true</minimizeJar>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <!--<minimizeJar>true</minimizeJar>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>-->
                             <relocations>
                                 <relocation>
                                     <pattern>org.bstats</pattern>
                                     <!-- Replace this with your package! -->
                                     <shadedPattern>de.photon.anticheataddition</shadedPattern>
                                 </relocation>
-                                <!--<relocation>
+                                <relocation>
                                     <pattern>com.tcoded.folialib</pattern>
                                     <shadedPattern>de.photon.anticheataddition.lib.folialib</shadedPattern>
-                                </relocation>-->
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>

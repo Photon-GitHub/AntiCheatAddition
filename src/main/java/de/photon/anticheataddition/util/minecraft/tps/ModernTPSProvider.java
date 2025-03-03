@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.util.minecraft.tps;
 
+import com.tcoded.folialib.FoliaLib;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.datastructure.statistics.MovingLongStatistics;
 import org.bukkit.Bukkit;
@@ -17,12 +18,23 @@ final class ModernTPSProvider implements TPSProvider
 
     public ModernTPSProvider()
     {
-        Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), () -> {
+        FoliaLib foliaLib = AntiCheatAddition.getInstance().getFoliaLib();
+        if (foliaLib.isFolia())
+        {
+            foliaLib.getScheduler().runTimer(() -> {
+                        final long curr = System.currentTimeMillis();
+                        tickIntervals.add(curr - this.lastTick);
+                        this.lastTick = curr;
+                    }, 1, 1);
+        }else {
+            Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), () -> {
             final long curr = System.currentTimeMillis();
             // Add the tick time difference as a data point.
             tickIntervals.add(curr - this.lastTick);
             this.lastTick = curr;
-        }, 1L, 1L);
+            }, 1L, 1L);
+        }
+
     }
 
     @Override

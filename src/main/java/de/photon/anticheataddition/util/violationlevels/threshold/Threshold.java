@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.util.violationlevels.threshold;
 
 import com.google.common.base.Preconditions;
+import com.tcoded.folialib.FoliaLib;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.execute.Placeholders;
 import org.bukkit.Bukkit;
@@ -26,21 +27,39 @@ public record Threshold(int vl, List<String> commandList) implements Comparable<
      */
     public void executeCommandList(Player player)
     {
-        Bukkit.getScheduler().runTask(
-                AntiCheatAddition.getInstance(),
-                () -> {
-                    for (String rawCommand : this.commandList) {
-                        final String command = Placeholders.replacePlaceholders(rawCommand, player);
-
-                        // Try catch to prevent console errors if a command couldn't be executed, e.g. if the player has left.
-                        try {
-                            Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), command);
-                            AntiCheatAddition.getInstance().getLogger().fine(ChatColor.GOLD + "Executed command: " + command);
-                        } catch (final Exception e) {
-                            AntiCheatAddition.getInstance().getLogger().severe("Could not execute command /" + command);
+        FoliaLib foliaLib = AntiCheatAddition.getInstance().getFoliaLib();
+        if (foliaLib.isFolia()) {
+            foliaLib.getScheduler().runAtEntity(
+                    player,
+                    task -> {
+                        for (String rawCommand : this.commandList) {
+                            final String command = Placeholders.replacePlaceholders(rawCommand, player);
+                            try {
+                                Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), command);
+                                AntiCheatAddition.getInstance().getLogger().fine(ChatColor.GOLD + "Executed command: " + command);
+                            } catch (final Exception e) {
+                                AntiCheatAddition.getInstance().getLogger().severe("Could not execute command /" + command);
+                            }
                         }
                     }
-                });
+            );
+        }else {
+            Bukkit.getScheduler().runTask(
+                    AntiCheatAddition.getInstance(),
+                    () -> {
+                        for (String rawCommand : this.commandList) {
+                            final String command = Placeholders.replacePlaceholders(rawCommand, player);
+
+                            // Try catch to prevent console errors if a command couldn't be executed, e.g. if the player has left.
+                            try {
+                                Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), command);
+                                AntiCheatAddition.getInstance().getLogger().fine(ChatColor.GOLD + "Executed command: " + command);
+                            } catch (final Exception e) {
+                                AntiCheatAddition.getInstance().getLogger().severe("Could not execute command /" + command);
+                            }
+                        }
+                    });
+        }
     }
 
     @Override

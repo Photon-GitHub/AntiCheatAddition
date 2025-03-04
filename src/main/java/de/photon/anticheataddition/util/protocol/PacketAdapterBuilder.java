@@ -3,6 +3,7 @@ package de.photon.anticheataddition.util.protocol;
 import com.github.retrooper.packetevents.event.*;
 import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 import com.google.common.base.Preconditions;
+import com.tcoded.folialib.FoliaLib;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
@@ -19,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
+import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PacketAdapterBuilder
@@ -46,19 +48,42 @@ public final class PacketAdapterBuilder
      */
     public static boolean checkSync(long timeout, TimeUnit unit, @NotNull Callable<Boolean> task)
     {
-        try {
-            // If the timeout is smaller than or equal to 0, wait indefinitely.
-            return timeout <= 0 ?
-                   Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AntiCheatAddition.getInstance(), task).get()) :
-                   Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AntiCheatAddition.getInstance(), task).get(timeout, unit));
+        FoliaLib foliaLib = AntiCheatAddition.getInstance().getFoliaLib();
+        if (foliaLib.isFolia()){
+            try {
+                CompletableFuture<Boolean> future = new CompletableFuture<>();
+                foliaLib.getScheduler().runNextTick(scheduledTask -> {
+                    try {
+                        future.complete(task.call());
+                    } catch (Exception e) {
+                        future.completeExceptionally(e);
+                    }
+                });
+                return timeout <= 0 ?
+                        Boolean.TRUE.equals(future.get()) :
+                        Boolean.TRUE.equals(future.get(timeout, unit));
+            } catch (InterruptedException | ExecutionException e) {
+                Log.error("Unable to complete the synchronous calculations.", e);
+                Thread.currentThread().interrupt();
+            } catch (TimeoutException e) {
+                Log.severe(() -> "Unable to finish synchronous calculations. If this message appears frequently please consider upgrading your server.");
+            }
+            return false;
+        }else {
+            try {
+                // If the timeout is smaller than or equal to 0, wait indefinitely.
+                return timeout <= 0 ?
+                       Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AntiCheatAddition.getInstance(), task).get()) :
+                       Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AntiCheatAddition.getInstance(), task).get(timeout, unit));
 
-        } catch (InterruptedException | ExecutionException e) {
-            Log.error("Unable to complete the synchronous calculations.", e);
-            Thread.currentThread().interrupt();
-        } catch (TimeoutException e) {
-            Log.severe(() -> "Unable to finish synchronous calculations. If this message appears frequently please consider upgrading your server.");
+            } catch (InterruptedException | ExecutionException e) {
+                Log.error("Unable to complete the synchronous calculations.", e);
+                Thread.currentThread().interrupt();
+            } catch (TimeoutException e) {
+                Log.severe(() -> "Unable to finish synchronous calculations. If this message appears frequently please consider upgrading your server.");
+            }
+            return false;
         }
-        return false;
     }
 
     public static PacketAdapterBuilder of(@NotNull Module module, @NotNull PacketTypeCommon... types)

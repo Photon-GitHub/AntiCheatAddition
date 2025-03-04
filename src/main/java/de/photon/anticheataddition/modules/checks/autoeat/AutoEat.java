@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.modules.checks.autoeat;
 
+import com.tcoded.folialib.FoliaLib;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
@@ -8,9 +9,12 @@ import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+
+import java.util.concurrent.TimeUnit;
 
 public final class AutoEat extends ViolationModule implements Listener
 {
@@ -30,17 +34,33 @@ public final class AutoEat extends ViolationModule implements Listener
         final var user = User.getUser(event.getPlayer());
         // If the amount is 1, the last right click on a consumable will be perfect (bot-like), as the item disappears from the slot.
         if (User.isUserInvalid(user, this) || event.getItem().getAmount() <= 1) return;
-
-        Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(), () -> {
-            // A PlayerInteractEvent will always fire when the right mouse button is clicked, therefore a legit player will always hold his mouse a bit longer than a bot and the last right click will
-            // be after the last consume event.
-            if (user.getTimeMap().at(TimeKey.RIGHT_CLICK_CONSUMABLE_ITEM_EVENT).getTime() < user.getTimeMap().at(TimeKey.CONSUME_EVENT).getTime()) {
-                this.getManagement().flag(Flag.of(user)
-                                              .setAddedVl(20)
-                                              .setCancelAction(cancelVl, () -> user.getTimeMap().at(TimeKey.AUTOEAT_TIMEOUT).update()));
-            }
-        }, 10L);
-
+        FoliaLib foliaLib = AntiCheatAddition.getInstance().getFoliaLib();
+        if (foliaLib.isFolia()) {
+            final Player player = user.getPlayer();
+            if (player == null || !player.isOnline()) return;
+            foliaLib.getScheduler().runAtEntityLater(
+                player,
+                task -> {
+                    if (user.getTimeMap().at(TimeKey.RIGHT_CLICK_CONSUMABLE_ITEM_EVENT).getTime() < user.getTimeMap().at(TimeKey.CONSUME_EVENT).getTime()) {
+                        this.getManagement().flag(Flag.of(user)
+                                .setAddedVl(20)
+                                .setCancelAction(cancelVl, () -> user.getTimeMap().at(TimeKey.AUTOEAT_TIMEOUT).update()));
+                    }
+                },
+                10*50L,
+                TimeUnit.MILLISECONDS
+            );
+        }else {
+            Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(), () -> {
+                // A PlayerInteractEvent will always fire when the right mouse button is clicked, therefore a legit player will always hold his mouse a bit longer than a bot and the last right click will
+                // be after the last consume event.
+                if (user.getTimeMap().at(TimeKey.RIGHT_CLICK_CONSUMABLE_ITEM_EVENT).getTime() < user.getTimeMap().at(TimeKey.CONSUME_EVENT).getTime()) {
+                    this.getManagement().flag(Flag.of(user)
+                            .setAddedVl(20)
+                            .setCancelAction(cancelVl, () -> user.getTimeMap().at(TimeKey.AUTOEAT_TIMEOUT).update()));
+                }
+            }, 10L);
+        }
         // Timeout
         if (user.getTimeMap().at(TimeKey.AUTOEAT_TIMEOUT).recentlyUpdated(timeout)) event.setCancelled(true);
     }

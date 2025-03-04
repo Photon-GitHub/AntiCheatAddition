@@ -68,6 +68,10 @@ public final class User implements Permissible
      */
     private final ServerVersion clientVersion;
 
+    public Player getPlayer() {
+        return this.player;
+    }
+
     /**
      * Creates an {@link User} from a {@link Player}.
      */

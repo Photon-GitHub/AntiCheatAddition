@@ -25,7 +25,7 @@ final class ModernTPSProvider implements TPSProvider
                         final long curr = System.currentTimeMillis();
                         tickIntervals.add(curr - this.lastTick);
                         this.lastTick = curr;
-                    }, 1, 1);
+            }, 1, 1);
         }else {
             Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), () -> {
             final long curr = System.currentTimeMillis();

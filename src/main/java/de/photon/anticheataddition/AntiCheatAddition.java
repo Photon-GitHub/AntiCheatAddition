@@ -91,10 +91,10 @@ public class AntiCheatAddition extends JavaPlugin
         return enabled;
     }
 
-        public static AntiCheatAddition getInstance() {
+        /*public static AntiCheatAddition getInstance() {
         return instance;
         //already exists,can // ?
-    }
+        }*/
     public FoliaLib getFoliaLib() {
         return foliaLib;
     }

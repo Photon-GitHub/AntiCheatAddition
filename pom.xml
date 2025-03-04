@@ -41,7 +41,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -56,6 +56,10 @@
                                     <pattern>org.bstats</pattern>
                                     <!-- Replace this with your package! -->
                                     <shadedPattern>de.photon.anticheataddition</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.tcoded.folialib</pattern>
+                                    <shadedPattern>de.photon.anticheataddition.lib.folialib</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -159,9 +163,20 @@
             <id>sk89q-repo</id>
             <url>https://maven.enginehub.org/repo/</url>
         </repository>
+        <!--folialib-->
+        <repository>
+            <id>jitpack</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
+        <!--folialib-->
+        <dependency>
+            <groupId>com.github.TechnicallyCoded</groupId>
+            <artifactId>FoliaLib</artifactId>
+            <version>0.4.3</version>
+        </dependency>
         <!-- junit 5, unit test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

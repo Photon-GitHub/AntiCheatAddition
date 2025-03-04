@@ -17,6 +17,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 
+import  com.tcoded.folialib.FoliaLib;
+
 /**
  * The LogFileHandler class manages log file creation and rotation for AntiCheatAddition.
  * It creates new log files daily and ensures log messages are appropriately formatted and written.
@@ -64,7 +66,16 @@ public final class LogFileHandler
 
         // Schedule the first log file replacement to occur at the start of the next day. Then have a daily cycle.
         this.replaceDebugFile();
+        FoliaLib foliaLib = AntiCheatAddition.getInstance().getFoliaLib();
+        if (foliaLib.isFolia()){
+            foliaLib.getScheduler().runTimer(
+                    this::replaceDebugFile,
+                    TimeUtil.toTicks(difference),
+                    TimeUtil.toTicks(1, TimeUnit.DAYS)
+            );
+        }else{
         Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), this::replaceDebugFile, TimeUtil.toTicks(difference), TimeUtil.toTicks(1, TimeUnit.DAYS));
+        }
     }
 
     /**

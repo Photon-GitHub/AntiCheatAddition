@@ -32,9 +32,18 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import com.tcoded.folialib.FoliaLib;
+
 @Getter
 public class AntiCheatAddition extends JavaPlugin
 {
+    /*public static AntiCheatAddition getInstance() {
+        return instance;
+        //already exists,can // ?
+        }*/
+    @Getter
+    private FoliaLib foliaLib;
+
     /**
      * The expected players to be on the entire server across all worlds.
      */
@@ -97,6 +106,7 @@ public class AntiCheatAddition extends JavaPlugin
     @Override
     public void onEnable()
     {
+        this.foliaLib = new FoliaLib(this);
         try {
             // Now needs to be done via this ugly way as the original way caused a loading error.
             setInstance(this);

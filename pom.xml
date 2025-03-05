@@ -44,6 +44,7 @@
                 <version>3.6.0</version>
                 <executions>
                     <execution>
+                        <id>bukkit-build</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
@@ -51,6 +52,31 @@
                         <configuration>
                             <minimizeJar>true</minimizeJar>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <finalName>${project.artifactId}-${project.version}-bukkit</finalName>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <!-- Replace this with your package! -->
+                                    <shadedPattern>de.photon.anticheataddition</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.tcoded.folialib</pattern>
+                                    <shadedPattern>de.photon.anticheataddition.lib.folialib</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>folia-build</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <!--if note off, plugin will error when loading-->
+                            <!--<minimizeJar>true</minimizeJar>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>-->
+                            <finalName>${project.artifactId}-${project.version}-folia</finalName>
                             <relocations>
                                 <relocation>
                                     <pattern>org.bstats</pattern>

@@ -50,6 +50,7 @@ public final class User implements Permissible
     private static final Set<User> FLOODGATE_USERS = ConcurrentHashMap.newKeySet(AntiCheatAddition.SERVER_EXPECTED_PLAYERS);
     private static final Set<User> DEBUG_USERS = new CopyOnWriteArraySet<>();
 
+    @Getter
     @Delegate(types = Permissible.class) @EqualsAndHashCode.Include private final Player player;
 
     private final Data data = new Data();
@@ -67,10 +68,6 @@ public final class User implements Permissible
      * It may differ from the active server version e.g. due to ViaVersion.
      */
     private final ServerVersion clientVersion;
-
-    public Player getPlayer() {
-        return this.player;
-    }
 
     /**
      * Creates an {@link User} from a {@link Player}.
@@ -176,6 +173,12 @@ public final class User implements Permissible
     {
         final var location = player.getLocation();
         return Entry.entry(player, Point.create(location.getX(), location.getY(), location.getZ()));
+    }
+
+    public static Collection<Player> getOnlinePlayers() {
+        return USERS.values().stream()
+                .map(User::getPlayer)
+                .toList();
     }
 
     /**

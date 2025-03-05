@@ -11,9 +11,11 @@ import de.photon.anticheataddition.util.log.Log;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -46,19 +48,31 @@ public final class PacketAdapterBuilder
      * @param timeout the timeout after which the calculation shall be stopped. Negative timeout will wait indefinitely.
      * @param unit    the {@link TimeUnit} for timeout.
      */
+
+
     public static boolean checkSync(long timeout, TimeUnit unit, @NotNull Callable<Boolean> task)
     {
+
         FoliaLib foliaLib = AntiCheatAddition.getInstance().getFoliaLib();
+
         if (foliaLib.isFolia()){
+            CompletableFuture<Boolean> future = new CompletableFuture<>();
             try {
-                CompletableFuture<Boolean> future = new CompletableFuture<>();
-                foliaLib.getScheduler().runNextTick(scheduledTask -> {
-                    try {
-                        future.complete(task.call());
-                    } catch (Exception e) {
-                        future.completeExceptionally(e);
+                Collection<Player> onlinePlayers = User.getOnlinePlayers();
+                for (Player player : onlinePlayers) {
+                    if (foliaLib.isFolia()) {
+                        foliaLib.getScheduler().runAtEntity(
+                                player,
+                                scheduledTask -> {
+                                    try {
+                                        future.complete(task.call());
+                                    } catch (Exception e) {
+                                        future.completeExceptionally(e);
+                                    }
+                                }
+                        );
                     }
-                });
+                }
                 return timeout <= 0 ?
                         Boolean.TRUE.equals(future.get()) :
                         Boolean.TRUE.equals(future.get(timeout, unit));
@@ -85,6 +99,8 @@ public final class PacketAdapterBuilder
             return false;
         }
     }
+
+
 
     public static PacketAdapterBuilder of(@NotNull Module module, @NotNull PacketTypeCommon... types)
     {

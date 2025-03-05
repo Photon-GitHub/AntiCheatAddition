@@ -37,6 +37,11 @@ import com.tcoded.folialib.FoliaLib;
 @Getter
 public class AntiCheatAddition extends JavaPlugin
 {
+    /*public static AntiCheatAddition getInstance() {
+        return instance;
+        //already exists,can // ?
+        }*/
+    @Getter
     private FoliaLib foliaLib;
 
     /**
@@ -89,14 +94,6 @@ public class AntiCheatAddition extends JavaPlugin
         getInstance().getLogger().info(pluginName + (enabled ? " hooked" : " not found"));
         metrics.addCustomChart(new SimplePie(pluginName.toLowerCase(Locale.ROOT), enabled ? () -> "Yes" : () -> "No"));
         return enabled;
-    }
-
-        /*public static AntiCheatAddition getInstance() {
-        return instance;
-        //already exists,can // ?
-        }*/
-    public FoliaLib getFoliaLib() {
-        return foliaLib;
     }
 
     @Override

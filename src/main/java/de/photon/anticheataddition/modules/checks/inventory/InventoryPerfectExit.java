@@ -36,13 +36,17 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
                         ", MinTPS: " + !Inventory.hasMinTPS() +
                         ", EmptyInv: " + !InventoryUtil.isInventoryEmpty(event.getInventory()));
 
-        if (User.isUserInvalid(user, this) ||
-            // Creative-clear might trigger this.
-            !user.inAdventureOrSurvivalMode() ||
-            // Minimum TPS before the check is activated as of a huge amount of fps
-            !Inventory.hasMinTPS() ||
-            // The inventory has been completely cleared
-            !InventoryUtil.isInventoryEmpty(event.getInventory())) return;
+//        if (User.isUserInvalid(user, this) ||
+//            // Creative-clear might trigger this.
+//            !user.inAdventureOrSurvivalMode() ||
+//            // Minimum TPS before the check is activated as of a huge amount of fps
+//            !Inventory.hasMinTPS() ||
+//            // The inventory has been completely cleared
+//            !InventoryUtil.isInventoryEmpty(event.getInventory())) return;
+
+
+        // changed the above if condition  because it was complex and introduced a new extract method
+        if (shouldSkipPerfectExitCheck(user, event)) return;
 
         final long passedTime = user.getTimeMap().at(TimeKey.INVENTORY_CLICK_ON_ITEM).passedTime();
 
@@ -61,5 +65,13 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
                                        .withDecay(400, 1).build();
+    }
+
+    // New extracted method
+    private boolean shouldSkipPerfectExitCheck(User user, InventoryCloseEvent event) {
+        return User.isUserInvalid(user, this)
+                || !user.inAdventureOrSurvivalMode()
+                || !Inventory.hasMinTPS()
+                || !InventoryUtil.isInventoryEmpty(event.getInventory());
     }
 }

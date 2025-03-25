@@ -43,21 +43,25 @@ public final class WorldDownloaderSentinel extends SentinelModule implements Plu
          * https://wiki.vg/User:Pokechu22/World_downloader
          *
          * The first packet specifies, whether new functions are allowed, the second what current functions are allowed.*/
-        final var packetZero = ByteStreams.newDataOutput();
-        packetZero.writeInt(0);
-        packetZero.writeBoolean(!disableFuture);
-        player.sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, packetZero.toByteArray());
+//        final var packetZero = ByteStreams.newDataOutput();
+//        packetZero.writeInt(0);
+//        packetZero.writeBoolean(!disableFuture);
+//        player.sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, packetZero.toByteArray());
+//
+//        final var packetOne = ByteStreams.newDataOutput();
+//        packetOne.writeInt(1);
+//
+//        packetOne.writeBoolean(!disable);
+//        packetOne.writeInt(saveRadius);
+//        packetOne.writeBoolean(!disableChunkCaching);
+//        packetOne.writeBoolean(!disableEntitySaving);
+//        packetOne.writeBoolean(!disableTileEntitySaving);
+//        packetOne.writeBoolean(!disableContainerSaving);
+//        player.sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, packetOne.toByteArray());
 
-        final var packetOne = ByteStreams.newDataOutput();
-        packetOne.writeInt(1);
-
-        packetOne.writeBoolean(!disable);
-        packetOne.writeInt(saveRadius);
-        packetOne.writeBoolean(!disableChunkCaching);
-        packetOne.writeBoolean(!disableEntitySaving);
-        packetOne.writeBoolean(!disableTileEntitySaving);
-        packetOne.writeBoolean(!disableContainerSaving);
-        player.sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, packetOne.toByteArray());
+        // Introduced moved method  as above code was causing Imperative Abstraction.
+        sendFutureSupportPacket(player, sendChannel);
+        sendControlSettingsPacket(player, sendChannel);
 
         detection(player);
     }
@@ -69,5 +73,28 @@ public final class WorldDownloaderSentinel extends SentinelModule implements Plu
                            .addIncomingMessageChannel(WDL_INIT_CHANNEL)
                            .addOutgoingMessageChannel(WDL_CONTROL_CHANNEL)
                            .build();
+    }
+
+    // Moved method 1
+    private void sendFutureSupportPacket(Player player, String channel)
+    {
+        final var packet = ByteStreams.newDataOutput();
+        packet.writeInt(0);
+        packet.writeBoolean(!disableFuture);
+        player.sendPluginMessage(AntiCheatAddition.getInstance(), channel, packet.toByteArray());
+    }
+
+    // Moved method 2
+    private void sendControlSettingsPacket(Player player, String channel)
+    {
+        final var packet = ByteStreams.newDataOutput();
+        packet.writeInt(1);
+        packet.writeBoolean(!disable);
+        packet.writeInt(saveRadius);
+        packet.writeBoolean(!disableChunkCaching);
+        packet.writeBoolean(!disableEntitySaving);
+        packet.writeBoolean(!disableTileEntitySaving);
+        packet.writeBoolean(!disableContainerSaving);
+        player.sendPluginMessage(AntiCheatAddition.getInstance(), channel, packet.toByteArray());
     }
 }

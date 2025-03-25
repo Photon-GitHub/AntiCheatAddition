@@ -19,6 +19,44 @@ import java.util.Set;
 
 final class ModernWorldUtil implements WorldUtil
 {
+
+    // Field for the polymorphic checker
+    private final InventoryOpenableChecker inventoryChecker;
+
+    // Constructor to initialize the checker based on server version
+    ModernWorldUtil() {
+        this.inventoryChecker = ServerVersion.MC112.activeIsEarlierOrEqual() ?
+                new Pre112InventoryChecker() : new Post112InventoryChecker();
+    }
+
+    // Nested interface for inventory openable checking
+    private interface InventoryOpenableChecker {
+        boolean canOpenInventory(Block block, Block aboveBlock);
+    }
+
+    // Nested class for pre-1.12 versions
+    private static class Pre112InventoryChecker implements InventoryOpenableChecker {
+        @Override
+        public boolean canOpenInventory(Block block, Block aboveBlock) {
+            return !aboveBlock.getType().isOccluding();
+        }
+    }
+
+    // Nested class for post-1.12 versions
+    private static class Post112InventoryChecker implements InventoryOpenableChecker {
+        @Override
+        public boolean canOpenInventory(Block block, Block aboveBlock) {
+            return !aboveBlock.getType().isOccluding() &&
+                    aboveBlock.getWorld().getNearbyEntities(
+                            aboveBlock.getLocation().add(0.5, 0.5, 0.5), 0.5, 0.5, 0.5,
+                            entity -> switch (entity.getType()) {
+                                case CAT, OCELOT -> true;
+                                default -> false;
+                            }
+                    ).isEmpty();
+        }
+    }
+
     @Override
     public boolean isNext(Block a, Block b, Set<BlockFace> faces)
     {
@@ -193,21 +231,26 @@ final class ModernWorldUtil implements WorldUtil
         if (MaterialUtil.INSTANCE.getFreeSpaceContainers().contains(block.getType())) {
             final Block aboveBlock = block.getRelative(BlockFace.UP);
 
-            if (ServerVersion.MC112.activeIsEarlierOrEqual()) {
-                // 1.8.8 and 1.12 doesn't provide isPassable.
-                // Make sure that the block above is not obstructed by blocks
-                // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
-                return !aboveBlock.getType().isOccluding();
-            } else {
-                // Any occluding block above will prevent the inventory from being opened.
-                return !aboveBlock.getType().isOccluding() &&
-                       // No cats or ocelots sitting on the chest.
-                       // Check the center of the block above with a radius of 0.5 blocks.
-                       aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation().add(0.5, 0.5, 0.5), 0.5, 0.5, 0.5, entity -> switch (entity.getType()) {
-                           case CAT, OCELOT -> true;
-                           default -> false;
-                       }).isEmpty();
-            }
+//            if (ServerVersion.MC112.activeIsEarlierOrEqual()) {
+//                // 1.8.8 and 1.12 doesn't provide isPassable.
+//                // Make sure that the block above is not obstructed by blocks
+//                // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
+//                return !aboveBlock.getType().isOccluding();
+//            } else {
+//                // Any occluding block above will prevent the inventory from being opened.
+//                return !aboveBlock.getType().isOccluding() &&
+//                       // No cats or ocelots sitting on the chest.
+//                       // Check the center of the block above with a radius of 0.5 blocks.
+//                       aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation().add(0.5, 0.5, 0.5), 0.5, 0.5, 0.5, entity -> switch (entity.getType()) {
+//                           case CAT, OCELOT -> true;
+//                           default -> false;
+//                       }).isEmpty();
+//            }
+
+
+            // Delegate to polymorphic checker to handle version-specific logic (pre-1.12 vs. post-1.12),
+            // removing imperative details from this method and improving abstraction.
+            return inventoryChecker.canOpenInventory(block, aboveBlock);
         }
         return true;
     }

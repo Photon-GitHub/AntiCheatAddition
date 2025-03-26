@@ -163,4 +163,13 @@ public abstract class InternalCommand
      * This contains the code that is actually executed if everything is correct.
      */
     protected abstract void execute(CommandSender sender, Queue<String> arguments);
+
+    // New helper method pulled up
+    protected boolean ensurePlayerSender(@NotNull CommandSender sender) {
+        if (!(sender instanceof Player)) {
+            ChatMessage.sendMessage(sender, "Only a player can use this command.");
+            return false;
+        }
+        return true;
+    }
 }

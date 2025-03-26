@@ -192,7 +192,7 @@ final class ModernWorldUtil implements WorldUtil
 //                if (lastChunkX == chunkX && lastChunkZ == chunkZ ||
 //                    lastLastChunkX == chunkX && lastLastChunkZ == chunkZ) continue;
 
-                // Changed the if Condition as i was complex and not readble , Refactored it by using a decomposed conition
+                // Changed the if Condition as it was complex and not readble , Refactored it by using a decomposed conidtion
                 if (isSameAsLastChunk(lastChunkX, lastChunkZ, chunkX, chunkZ)) continue;
                 if (isSameAsSecondLastChunk(lastLastChunkX, lastLastChunkZ, chunkX, chunkZ)) continue;
 

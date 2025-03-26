@@ -17,13 +17,7 @@ public abstract class InternalPlayerCommand extends InternalCommand
     @Override
     protected void invokeCommand(@NotNull CommandSender sender, @NotNull Queue<String> arguments)
     {
-//        // Only players
-//        if (!(sender instanceof Player)) {
-//            ChatMessage.sendMessage(sender, "Only a player can use this command.");
-//            return;
-//        }
-
-        //Applied Pull-up method by moving player-sender validation to InternalCommand.ensurePlayerSender(). Simplified InternalPlayerCommand.invokeCommand, enhancing modularity and reusability.
+        // Only players
         if (!ensurePlayerSender(sender)) return;
         super.invokeCommand(sender, arguments);
     }

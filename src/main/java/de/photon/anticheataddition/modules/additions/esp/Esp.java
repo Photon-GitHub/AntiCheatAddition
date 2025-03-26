@@ -133,16 +133,7 @@ public final class Esp extends Module
             for (final var watchedNode : rTree.nearest(observerPoint, playerTrackingRange, 10000)) {
                 final Player watched = watchedNode.value();
 
-//                // Either of the two players is not in adventure or survival mode (observer is already checked above)
-//                if (!User.inAdventureOrSurvivalMode(watched)
-//                    // Less than 1 block distance (removes the player themselves and any very close player)
-//                    || observerLoc.distanceSquared(watched.getLocation()) < 1
-//                    || watched.isDead()
-//                    || CanSee.canSee(observer, watched)) {
-//                    // No hiding case
-//                    fullHiddenPlayers.remove(watched);}
-
-                // The above condition was complex as it was not readble so refactored it by introducing Explaining Variable
+                // Either of the two players is not in adventure or survival mode (observer is already checked above)
                 boolean notInValidMode = !User.inAdventureOrSurvivalMode(watched);
                 boolean isTooClose = observerLoc.distanceSquared(watched.getLocation()) < 1;
                 boolean isDead = watched.isDead();

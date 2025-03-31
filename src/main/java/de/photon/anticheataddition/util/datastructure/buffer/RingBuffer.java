@@ -2,42 +2,31 @@ package de.photon.anticheataddition.util.datastructure.buffer;
 
 import de.photon.anticheataddition.util.mathematics.ModularInteger;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Array;
-import java.util.AbstractCollection;
+import java.util.AbstractList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.List;
 
 /**
- * An implementation of a ring buffer which overwrites the oldest data once it is full.
- * <p></p>
- * Note that the {@link RingBuffer} may be changed during iteration which will NOT cause the iteration to throw a
- * {@link java.util.ConcurrentModificationException}! They are guaranteed to iterate at most maxSize elements.
- * <p>
- * Make sure to properly synchronize access if iteration needs to be
- * stable.
+ * A ring buffer that overwrites the oldest data once it is full.
+ * This is NOT thread-safe.
  */
-public class RingBuffer<T> extends AbstractCollection<T> implements Collection<T>
+public class RingBuffer<T> extends AbstractList<T> implements List<T>
 {
     @Getter
     private final int maxSize;
     private final T[] array;
 
-    // The position at which the next element will be written.
+    // Pointer for the next index to be written.
     private final ModularInteger head;
-
-    // The position of the oldest element (if such an element exists).
+    // Pointer for the oldest element.
     private final ModularInteger tail;
     private int size = 0;
 
     /**
-     * Create a new {@link RingBuffer}.
+     * Create a new RingBuffer.
      *
-     * @param maxSize the size of the internal array to store the data. Once it is full, the oldest element will be
-     *                overwritten.
+     * @param maxSize the maximum number of elements; once full, the oldest element will be overwritten.
      */
     public RingBuffer(int maxSize)
     {
@@ -47,153 +36,91 @@ public class RingBuffer<T> extends AbstractCollection<T> implements Collection<T
         this.tail = new ModularInteger(0, maxSize);
     }
 
+    /**
+     * Create a new RingBuffer with all elements pre-filled.
+     *
+     * @param maxSize       the maximum number of elements.
+     * @param defaultObject the default object to fill the buffer with.
+     */
     public RingBuffer(int maxSize, T defaultObject)
     {
         this(maxSize);
         Arrays.fill(array, defaultObject);
+        this.size = maxSize;
     }
 
     @Override
     public boolean add(T elem)
     {
-        if (this.size == maxSize) this.onForget(array[tail.getAndIncrement()]);
+        // If full, overwrite the oldest element.
+        if (this.size == maxSize) onForget(array[tail.getAndIncrement()]);
         else ++this.size;
 
-        this.array[head.getAndIncrement()] = elem;
+        // Write element at head and then increment head.
+        array[head.getAndIncrement()] = elem;
         return true;
     }
 
+    @Override
+    public T get(int index)
+    {
+        if (index < 0 || index >= size) throw new IndexOutOfBoundsException("Index " + index + " out of bounds for size " + size);
+        // Tail is the oldest element, so it will be element 0.
+        return array[(tail.get() + index) % maxSize];
+    }
+
+    @Override
+    public void clear()
+    {
+        // Clear the reference to allow garbage collection.
+        Arrays.fill(array, null);
+
+        head.set(0);
+        tail.set(0);
+        size = 0;
+    }
+
+    /**
+     * Callback invoked when an element is overwritten/forgotten.
+     * <p>
+     * Subclasses can override this to handle removal events.
+     */
     protected void onForget(T t)
     {
-        // This can be extended by subclasses to listen to overwritten elements.
+        // Default implementation does nothing.
     }
 
     @Override
-    public boolean remove(Object o)
+    public T removeFirst()
     {
-        throw new UnsupportedOperationException();
+        if (size == 0) throw new IllegalStateException("Buffer is empty");
+        final int idx = tail.getAndIncrement();
+        final T elem = array[idx];
+        onForget(elem);
+        // Clear the reference to allow garbage collection.
+        array[idx] = null;
+        --this.size;
+        return elem;
     }
 
     @Override
-    public boolean removeAll(@NotNull Collection<?> c)
+    public T removeLast()
     {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean retainAll(@NotNull Collection<?> c)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    public T head()
-    {
-        return this.array[ModularInteger.decrement(head.get(), maxSize)];
-    }
-
-    public T tail()
-    {
-        return this.array[tail.get()];
+        if (size == 0) throw new IllegalStateException("Buffer is empty");
+        // Decrement head to get the index of the last element.
+        head.decrement();
+        final int idx = head.get();
+        final T elem = array[idx];
+        onForget(elem);
+        // Clear the reference to allow garbage collection.
+        array[idx] = null;
+        --this.size;
+        return elem;
     }
 
     @Override
     public int size()
     {
         return this.size;
-    }
-
-    @Override
-    public boolean contains(Object o)
-    {
-        for (T t : this.array) {
-            if (t.equals(o)) return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void clear()
-    {
-        // We don't need to specifically clear the array as the values will be overwritten anyway.
-        this.head.setToZero();
-        this.tail.setToZero();
-        this.size = 0;
-    }
-
-    @NotNull
-    @Override
-    public Iterator<T> iterator()
-    {
-        return new Iterator<>()
-        {
-            private int index = tail.get();
-            // An element counter to limit the iterated elements.
-            private int elements = 0;
-
-            @Override
-            public boolean hasNext()
-            {
-                return elements < size;
-            }
-
-            @Override
-            public T next()
-            {
-                if (!hasNext()) throw new NoSuchElementException();
-                T elem = array[index];
-                index = ModularInteger.increment(index, maxSize);
-                ++elements;
-                return elem;
-            }
-        };
-    }
-
-    @NotNull
-    @Override
-    public Object @NotNull [] toArray()
-    {
-        final var elements = new Object[this.size];
-        int i = 0;
-        for (T t : this) elements[i++] = t;
-        return elements;
-    }
-
-    @NotNull
-    @Override
-    public <T1> T1 @NotNull [] toArray(T1[] a)
-    {
-        final var elements = a.length < size ? (T1[]) Array.newInstance(a.getClass().getComponentType(), size) : a;
-        int i = 0;
-        for (T t : this) elements[i++] = (T1) t;
-        if (a.length > size) elements[size - 1] = null;
-        return elements;
-    }
-
-    public Iterator<T> descendingIterator()
-    {
-        return new Iterator<>()
-        {
-            // Start at head - 1 as head is the position at which will be written next, but right now there is no
-            // element there, or the oldest element.
-            private int index = ModularInteger.decrement(head.get(), maxSize);
-            // An element counter to limit the iterated elements.
-            private int elements = 0;
-
-            @Override
-            public boolean hasNext()
-            {
-                return elements < size;
-            }
-
-            @Override
-            public T next()
-            {
-                if (!hasNext()) throw new NoSuchElementException();
-                T elem = array[index];
-                index = ModularInteger.decrement(index, maxSize);
-                ++elements;
-                return elem;
-            }
-        };
     }
 }

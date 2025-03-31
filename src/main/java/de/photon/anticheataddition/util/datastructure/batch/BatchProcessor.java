@@ -18,7 +18,7 @@ import java.util.Set;
  * <p>
  * As the {@link Batch.Snapshot}s can be received asynchronously, thread safety is important.
  */
-public abstract sealed class BatchProcessor<T> implements ConfigLoading permits AsyncBatchProcessor, SyncBatchProcessor
+public abstract sealed class BatchProcessor<T> implements ConfigLoading permits AsyncBatchProcessor, SyncBatchProcessor, VirtualThreadBatchProcessor
 {
     @Getter private final ViolationModule module;
 

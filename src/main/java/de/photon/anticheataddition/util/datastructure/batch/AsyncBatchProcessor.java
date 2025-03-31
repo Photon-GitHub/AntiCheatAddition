@@ -43,7 +43,7 @@ public abstract non-sealed class AsyncBatchProcessor<T> extends BatchProcessor<T
     {
         this.executor.shutdown();
         //noinspection ResultOfMethodCallIgnored
-        this.executor.awaitTermination(100, TimeUnit.DAYS);
+        this.executor.awaitTermination(30, TimeUnit.SECONDS);
         this.executor = null;
     }
 }

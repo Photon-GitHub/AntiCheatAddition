@@ -3,8 +3,8 @@ package de.photon.anticheataddition.modules.checks.inventory;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
-import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
+import de.photon.anticheataddition.util.datastructure.batch.VirtualThreadBatchProcessor;
 import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.mathematics.DataUtil;
 import de.photon.anticheataddition.util.mathematics.KolmogorovSmirnow;
@@ -19,7 +19,7 @@ import java.util.Set;
  * The StatisticalBatchProcessor class processes batches of inventory clicks from users,
  * analyzing the time offsets between clicks to detect suspicious behavior using the Kolmogorov-Smirnov test.
  */
-public final class StatisticalBatchProcessor extends AsyncBatchProcessor<InventoryBatch.InventoryClick>
+public final class StatisticalBatchProcessor extends VirtualThreadBatchProcessor<InventoryBatch.InventoryClick>
 {
     // TODO: Refine this value further.
     // Threshold value for the Kolmogorov-Smirnov test (D-statistic).

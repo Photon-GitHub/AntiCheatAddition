@@ -112,6 +112,6 @@ class BatchTest
         batchProcessor.controlledShutdown();
 
         // Make sure to respect the race condition.
-        Assertions.assertIterableEquals(output.get(0).charAt(0) == '0' ? List.of("0", "1", "2", "3", "4", "5") : List.of("3", "4", "5", "0", "1", "2"), output);
+        Assertions.assertIterableEquals(output.getFirst().charAt(0) == '0' ? List.of("0", "1", "2", "3", "4", "5") : List.of("3", "4", "5", "0", "1", "2"), output);
     }
 }

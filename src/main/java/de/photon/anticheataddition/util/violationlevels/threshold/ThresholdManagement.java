@@ -31,7 +31,7 @@ public sealed interface ThresholdManagement permits EmptyThresholds, SingleThres
 
         return switch (thresholds.size()) {
             case 0 -> EMPTY;
-            case 1 -> new SingleThresholds(thresholds.get(0));
+            case 1 -> new SingleThresholds(thresholds.getFirst());
             default -> new MultiThresholds(thresholds);
         };
     }

@@ -110,7 +110,7 @@ public final class Dummy
     public static Player mockPlayer()
     {
         ensureMockedPlayers(1);
-        return mockedPlayers.get(0);
+        return mockedPlayers.getFirst();
     }
 
     /**
@@ -133,7 +133,7 @@ public final class Dummy
     public static User mockUser()
     {
         ensureMockedUsers(1);
-        return mockedUsers.get(0);
+        return mockedUsers.getFirst();
     }
 
     /**

@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.violationlevels;
 import de.photon.anticheataddition.Dummy;
 import de.photon.anticheataddition.util.violationlevels.threshold.Threshold;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -49,8 +48,8 @@ class ThresholdTest
 
         final List<Threshold> singleThreshold = ThresholdManagement.loadThresholds("SingleCommandThreshold").getThresholds();
         Assertions.assertEquals(1, singleThreshold.size());
-        Assertions.assertEquals(1, singleThreshold.get(0).commandList().size());
-        Assertions.assertLinesMatch(List.of("Some command"), singleThreshold.get(0).commandList());
+        Assertions.assertEquals(1, singleThreshold.getFirst().commandList().size());
+        Assertions.assertLinesMatch(List.of("Some command"), singleThreshold.getFirst().commandList());
 
         final List<Threshold> multiThreshold = ThresholdManagement.loadThresholds("MultiCommandThreshold").getThresholds();
         Assertions.assertEquals(3, multiThreshold.size());

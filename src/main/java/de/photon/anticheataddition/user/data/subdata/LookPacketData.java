@@ -34,7 +34,6 @@ public final class LookPacketData
 
     private final RingBuffer<RotationChange> rotationChangeQueue = new RingBuffer<>(20, new RotationChange(0, 0));
 
-
     public record ScaffoldAngleInfo(double angleChangeSum, double angleVariance, List<Double> angleList) {}
 
     public Optional<ScaffoldAngleInfo> getAngleInformation()
@@ -48,7 +47,7 @@ public final class LookPacketData
         if (changes.length < 2) return Optional.empty();
 
         final long curTime = System.currentTimeMillis();
-        final List<Float> angles = new ArrayList<>();
+        final List<Float> angles = new ArrayList<>(changes.length);
 
         for (int i = 1; i < changes.length; ++i) {
             // Ignore rotation changes more than 1 second ago.
@@ -112,8 +111,6 @@ public final class LookPacketData
      */
     private static final class LookPacketDataUpdater extends PacketListenerAbstract
     {
-
-
         public LookPacketDataUpdater()
         {
             super(PacketListenerPriority.MONITOR);

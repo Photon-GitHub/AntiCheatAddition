@@ -62,11 +62,11 @@ public final class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
             // SwiftSneak is only available in 1.19+
             if (ServerVersion.MC118.activeIsEarlierOrEqual()) return 0;
 
-            var equip = player.getEquipment();
+            final var equip = player.getEquipment();
             if (equip == null) return 0;
-            var leggings = equip.getLeggings();
+            final var leggings = equip.getLeggings();
             if (leggings == null) return 0;
-            var enchantments = leggings.getEnchantments();
+            final var enchantments = leggings.getEnchantments();
             return enchantments.getOrDefault(Enchantment.SWIFT_SNEAK, 0);
         }
 

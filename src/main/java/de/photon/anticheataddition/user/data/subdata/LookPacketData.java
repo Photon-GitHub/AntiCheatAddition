@@ -18,7 +18,6 @@ import de.photon.anticheataddition.util.protocol.PacketEventUtils;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -36,29 +35,36 @@ public final class LookPacketData
 
     public record ScaffoldAngleInfo(double angleChangeSum, double angleVariance, List<Double> angleList) {}
 
-    public Optional<ScaffoldAngleInfo> getAngleInformation()
+    private double[] getRecentAngleChanges()
     {
+        // Get the rotation changes from the queue.
         final RotationChange[] changes;
-
         synchronized (this.rotationChangeQueue) {
             changes = this.rotationChangeQueue.toArray(new RotationChange[0]);
         }
 
-        if (changes.length < 2) return Optional.empty();
+        // Ignore if there are not enough changes.
+        if (changes.length < 2) return new double[0];
 
+        // Ignore if the last change is older than 1 second.
         final long curTime = System.currentTimeMillis();
-        final List<Float> angles = new ArrayList<>(changes.length);
+        final double[] angles = new double[changes.length - 1];
+        int index = 0;
 
         for (int i = 1; i < changes.length; ++i) {
             // Ignore rotation changes more than 1 second ago.
             if ((curTime - changes[i].getTime()) > 1000) continue;
 
             // Accumulate the angle change
-            angles.add(changes[i - 1].angle(changes[i]));
+            angles[index++] = changes[i - 1].angle(changes[i]);
         }
+        // Only return the values that were actually written.
+        return Arrays.copyOf(angles, index);
+    }
 
-
-        final double[] angleArray = angles.stream().mapToDouble(Float::doubleValue).toArray();
+    public Optional<ScaffoldAngleInfo> calculateRecentAngleStatistics()
+    {
+        final double[] angleArray = getRecentAngleChanges();
         if (angleArray.length == 0) return Optional.empty();
 
         final double angleSum = DataUtil.sum(angleArray);

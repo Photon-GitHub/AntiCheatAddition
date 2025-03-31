@@ -28,7 +28,7 @@ public final class ScaffoldRotation extends Module
         if (!this.isEnabled()) return 0;
         int vl = 0;
 
-        final var scaffoldAngleInfoOptional = user.getLookPacketData().getAngleInformation();
+        final var scaffoldAngleInfoOptional = user.getLookPacketData().calculateRecentAngleStatistics();
         if (scaffoldAngleInfoOptional.isEmpty()) return 0;
         final var scaffoldAngleInfo = scaffoldAngleInfoOptional.get();
 

@@ -1,153 +1,131 @@
 package de.photon.anticheataddition.util.mathematics;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-class KolmogorovSmirnowTest
+class KolmogorovSmirnovTest
 {
 
+    /* ─────────────────── normalisation helpers ─────────────────── */
+
     @Test
-    void testNormalizeDataWithDoubles()
+    void normalizeDoubles_basic()
     {
         double[] data = {2.0, 4.0, 6.0, 8.0};
-        double[] expected = {0.0, 0.3333333333333333, 0.6666666666666666, 1.0};
+        double[] expected = {0.0, 1.0 / 3, 2.0 / 3, 1.0};
 
-        double[] result = KolmogorovSmirnow.normalizeData(data);
-
-        assertArrayEquals(expected, result, 1e-9);
+        assertArrayEquals(expected,
+                          KolmogorovSmirnov.normalize(data),
+                          1e-12);
     }
 
     @Test
-    void testNormalizeDataWithDoublesEmptyArray()
+    void normalizeDoubles_empty()
     {
-        double[] data = {};
-        double[] expected = {};
-
-        double[] result = KolmogorovSmirnow.normalizeData(data);
-
-        assertArrayEquals(expected, result, 1e-9);
+        assertArrayEquals(new double[0],
+                          KolmogorovSmirnov.normalize(new double[0]));
     }
 
     @Test
-    void testNormalizeDataWithDoublesSameValues()
+    void normalizeDoubles_constant()
     {
-        double[] data = {5.0, 5.0, 5.0};
         double[] expected = {0.0, 0.0, 0.0};
+        double[] data = {5.0, 5.0, 5.0};
 
-        double[] result = KolmogorovSmirnow.normalizeData(data);
-
-        assertArrayEquals(expected, result, 1e-9);
+        assertArrayEquals(expected,
+                          KolmogorovSmirnov.normalize(data),
+                          0.0);
     }
 
     @Test
-    void testNormalizeDataWithLongs()
+    void normalizeLongs_basic()
     {
         long[] data = {2L, 4L, 6L, 8L};
-        double[] expected = {0.0, 0.3333333333333333, 0.6666666666666666, 1.0};
+        double[] expected = {0.0, 1.0 / 3, 2.0 / 3, 1.0};
 
-        double[] result = KolmogorovSmirnow.normalizeData(data);
+        assertArrayEquals(expected,
+                          KolmogorovSmirnov.normalize(data),
+                          1e-12);
+    }
 
-        assertArrayEquals(expected, result, 1e-9);
+    /* ───────────────────── uniform vs non‑uniform ───────────────────── */
+
+    @Test
+    void uniformSample_isNotRejected()
+    {
+        Random rng = new Random(0);
+        double[] sample = rng.doubles(1_000).toArray();        // U(0,1)
+
+        KolmogorovSmirnov.KsResult r = KolmogorovSmirnov.uniformTest(sample);
+        System.out.println(r);
+        assertTrue(r.significanceTest(0.05), () -> "p = " + r.pValue() + " should be ≥ 0.05");
     }
 
     @Test
-    void testNormalizeDataWithLongsEmptyArray()
+    void normalSample_isRejected()
     {
-        long[] data = {};
-        double[] expected = {};
+        Random rng = new Random(0);
+        double[] sample = rng.doubles(1_000)
+                             .map(x -> rng.nextGaussian() * 0.2 + 0.5) // N(0.5, 0.2²)
+                             .toArray();
 
-        double[] result = KolmogorovSmirnow.normalizeData(data);
+        KolmogorovSmirnov.KsResult r = KolmogorovSmirnov.uniformTest(sample);
+        System.out.println(r);
 
-        assertArrayEquals(expected, result, 1e-9);
+        assertFalse(r.significanceTest(0.05),
+                    () -> "p = " + r.pValue() + " should be < 0.05");
     }
 
     @Test
-    void testNormalizeDataWithLongsSameValues()
+    void exponentialSample_isRejected()
     {
-        long[] data = {5L, 5L, 5L};
-        double[] expected = {0.0, 0.0, 0.0};
+        ThreadLocalRandom rng = ThreadLocalRandom.current();
+        double[] sample = rng.doubles(1_000)
+                             .map(u -> -Math.log1p(-u))          // Exp(λ=1)
+                             .toArray();
 
-        double[] result = KolmogorovSmirnow.normalizeData(data);
+        KolmogorovSmirnov.KsResult r = KolmogorovSmirnov.uniformTest(sample);
+        System.out.println(r);
 
-        assertArrayEquals(expected, result, 1e-9);
+        assertFalse(r.significanceTest(0.05),
+                    () -> "p = " + r.pValue() + " should be < 0.05");
+    }
+
+    /* ───────────────────────── edge cases ───────────────────────── */
+
+
+    @Test
+    void constantSample_alwaysRejected() {
+        double[] sample = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+
+        var res = KolmogorovSmirnov.uniformTest(sample);
+
+        assertTrue(res.pValue() < 1e-10,() -> "p = " + res.pValue() + " should be tiny");
+        assertFalse(res.significanceTest(0.99));   // still rejected even at 1% α
+    }
+
+
+    @Test
+    void emptySample_throws()
+    {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> KolmogorovSmirnov.uniformTest(new double[0]));
+
+        assertTrue(ex.getMessage().contains("at least 2"));
     }
 
     @Test
-    void testKolmogorovSmirnowUniformTestEmptyArray()
+    void significanceTest_invalidAlpha_throws()
     {
-        double[] sample = {};
-        double expected = 1.0;
+        KolmogorovSmirnov.KsResult r = new KolmogorovSmirnov.KsResult(0.0, 1.0);
+        System.out.println(r);
 
-        double result = KolmogorovSmirnow.kSTestForUniformDistribution(sample);
-
-        assertEquals(expected, result, 1e-9);
-    }
-
-    @Test
-    void testKolmogorovSmirnowUniformTestNullArray()
-    {
-        double[] sample = null;
-        double expected = 1.0;
-
-        double result = KolmogorovSmirnow.kSTestForUniformDistribution(sample);
-
-        assertEquals(expected, result, 1e-9);
-    }
-
-    @Test
-    void testKolmogorovSmirnowUniformDistribution()
-    {
-        double[] sample = KolmogorovSmirnow.normalizeData(generateUniformDistribution(1000));
-        final double d_max = KolmogorovSmirnow.kSTestForUniformDistribution(sample);
-
-        Assertions.assertTrue(d_max < 0.1, "D statistic should be close to zero 0 for a uniform distribution");
-    }
-
-    @Test
-    void testKolmogorovSmirnowNormalDistribution()
-    {
-        double[] sample = KolmogorovSmirnow.normalizeData(generateNormalDistribution(1000, 5, 10));
-        double d_max = KolmogorovSmirnow.kSTestForUniformDistribution(sample);
-
-        // The D statistic should be significantly higher than 0 for a normal distribution
-        Assertions.assertTrue(d_max > 0.1, "D statistic should be significantly higher than 0 for a normal distribution");
-    }
-
-    @Test
-    void testKolmogorovSmirnowExponentialDistribution()
-    {
-        double[] sample = generateExponentialDistribution(1000);
-        double d_max = KolmogorovSmirnow.kSTestForUniformDistribution(sample);
-
-        // The D statistic should be significantly higher than 0 for a Poisson distribution
-        Assertions.assertTrue(d_max > 0.1, "D statistic should be significantly higher than 0 for a Poisson distribution");
-    }
-
-    // Utility methods for generating distributions
-    private double[] generateUniformDistribution(int size)
-    {
-        Random random = new Random();
-        return random.doubles(size).toArray();
-    }
-
-    private double[] generateNormalDistribution(int size, double mean, double stddev)
-    {
-        Random random = new Random();
-        final double[] data = new double[size];
-        for (int i = 0; i < size; i++) data[i] = random.nextGaussian(mean, stddev);
-        return data;
-    }
-
-    private double[] generateExponentialDistribution(int size)
-    {
-        Random random = new Random();
-        final double[] data = new double[size];
-        for (int i = 0; i < size; i++) data[i] = random.nextExponential();
-        return data;
+        assertThrows(IllegalArgumentException.class, () -> r.significanceTest(0.0));
+        assertThrows(IllegalArgumentException.class, () -> r.significanceTest(1.0));
     }
 }

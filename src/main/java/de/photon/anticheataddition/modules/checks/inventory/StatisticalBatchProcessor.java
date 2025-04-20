@@ -58,17 +58,7 @@ public final class StatisticalBatchProcessor extends SyncBatchProcessor<Inventor
         // Not enough data to check as the player opened many inventories.
         if (timeOffsets.length < 10) return;
 
-        kolmogorowSmirnowTest(user, timeOffsets);
-    }
-
-    /**
-     * Performs the Kolmogorov-Smirnov test on the given time offsets to detect suspicious behavior.
-     *
-     * @param user        The user whose inventory clicks are being analyzed.
-     * @param timeOffsets The time offsets between successive inventory clicks.
-     */
-    private void kolmogorowSmirnowTest(User user, long[] timeOffsets)
-    {
+        // Remove outliers that might mask the distribution.
         final long[] timeOffsetsOutliersRemoved = DataUtil.removeOutliers(2, timeOffsets);
         final KolmogorovSmirnov.KsResult result = KolmogorovSmirnov.uniformTest(timeOffsetsOutliersRemoved);
 

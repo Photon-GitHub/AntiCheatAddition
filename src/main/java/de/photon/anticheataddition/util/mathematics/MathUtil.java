@@ -1,7 +1,5 @@
 package de.photon.anticheataddition.util.mathematics;
 
-import com.google.common.math.DoubleMath;
-import com.google.common.math.Stats;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;

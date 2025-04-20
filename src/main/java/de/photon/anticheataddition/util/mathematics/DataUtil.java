@@ -2,7 +2,8 @@ package de.photon.anticheataddition.util.mathematics;
 
 import lombok.experimental.UtilityClass;
 
-import java.util.PriorityQueue;
+import java.util.Arrays;
+import java.util.Comparator;
 
 @UtilityClass
 public final class DataUtil
@@ -92,20 +93,15 @@ public final class DataUtil
         // Calculate the mean using predefined methods
         final double mean = average(data);
 
-        // Priority queue to store the farthest elements from the mean
-        final PriorityQueue<Integer> outliers = new PriorityQueue<>((a, b) -> Double.compare(Math.abs(b - mean), Math.abs(a - mean)));
-
-        // Add all data points to the priority queue
-        for (int value : data) {
-            outliers.add(value);
-        }
-
-        // Remove the specified number of outliers
-        for (int i = 0; i < numberOutliers; i++) {
-            outliers.poll();
-        }
-        // Convert the remaining elements in the priority queue to an array
-        return outliers.stream().mapToInt(Integer::intValue).toArray();
+        return Arrays.stream(data)
+                     .boxed()
+                     // Sort the data based on their distance from the mean
+                     .sorted(Comparator.comparingDouble(d -> Math.abs(d - mean)))
+                     // Remove the specified number of outliers with the highest distance
+                     .limit(data.length - numberOutliers)
+                     // Convert the remaining elements in the stream to an array
+                     .mapToInt(Integer::intValue)
+                     .toArray();
     }
 
     /**
@@ -118,21 +114,15 @@ public final class DataUtil
         // Calculate the mean using predefined methods
         final double mean = average(data);
 
-        // Priority queue to store the farthest elements from the mean
-        final PriorityQueue<Long> outliers = new PriorityQueue<>((a, b) -> Double.compare(Math.abs(b - mean), Math.abs(a - mean)));
-
-        // Add all data points to the priority queue
-        for (long value : data) {
-            outliers.add(value);
-        }
-
-        // Remove the specified number of outliers
-        for (int i = 0; i < numberOutliers; i++) {
-            outliers.poll();
-        }
-
-        // Convert the remaining elements in the priority queue to an array
-        return outliers.stream().mapToLong(Long::longValue).toArray();
+        return Arrays.stream(data)
+                     .boxed()
+                     // Sort the data based on their distance from the mean
+                     .sorted(Comparator.comparingDouble(d -> Math.abs(d - mean)))
+                     // Remove the specified number of outliers with the highest distance
+                     .limit(data.length - numberOutliers)
+                     // Convert the remaining elements in the stream to an array
+                     .mapToLong(Long::longValue)
+                     .toArray();
     }
 
     /**
@@ -145,20 +135,14 @@ public final class DataUtil
         // Calculate the mean using predefined methods
         final double mean = average(data);
 
-        // Priority queue to store the farthest elements from the mean
-        final PriorityQueue<Double> outliers = new PriorityQueue<>((a, b) -> Double.compare(Math.abs(b - mean), Math.abs(a - mean)));
-
-        // Add all data points to the priority queue
-        for (double value : data) {
-            outliers.add(value);
-        }
-
-        // Remove the specified number of outliers
-        for (int i = 0; i < numberOutliers; i++) {
-            outliers.poll();
-        }
-
-        // Convert the remaining elements in the priority queue to an array
-        return outliers.stream().mapToDouble(Double::doubleValue).toArray();
+        return Arrays.stream(data)
+                     .boxed()
+                     // Sort the data based on their distance from the mean
+                     .sorted(Comparator.comparingDouble(d -> Math.abs(d - mean)))
+                     // Remove the specified number of outliers with the highest distance
+                     .limit(data.length - numberOutliers)
+                     // Convert the remaining elements in the stream to an array
+                     .mapToDouble(Double::doubleValue)
+                     .toArray();
     }
 }

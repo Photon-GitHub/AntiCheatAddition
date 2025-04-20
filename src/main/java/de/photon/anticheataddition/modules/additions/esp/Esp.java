@@ -126,7 +126,7 @@ public final class Esp extends Module
                 continue;
             }
 
-            final Set<Player> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
+            final Set<Player> equipHiddenPlayers = HashSet.newHashSet(worldPlayers.size());
             final Set<Player> fullHiddenPlayers = new HashSet<>(worldPlayers);
 
             // Blindness and darkness are already handled by canSee.

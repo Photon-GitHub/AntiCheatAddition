@@ -1,5 +1,7 @@
 package de.photon.anticheataddition.util.mathematics;
 
+import com.google.common.math.DoubleMath;
+import com.google.common.math.Stats;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
@@ -44,17 +46,6 @@ public final class MathUtil
     public static boolean inRange(final double min, final double max, final double number)
     {
         return number >= min && number <= max;
-    }
-
-    /**
-     * Bounds a value between two bonds.
-     *
-     * @return a value of at least min and at most max. If value is smaller than max and greater than min, it is
-     * returned unchanged, otherwise either min (value smaller than min) or max (value greater than max) is returned.
-     */
-    public static double bound(final double min, final double value, final double max)
-    {
-        return Math.min(Math.max(min, value), max);
     }
 
     /**

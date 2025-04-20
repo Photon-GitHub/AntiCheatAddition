@@ -36,18 +36,6 @@ class MathUtilTest
     }
 
     @Test
-    void boundTest()
-    {
-        assertEquals(1.0, MathUtil.bound(1.0, -10.0, 5.0));
-        assertEquals(5.0, MathUtil.bound(1.0, 10.0, 5.0));
-        assertEquals(3.0, MathUtil.bound(1.0, 3.0, 5.0));
-
-        assertEquals(1.0, MathUtil.bound(1.0, 0.0, 1.0));
-        assertEquals(1.0, MathUtil.bound(1.0, 1.0, 5.0));
-        assertEquals(5.0, MathUtil.bound(1.0, 5.0, 5.0));
-    }
-
-    @Test
     void testFastHypotCalculatesCorrectly()
     {
         assertEquals(5, MathUtil.fastHypot(3, 4), DELTA);

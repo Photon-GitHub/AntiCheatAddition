@@ -4,8 +4,8 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.ViolationCounter;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
-import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
+import de.photon.anticheataddition.util.datastructure.batch.SyncBatchProcessor;
 import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.mathematics.DataUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<InventoryBatch.InventoryClick>
+public final class AverageHeuristicBatchProcessor extends SyncBatchProcessor<InventoryBatch.InventoryClick>
 {
     AverageHeuristicBatchProcessor(ViolationModule module)
     {

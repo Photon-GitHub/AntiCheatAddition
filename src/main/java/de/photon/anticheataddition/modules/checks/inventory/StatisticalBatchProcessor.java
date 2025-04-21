@@ -3,15 +3,14 @@ package de.photon.anticheataddition.modules.checks.inventory;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
-import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
+import de.photon.anticheataddition.util.datastructure.batch.SyncBatchProcessor;
 import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.mathematics.DataUtil;
-import de.photon.anticheataddition.util.mathematics.KolmogorovSmirnow;
+import de.photon.anticheataddition.util.mathematics.KolmogorovSmirnov;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -19,13 +18,11 @@ import java.util.Set;
  * The StatisticalBatchProcessor class processes batches of inventory clicks from users,
  * analyzing the time offsets between clicks to detect suspicious behavior using the Kolmogorov-Smirnov test.
  */
-public final class StatisticalBatchProcessor extends AsyncBatchProcessor<InventoryBatch.InventoryClick>
+public final class StatisticalBatchProcessor extends SyncBatchProcessor<InventoryBatch.InventoryClick>
 {
-    // TODO: Refine this value further.
-    // Threshold value for the Kolmogorov-Smirnov test (D-statistic).
-    private static final double D_TEST = 0.21;
+    private static final double PROBABILITY_THRESHOLD = 0.5;
     // Polynomial for calculating violation levels based on the D-statistic.
-    private static final Polynomial D_TEST_VL_CALCULATOR = new Polynomial(-50, 60);
+    private static final Polynomial D_TEST_VL_CALCULATOR = new Polynomial(59, 1);
 
     /**
      * Constructor for StatisticalBatchProcessor.
@@ -61,33 +58,16 @@ public final class StatisticalBatchProcessor extends AsyncBatchProcessor<Invento
         // Not enough data to check as the player opened many inventories.
         if (timeOffsets.length < 10) return;
 
-        kolmogorowSmirnowTest(user, timeOffsets);
-    }
-
-    /**
-     * Performs the Kolmogorov-Smirnov test on the given time offsets to detect suspicious behavior.
-     *
-     * @param user        The user whose inventory clicks are being analyzed.
-     * @param timeOffsets The time offsets between successive inventory clicks.
-     */
-    private void kolmogorowSmirnowTest(User user, long[] timeOffsets)
-    {
+        // Remove outliers that might mask the distribution.
         final long[] timeOffsetsOutliersRemoved = DataUtil.removeOutliers(2, timeOffsets);
+        final KolmogorovSmirnov.KsResult result = KolmogorovSmirnov.uniformTest(timeOffsetsOutliersRemoved);
 
-        // Normalize the clickOffsets to the [0, 1] range
-        final double[] normalizedOffsets = KolmogorovSmirnow.normalizeData(timeOffsetsOutliersRemoved);
+        Log.finer(() -> "Inventory-Debug | Statistical Player: %s, p-value: %f, p-threshold: %f".formatted(user.getPlayer().getName(), result.pValue(), PROBABILITY_THRESHOLD));
 
-        Log.finest(() -> "Inventory-Debug | Statistical Player: %s | RAW-OFFSET: %s | SCALED-OFFSET: %s".formatted(user.getPlayer().getName(), Arrays.toString(timeOffsets), Arrays.toString(normalizedOffsets)));
-
-        // Perform the K-S test to see if the clicks are uniformly distributed.
-        final double d_max = KolmogorovSmirnow.kSTestForUniformDistribution(normalizedOffsets);
-
-        Log.finer(() -> "Inventory-Debug | Statistical Player: %s, D_MAX: %f, D_TEST: %f".formatted(user.getPlayer().getName(), d_max, D_TEST));
-
-        // If the D-statistic is greater than or equal to the threshold, return (no uniform distribution found).
-        if (d_max >= D_TEST) return;
+        // If the p-value is above the threshold, we are reasonably sure that the distribution is uniform.
+        if (result.pValue() < PROBABILITY_THRESHOLD) return;
         this.getModule().getManagement().flag(Flag.of(user)
-                                                  .setAddedVl(D_TEST_VL_CALCULATOR.apply(d_max / D_TEST).intValue())
-                                                  .setDebug(() -> "Inventory-Debug | Player: %s has suspiciously distributed click delays. (D_MAX: %f, D_TEST: %f)".formatted(user.getPlayer().getName(), d_max, D_TEST)));
+                                                  .setAddedVl(D_TEST_VL_CALCULATOR.apply(result.pValue()).intValue())
+                                                  .setDebug(() -> "Inventory-Debug | Player: %s has suspiciously distributed click delays. (p-value: %f, p-threshold: %f)".formatted(user.getPlayer().getName(), result.pValue(), PROBABILITY_THRESHOLD)));
     }
 }

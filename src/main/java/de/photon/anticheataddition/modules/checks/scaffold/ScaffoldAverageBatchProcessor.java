@@ -4,18 +4,18 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
-import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
+import de.photon.anticheataddition.util.datastructure.batch.SyncBatchProcessor;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
-import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.log.Log;
+import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.ScaffoldBlockPlace>
+final class ScaffoldAverageBatchProcessor extends SyncBatchProcessor<ScaffoldBatch.ScaffoldBlockPlace>
 {
     private static final Polynomial VL_CALCULATOR = new Polynomial(1.1, 5);
 

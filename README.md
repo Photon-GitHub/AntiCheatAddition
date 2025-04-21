@@ -8,7 +8,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-The current JDK version for this project is 17.
+The current JDK version for this project is 21.
 
 ### Installing
 

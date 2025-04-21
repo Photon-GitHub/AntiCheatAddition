@@ -171,7 +171,10 @@ public final class Esp extends Module {
                 continue;
             }
 
+<<<<<<< HEAD
             // Collections to track which players should be hidden and how
+=======
+>>>>>>> improvments
             final Set<Player> equipHiddenPlayers = HashSet.newHashSet(worldPlayers.size());
             final Set<Player> fullHiddenPlayers = new HashSet<>(worldPlayers);
 

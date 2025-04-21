@@ -7,7 +7,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 @Getter
 public enum ServerVersion
 {
-    // As we compare the versions these MUST be sorted.
 
+    // As we compare the versions these MUST be sorted.
     MC18("1.8.8", true, 47),
     MC19("1.9", false, 107, 108, 109, 110),
     MC110("1.10", false, 210),
@@ -28,17 +28,17 @@ public enum ServerVersion
     MC114("1.14", false, 477, 480, 485, 490, 498),
     MC115("1.15.2", false, 573, 575),
     MC116("1.16.5", false, 735, 736, 751, 753, 754),
-    MC117("1.17.1", true, 755, 756),
-    MC118("1.18.2", true, 757, 758),
+    MC117("1.17.1", false, 755, 756),
+    MC118("1.18.2", false, 757, 758),
     MC119("1.19.4", true, 759, 760, 761, 762),
     MC120("1.20", true, 763, 764, 765, 766),
-    MC121("1.21", true, 767);
+    MC121("1.21", true, 767, 768, 769, 770);
 
-    private static final Map<Integer, ServerVersion> PROTOCOL_VERSION_MAP = Arrays.stream(ServerVersion.values())
-                                                                                  // Map each protocol version number to the ServerVersion.
-                                                                                  .flatMap(sv -> sv.getProtocolVersions().stream().map(vn -> Pair.of(vn, sv)))
-                                                                                  // Create a map.
-                                                                                  .collect(Collectors.toUnmodifiableMap(Pair::first, Pair::second));
+    private static final Map<Integer, ServerVersion> PROTOCOL_VERSION_MAP = EnumSet.allOf(ServerVersion.class)
+                                                                                   .stream()
+                                                                                   // Map each protocol version number to the ServerVersion.
+                                                                                   .flatMap(sv -> sv.getProtocolVersions().stream().map(vn -> Pair.of(vn, sv)))
+                                                                                   .collect(Collectors.toUnmodifiableMap(Pair::first, Pair::second));
 
     public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS = MC18.getSupVersionsFrom();
     public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = MC112.getSupVersionsTo();
@@ -49,10 +49,11 @@ public enum ServerVersion
      * The server version of the currently running {@link Bukkit} instance.
      */
     @NotNull
-    public static final ServerVersion ACTIVE = Arrays.stream(ServerVersion.values())
-                                                     .filter(serverVersion -> Bukkit.getBukkitVersion().startsWith(serverVersion.getVersionOutputString()))
-                                                     .findFirst()
-                                                     .orElseThrow(UnknownMinecraftException::new);
+    public static final ServerVersion ACTIVE = EnumSet.allOf(ServerVersion.class)
+                                                      .stream()
+                                                      .filter(serverVersion -> Bukkit.getBukkitVersion().startsWith(serverVersion.getVersionOutputString()))
+                                                      .findFirst()
+                                                      .orElseThrow(UnknownMinecraftException::new);
 
     /**
      * This is the string that is searched for on startup.
@@ -67,7 +68,7 @@ public enum ServerVersion
     private final boolean supported;
 
     /**
-     * The protocol versions of the major minecraft version.
+     * The protocol versions of the major Minecraft version.
      * E.g. even though the name is 1.18.2, this shall include the protocol versions of 1.18, 1.18.1 and 1.18.2.
      */
     private final Set<Integer> protocolVersions;
@@ -80,7 +81,7 @@ public enum ServerVersion
     }
 
     /**
-     * This method checks if the active server version is equal to or earlier than this version.
+     * Checks if the active server version is equal to or earlier than this version.
      */
     public boolean activeIsEarlierOrEqual()
     {
@@ -88,28 +89,27 @@ public enum ServerVersion
     }
 
     /**
-     * This method checks if the active server version is equal to or later than this version.
+     * Checks if the active server version is equal to or later than this version.
      */
     public boolean activeIsLaterOrEqual()
     {
         return this.compareTo(ACTIVE) <= 0;
     }
 
-    // Lazy getting as most versions are not supported or used.
-    // Also, this is important to avoid loading errors (as the generate methods access values() when not fully loaded)
+    // Lazy getters (using Lombok) to avoid loading errors and unnecessary computation.
     /**
-     * All supported versions that came before this minecraft server version, including this one.
+     * All supported versions that came before (or equal to) this Minecraft server version.
      */
     @Getter(lazy = true) private final Set<ServerVersion> supVersionsTo = getSupportedVersions(version -> this.compareTo(version) >= 0);
+
     /**
-     * All supported versions that came after this minecraft server version, including this one.
+     * All supported versions that came after (or equal to) this Minecraft server version.
      */
     @Getter(lazy = true) private final Set<ServerVersion> supVersionsFrom = getSupportedVersions(version -> this.compareTo(version) <= 0);
 
     /**
      * Shorthand for activeServerVersion == MC18.
-     * Checks if the current ServerVersion is minecraft 1.8.8.
-     * This method reduces both code and improves the maintainability as activeServerVersion is only used by those statements that might need changes for a new version.
+     * Checks if the current ServerVersion is Minecraft 1.8.8.
      */
     public static boolean is18()
     {
@@ -117,11 +117,11 @@ public enum ServerVersion
     }
 
     /**
-     * Used to check whether the current server version is included in a set of supported server versions.
+     * Checks whether the current server version is included in a set of supported server versions.
      *
      * @param supportedServerVersions the {@link Set} of supported server versions of the module
      *
-     * @return true if the active server version is included in the provided {@link Set} or false if it is not.
+     * @return true if the active server version is included in the provided set, false otherwise.
      */
     public static boolean containsActive(Set<ServerVersion> supportedServerVersions)
     {
@@ -129,7 +129,7 @@ public enum ServerVersion
     }
 
     /**
-     * This gets the respective {@link ServerVersion} for a version number returned by the {@link com.viaversion.viaversion.api.ViaAPI}
+     * Gets the respective {@link ServerVersion} for a version number returned by the {@link com.viaversion.viaversion.api.ViaAPI}.
      */
     public static Optional<ServerVersion> getByProtocolVersionNumber(int versionNumber)
     {
@@ -138,9 +138,9 @@ public enum ServerVersion
 
     private static Set<ServerVersion> getSupportedVersions(Predicate<ServerVersion> filter)
     {
-        return Arrays.stream(values())
-                     .filter(ServerVersion::isSupported)
-                     .filter(filter)
-                     .collect(SetUtil.toImmutableEnumSet());
+        return EnumSet.allOf(ServerVersion.class).stream()
+                      .filter(ServerVersion::isSupported)
+                      .filter(filter)
+                      .collect(SetUtil.toImmutableEnumSet());
     }
 }

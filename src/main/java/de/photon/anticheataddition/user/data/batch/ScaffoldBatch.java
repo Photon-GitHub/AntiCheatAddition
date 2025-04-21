@@ -49,11 +49,10 @@ public final class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
                 case 5, 6 -> 1.65D;
                 case 7 -> 2D;
                 case 8 -> 2.2D;
-                default -> {
-                    if (potionEffect.getAmplifier() <= 17) yield 2.5;
-                    else if (potionEffect.getAmplifier() <= 50) yield 4;
-                    else yield 4.5;
-                }
+                // Cases 9-17
+                case 9, 10, 11, 12, 13, 14, 15, 16, 17 -> 2.5D;
+                // Cases 18-50, 51 - infinity
+                default -> potionEffect.getAmplifier() <= 50 ? 4D : 4.5D;
             };
         }
 

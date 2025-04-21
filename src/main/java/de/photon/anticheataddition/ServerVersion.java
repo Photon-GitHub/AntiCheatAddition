@@ -32,7 +32,7 @@ public enum ServerVersion
     MC118("1.18.2", false, 757, 758),
     MC119("1.19.4", true, 759, 760, 761, 762),
     MC120("1.20", true, 763, 764, 765, 766),
-    MC121("1.21", true, 767);
+    MC121("1.21", true, 767, 768, 769, 770);
 
     private static final Map<Integer, ServerVersion> PROTOCOL_VERSION_MAP = EnumSet.allOf(ServerVersion.class)
                                                                                    .stream()

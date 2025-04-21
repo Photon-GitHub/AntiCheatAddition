@@ -71,14 +71,19 @@ public final class ConfigurationRepresentation
             final var replacementLine = new StringBuilder(originalLine.substring(0, originalLine.lastIndexOf(':') + 1));
 
             // Set the new value.
-            if (value instanceof Boolean || value instanceof Number) replacementLine.append(' ').append(value);
-            else if (value instanceof String str) replacementLine.append(' ').append('\"').append(str).append('\"');
-            else if (value instanceof List<?> list) {
-                if (list.isEmpty()) replacementLine.append(" []");
-                else {
-                    final var preString = "- ".indent((int) ConfigUtil.depth(originalLine));
-                    for (Object o : list) configLines.add(lineIndexOfKey + 1, preString + o);
+            switch (value) {
+                case Boolean bool -> replacementLine.append(' ').append(bool);
+                case Number number -> replacementLine.append(' ').append(number);
+                case String str -> replacementLine.append(' ').append('\"').append(str).append('\"');
+                case List<?> list -> {
+                    if (list.isEmpty()) replacementLine.append(" []");
+                    else {
+                        final var preString = "- ".indent((int) ConfigUtil.depth(originalLine));
+                        for (Object o : list) configLines.add(lineIndexOfKey + 1, preString + o);
+                    }
                 }
+                // Ignore all other types.
+                default -> throw new IllegalArgumentException("Unexpected value: " + value);
             }
 
             configLines.set(lineIndexOfKey, replacementLine.toString());

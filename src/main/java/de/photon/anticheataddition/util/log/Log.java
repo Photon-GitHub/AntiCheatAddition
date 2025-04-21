@@ -69,7 +69,7 @@ public final class Log
         INSTANCE.logger.log(Level.SEVERE, message, thrown);
     }
 
-    private Logger logger;
+    public Logger logger;
     private final LogFileHandler logFileHandler;
 
     public Log()

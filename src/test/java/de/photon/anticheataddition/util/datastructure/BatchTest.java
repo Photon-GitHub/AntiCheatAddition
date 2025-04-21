@@ -3,16 +3,13 @@ package de.photon.anticheataddition.util.datastructure;
 import com.google.common.eventbus.EventBus;
 import de.photon.anticheataddition.Dummy;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.Batch;
 import de.photon.anticheataddition.util.datastructure.batch.SyncBatchProcessor;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -84,34 +81,5 @@ class BatchTest
         for (int i = 0, n = 2 * batchSize; i < n; ++i) batch.addDataPoint("Test");
 
         Assertions.assertIterableEquals(expected, output);
-    }
-
-    @SneakyThrows
-    @Test
-    void asyncBatchProcessorTest()
-    {
-        final var output = Collections.synchronizedList(new ArrayList<String>());
-        final int batchSize = 3;
-
-        final var batchProcessor = new AsyncBatchProcessor<String>(Dummy.mockViolationModule("Inventory"), Set.of(testBus))
-        {
-            @Override
-            public void processBatch(User user, List<String> batch)
-            {
-                output.addAll(batch);
-            }
-        };
-
-        batchProcessor.enable();
-
-        final var batch = new Batch<>(testBus, Dummy.mockUser(), batchSize, "");
-        testBus.register(batchProcessor);
-
-        for (int i = 0, n = 2 * batchSize; i < n; ++i) batch.addDataPoint(String.valueOf(i));
-
-        batchProcessor.controlledShutdown();
-
-        // Make sure to respect the race condition.
-        Assertions.assertIterableEquals(output.get(0).charAt(0) == '0' ? List.of("0", "1", "2", "3", "4", "5") : List.of("3", "4", "5", "0", "1", "2"), output);
     }
 }

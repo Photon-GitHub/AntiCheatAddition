@@ -79,7 +79,7 @@ public abstract class InternalCommand
     @Contract("null, _ , _ -> true; !null, _ , _ -> false")
     protected static boolean checkNotNullElseSend(final Object notNull, final CommandSender recipient, final String message)
     {
-        final boolean n = notNull == null;
+        final boolean n = (notNull == null);
         if (n) ChatMessage.sendMessage(recipient, message);
         return n;
     }

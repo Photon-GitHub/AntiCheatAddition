@@ -47,17 +47,6 @@ public final class MathUtil
     }
 
     /**
-     * Bounds a value between two bonds.
-     *
-     * @return a value of at least min and at most max. If value is smaller than max and greater than min, it is
-     * returned unchanged, otherwise either min (value smaller than min) or max (value greater than max) is returned.
-     */
-    public static double bound(final double min, final double value, final double max)
-    {
-        return Math.min(Math.max(min, value), max);
-    }
-
-    /**
      * Calculates the sum of the elements from 0 to n.
      *
      * @param n the maximum number to sum to (0, 1, 2, 3, 4, ..., n)
@@ -124,7 +113,33 @@ public final class MathUtil
     public static double yawDistance(double yaw1, double yaw2)
     {
         double diff = yaw1 - yaw2;
-        return Math.abs(((diff + 180) % 360 + 360) % 360 - 180);
+        return Math.abs(normalizeYaw(diff));
+    }
+
+    /**
+     * Adds two yaw angles and normalizes the result to the range [-180, 180].
+     *
+     * @param yaw1 the first angle in degrees (Minecraft yaw, typically in [-180, 180])
+     * @param yaw2 the second angle in degrees (could be any real number)
+     *
+     * @return the sum normalized into [-180, 180]
+     */
+    public static double yawAdd(double yaw1, double yaw2)
+    {
+        double sum = yaw1 + yaw2;
+        return normalizeYaw(sum);
+    }
+
+    /**
+     * Normalizes the yaw to the range [-180, 180].
+     *
+     * @param yaw the yaw angle in degrees
+     *
+     * @return the normalized yaw angle in degrees
+     */
+    public static double normalizeYaw(double yaw)
+    {
+        return ((yaw + 180) % 360 + 360) % 360 - 180;
     }
 
     /**

@@ -85,7 +85,6 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
         // Time in ticks that have to pass to not be flagged by this check for too fast inventory interactions.
         final int enforcedTicks;
 
-        //noinspection EnhancedSwitchMigration
         switch (event.getAction()) {
             // ------------------------------------------ Exemptions -------------------------------------------- //
             // Nothing happens, therefore exempted

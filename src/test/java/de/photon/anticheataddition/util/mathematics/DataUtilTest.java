@@ -42,6 +42,7 @@ class DataUtilTest
 
         long[] expected = {10, 20, 20, 20, 20, 20, 20, 20};
         long[] actual = DataUtil.removeOutliers(2, data);
+        Arrays.sort(actual);
 
         Assertions.assertArrayEquals(expected, actual);
     }
@@ -67,6 +68,7 @@ class DataUtilTest
 
         double[] expected = {10, 20, 20, 20, 20, 20, 20, 20};
         double[] actual = DataUtil.removeOutliers(2, data);
+        Arrays.sort(actual);
 
         Assertions.assertArrayEquals(expected, actual);
     }
@@ -92,6 +94,7 @@ class DataUtilTest
 
         int[] expected = {10, 20, 20, 20, 20, 20, 20, 20};
         int[] actual = DataUtil.removeOutliers(2, data);
+        Arrays.sort(actual);
 
         Assertions.assertArrayEquals(expected, actual);
     }

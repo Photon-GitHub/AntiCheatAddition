@@ -5,6 +5,7 @@ import com.github.retrooper.packetevents.event.PacketListenerAbstract;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Doubles;
 import de.photon.anticheataddition.modules.checks.scaffold.ScaffoldRotation;
 import de.photon.anticheataddition.user.User;
@@ -18,103 +19,144 @@ import de.photon.anticheataddition.util.protocol.PacketEventUtils;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Represents a data structure that stores and processes look packets for users.
+ * Collects *per–tick* rotation deltas of a {@link User}.<br/>
+ * <p>
+ * The Minecraft client sends <i>absolute</i> yaw &amp; pitch values.<br/>
+ * In order to reason about user behaviour we convert those absolutes into
+ * <b>deltas</b> – the signed change between two consecutive packets.<br/>
+ * Each tick (≤50ms) we accumulate all packet–local deltas into a single
+ * {@link AngleDelta}. That drastically simplifies downstream processing while
+ * still preserving the raw delta values via {@link #snapshot()}.
+ * <p>
+ * The last {@value #BUFFER_CAPACITY} accumulated deltas (≈1s @20TPS) are
+ * retained in a ring‑buffer. Thread‑safety for multi‑threaded
+ * listeners is achieved by synchronising on the buffer instance.
  */
 public final class LookPacketData
 {
-    static {
-        PacketEvents.getAPI().getEventManager().registerListener(new LookPacketDataUpdater());
-    }
 
-    private final RingBuffer<RotationChange> rotationChangeQueue = new RingBuffer<>(20, new RotationChange(0, 0));
+    /* ---------- configuration ---------- */
 
+    /** Maximum amount of per‑tick deltas kept in memory. */
+    private static final int BUFFER_CAPACITY = 20;
 
-    public record ScaffoldAngleInfo(double angleChangeSum, double angleVariance, List<Double> angleList) {}
+    /** Time‑window used by {@link #calculateRecentAngleStatistics()} (ms). */
+    private static final long DEFAULT_WINDOW_MS = 1_000L;
 
-    public Optional<ScaffoldAngleInfo> getAngleInformation()
+    /* ---------- storage ---------- */
+
+    private final RingBuffer<AngleDelta> deltaBuffer = new RingBuffer<>(BUFFER_CAPACITY, AngleDelta.ZERO);
+
+    /* ---------- public API ---------- */
+
+    /**
+     * An immutable view of all currently stored deltas (oldest → newest).
+     * <p>
+     * The returned list is safe to iterate over without further locking but
+     * represents a <i>snapshot</i>; it is not updated after the call.
+     */
+    public List<AngleDelta> snapshot()
     {
-        final RotationChange[] changes;
-
-        synchronized (this.rotationChangeQueue) {
-            changes = this.rotationChangeQueue.toArray(new RotationChange[0]);
-        }
-
-        if (changes.length < 2) return Optional.empty();
-
-        final long curTime = System.currentTimeMillis();
-        final List<Float> angles = new ArrayList<>();
-
-        for (int i = 1; i < changes.length; ++i) {
-            // Ignore rotation changes more than 1 second ago.
-            if ((curTime - changes[i].getTime()) > 1000) continue;
-
-            // Accumulate the angle change
-            angles.add(changes[i - 1].angle(changes[i]));
-        }
-
-
-        final double[] angleArray = angles.stream().mapToDouble(Float::doubleValue).toArray();
-        if (angleArray.length == 0) return Optional.empty();
-
-        final double angleSum = DataUtil.sum(angleArray);
-        final double angleVariance = DataUtil.variance(angleSum / angleArray.length, angleArray);
-
-        Log.finer(() -> "Scaffold-Debug | AngleSum: %.3f | AngleVariance: %.3f | Mean: %.3f | Max: %.3f".formatted(angleSum, angleVariance, angleSum / angleArray.length, Doubles.max(angleArray)));
-
-        // Return the accumulated sum of angle changes and the gaps
-        return Optional.of(new ScaffoldAngleInfo(angleSum, angleVariance, Arrays.stream(angleArray).boxed().toList()));
-    }
-
-    @Value
-    public static class RotationChange
-    {
-        long time = System.currentTimeMillis();
-        @NonFinal float yaw;
-        @NonFinal float pitch;
-
-        /**
-         * Merges a {@link RotationChange} with this {@link RotationChange}.
-         */
-        public void merge(RotationChange rotationChange)
-        {
-            this.yaw += rotationChange.yaw;
-            this.pitch += rotationChange.pitch;
-        }
-
-        /**
-         * Calculates the total angle between two {@link RotationChange} - directions.
-         */
-        public float angle(RotationChange rotationChange)
-        {
-            return MathUtil.getAngleBetweenRotations(this.yaw, this.pitch, rotationChange.getYaw(), rotationChange.getPitch());
-        }
-
-        public long timeOffset(RotationChange other)
-        {
-            return MathUtil.absDiff(this.time, other.time);
-        }
-
-        public long tickOffset(RotationChange other)
-        {
-            return TimeUtil.toTicks(timeOffset(other));
+        synchronized (deltaBuffer) {
+            return ImmutableList.copyOf(deltaBuffer);
         }
     }
 
     /**
-     * Singleton class responsible for updating the {@link LookPacketData} based on received packets.
-     * Reduces the number of required packet listeners.
+     * Computes aggregated statistics (sum, variance, list) of all rotation
+     * magnitudes that occurred within the configured time‑window.
+     */
+    public Optional<ScaffoldAngleInfo> calculateRecentAngleStatistics()
+    {
+        final long now = System.currentTimeMillis();
+
+        final double[] magnitudes;
+        synchronized (deltaBuffer) {
+            magnitudes = deltaBuffer.stream()
+                                    .filter(d -> now - d.timestamp <= DEFAULT_WINDOW_MS)
+                                    .mapToDouble(d -> d.magnitude)
+                                    .toArray();
+        }
+
+        if (magnitudes.length == 0) return Optional.empty();
+
+        final DoubleSummaryStatistics stats = Arrays.stream(magnitudes).summaryStatistics();
+        final double variance = DataUtil.variance(stats.getAverage(), magnitudes);
+
+        Log.finer(() -> "Scaffold-Debug | AngleSum: %.3f | AngleVariance: %.3f | Mean: %.3f | Max: %.3f".formatted(stats.getSum(), variance, stats.getAverage(), stats.getMax()));
+
+        return Optional.of(new ScaffoldAngleInfo(stats.getSum(), variance, Doubles.asList(magnitudes)));
+    }
+
+    /* --------------------------------------------------------------------- */
+    /*                               internal                               */
+    /* --------------------------------------------------------------------- */
+
+    /**
+     * Single rotation delta accumulated per client tick.
+     */
+    @Value
+    public static class AngleDelta
+    {
+        /** Time at which this delta was created (ms since epoch). */
+        long timestamp = System.currentTimeMillis();
+
+        @NonFinal float deltaYaw;
+        @NonFinal float deltaPitch;
+        @NonFinal double magnitude;
+
+        /** Empty delta used as ring‑buffer placeholder. */
+        static final AngleDelta ZERO = new AngleDelta(0f, 0f, 0d);
+
+        private AngleDelta(float deltaYaw, float deltaPitch, double magnitude)
+        {
+            this.deltaYaw = deltaYaw;
+            this.deltaPitch = deltaPitch;
+            this.magnitude = magnitude;
+        }
+
+        /** Accumulates {@code other} into {@code this}. */
+        void accumulate(AngleDelta other)
+        {
+            this.deltaYaw += other.deltaYaw;
+            this.deltaPitch += other.deltaPitch;
+            this.magnitude += other.magnitude;
+        }
+    }
+
+    /**
+     * Simple DTO returned by {@link #calculateRecentAngleStatistics()}.
+     * <p>
+     * The <i>raw</i> list of magnitudes is exposed for advanced downstream
+     * analysis while still offering convenience fields.
+     */
+    public record ScaffoldAngleInfo(double deltaAngleChangeSum,
+                                    double deltaAngleVariance,
+                                    List<Double> deltaAngleMagnitudes)
+    {
+    }
+
+    /* --------------------------------------------------------------------- */
+    /*                               listener                               */
+    /* --------------------------------------------------------------------- */
+
+    /**
+     * Dedicated, low‑overhead packet listener that converts absolute rotation
+     * packets into deltas and feeds them into the owning {@link LookPacketData}
+     * instance stored on each {@link User}.
+     * <p>
+     * One shared listener is cheaper than instantiating a listener per user.
      */
     private static final class LookPacketDataUpdater extends PacketListenerAbstract
     {
 
-
-        public LookPacketDataUpdater()
+        LookPacketDataUpdater()
         {
             super(PacketListenerPriority.MONITOR);
         }
@@ -122,33 +164,47 @@ public final class LookPacketData
         @Override
         public void onPacketReceive(PacketReceiveEvent event)
         {
-            if (event.getPacketType() == PacketType.Play.Client.PLAYER_ROTATION ||
-                event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
+            if (event.getPacketType() != PacketType.Play.Client.PLAYER_ROTATION &&
+                event.getPacketType() != PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) return;
 
-                final var user = User.getUser(event);
-                if (user == null) return;
+            final User user = User.getUser(event);
+            if (user == null) return;
 
-                final var rotation = PacketEventUtils.getRotationFromEvent(event);
+            final var rotation = PacketEventUtils.getRotationFromEvent(event);
 
-                final var rotationChange = new RotationChange(rotation.yaw(), rotation.pitch());
-                final var rotationQueue = user.getLookPacketData().rotationChangeQueue;
+            /* ----------- delta calculation ----------- */
+            final float lastYaw = user.getData().floating.lastPacketYaw;
+            final float lastPitch = user.getData().floating.lastPacketPitch;
 
-                // Same tick -> merge
-                synchronized (rotationQueue) {
-                    if (rotationChange.timeOffset(rotationQueue.tail()) < 55) rotationQueue.tail().merge(rotationChange);
-                    else rotationQueue.add(rotationChange);
+            final float deltaYaw = (float) MathUtil.yawDistance(rotation.yaw(), lastYaw);
+            final float deltaPitch = (float) MathUtil.absDiff(rotation.pitch(), lastPitch);
+            final double magnitude = MathUtil.getAngleBetweenRotations(lastYaw, lastPitch, rotation.yaw(), rotation.pitch());
+
+            final AngleDelta delta = new AngleDelta(deltaYaw, deltaPitch, magnitude);
+            final RingBuffer<AngleDelta> buffer = user.getLookPacketData().deltaBuffer;
+
+            /* ----------- store / merge ----------- */
+            synchronized (buffer) {
+                if (TimeUtil.toTicks(delta.timestamp - buffer.getLast().timestamp) <= 0) {
+                    // merge into same tick
+                    buffer.getLast().accumulate(delta);
+                } else {
+                    buffer.add(delta);
                 }
-
-                // Huge angle change
-                // Use the map values here to because the other ones are already updated.
-                if (MathUtil.getAngleBetweenRotations(user.getData().floating.lastPacketYaw, user.getData().floating.lastPacketPitch, rotation.yaw(), rotation.pitch()) > ScaffoldRotation.SIGNIFICANT_ROTATION_CHANGE_THRESHOLD) {
-                    user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).update();
-                }
-
-                // Update the values here so the RotationUtil calculation is functional.
-                user.getData().floating.lastPacketYaw = rotation.yaw();
-                user.getData().floating.lastPacketPitch = rotation.pitch();
             }
+
+            /* ----------- flag large spikes ----------- */
+            if (deltaYaw > ScaffoldRotation.SIGNIFICANT_YAW_CHANGE) {
+                user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_YAW_CHANGE).update();
+            }
+
+            /* ----------- update absolute orientation ----------- */
+            user.getData().floating.lastPacketYaw = rotation.yaw();
+            user.getData().floating.lastPacketPitch = rotation.pitch();
         }
+    }
+
+    static {
+        PacketEvents.getAPI().getEventManager().registerListener(new LookPacketDataUpdater());
     }
 }

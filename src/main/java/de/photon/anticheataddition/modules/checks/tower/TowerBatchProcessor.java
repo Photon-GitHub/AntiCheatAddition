@@ -4,8 +4,8 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.batch.TowerBatch;
-import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
+import de.photon.anticheataddition.util.datastructure.batch.SyncBatchProcessor;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
@@ -18,7 +18,7 @@ import org.bukkit.util.Vector;
 import java.util.List;
 import java.util.Set;
 
-final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlockPlace>
+final class TowerBatchProcessor extends SyncBatchProcessor<TowerBatch.TowerBlockPlace>
 {
     private static final Polynomial VL_CALCULATOR = new Polynomial(0.37125, 1);
     private final int cancelVl = loadInt(".cancel_vl", 6);

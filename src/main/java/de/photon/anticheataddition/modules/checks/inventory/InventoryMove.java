@@ -4,6 +4,7 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
+import de.photon.anticheataddition.util.datastructure.SetUtil;
 import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
@@ -33,6 +34,13 @@ public final class InventoryMove extends ViolationModule implements Listener
     // 300 is the vanilla breaking time without a speed effect (derived from testing, especially slab jumping)
     public static final long BASE_BREAKING_TIME = 300L;
 
+
+    // The materials below a player that allow a player to jump while having an open inventory.
+    private static final Set<Material> JUMP_ENABLING_MATERIALS = Stream.of(MaterialUtil.INSTANCE.getAutoStepMaterials(),
+                                                                           MaterialUtil.INSTANCE.getBounceMaterials())
+                                                                       .flatMap(Set::stream)
+                                                                       .collect(SetUtil.toImmutableEnumSet());
+
     public static final InventoryMove INSTANCE = new InventoryMove();
     public static final double STANDING_STILL_THRESHOLD = 0.005;
     private final int cancelVl = loadInt(".cancel_vl", 60);
@@ -50,18 +58,6 @@ public final class InventoryMove extends ViolationModule implements Listener
             // Teleport back the next tick.
             Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> user.getPlayer().teleport(event.getFrom(), PlayerTeleportEvent.TeleportCause.UNKNOWN));
         }
-    }
-
-    /**
-     * This checks all 9 blocks centered on where the player stands as well as the 9 blocks below to reliably check for materials like slabs.
-     * Checking all those blocks is required because stepping up a slab does not mean the player's block-location is already the slab.
-     */
-    private static boolean checkGroundMaterial(Location location, Set<Material> materials)
-    {
-        return Stream.concat(WorldUtil.INSTANCE.getBlocksAround(location.getBlock(), WorldUtil.HORIZONTAL_FACES, Set.of()).stream(),
-                             WorldUtil.INSTANCE.getBlocksAround(location.getBlock().getRelative(BlockFace.DOWN), WorldUtil.HORIZONTAL_FACES, Set.of()).stream())
-                     .map(Block::getType)
-                     .anyMatch(materials::contains);
     }
 
     private static long breakingTime(User user)
@@ -87,7 +83,7 @@ public final class InventoryMove extends ViolationModule implements Listener
             // Not flying (vanilla or elytra) as it may trigger some fps
             user.getPlayer().isFlying() ||
             EntityUtil.INSTANCE.isFlyingWithElytra(user.getPlayer()) ||
-            // Player must be in an inventory
+            // Player must not be in an inventory
             !user.hasOpenInventory() ||
             // After being hit a player moves due to knock-back, so recent hits can cause false positives.
             user.getPlayer().getNoDamageTicks() != 0 ||
@@ -105,22 +101,21 @@ public final class InventoryMove extends ViolationModule implements Listener
         final boolean movingUpwards = event.getFrom().getY() < event.getTo().getY();
         final boolean noYMovement = event.getFrom().getY() == event.getTo().getY();
 
-        if (movingUpwards != user.getData().bool.movingUpwards) {
-            handleJump(user, event, movingUpwards, noYMovement);
+        // Player accelerated upwards.
+        if (movingUpwards && !user.getData().bool.movingUpwards) {
+            handleJump(user, event);
             return;
         }
 
         final double yMovement = event.getPlayer().getVelocity().getY();
 
-        Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " checking for falling: " + user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).passedTime() +
-                        " | y-velocity: " + yMovement);
+        Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " checking for falling: " + user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).passedTime() + " | y-velocity: " + yMovement);
 
         // This bypasses players during a long fall from hundreds of blocks.
         if (yMovement < -2.0 ||
             // Bypass a falling player after a normal jump in which they opened an inventory.
-            user.hasJumpedRecently(1850) &&
             // If the y-movement is 0, the falling process is finished and there is no need for bypassing anymore.
-            !noYMovement) {
+            (user.hasJumpedRecently(1850) && !noYMovement)) {
             user.getTimeMap().at(TimeKey.INVENTORY_MOVE_JUMP_END).update();
             return;
         }
@@ -148,7 +143,7 @@ public final class InventoryMove extends ViolationModule implements Listener
         }
     }
 
-    private void handleJump(User user, PlayerMoveEvent event, boolean positiveVelocity, boolean noYMovement)
+    private void handleJump(User user, PlayerMoveEvent event)
     {
         Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " detected a jump.");
 
@@ -161,18 +156,26 @@ public final class InventoryMove extends ViolationModule implements Listener
         Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " is not jump-bypassed.");
 
         // Bouncing can lead to false positives.
-        if (checkGroundMaterial(event.getFrom(), MaterialUtil.INSTANCE.getBounceMaterials())) return;
+        if (playerCanJumpDueToGroundMaterial(event.getFrom())) return;
 
-        Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " no bounce materials detected.");
-
-        if ((positiveVelocity || noYMovement) &&
-            // Jumping onto a stair or slabs false positive
-            checkGroundMaterial(event.getFrom(), MaterialUtil.INSTANCE.getAutoStepMaterials())) return;
+        Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " no jump enabling materials detected.");
 
         getManagement().flag(Flag.of(user)
                                  .setAddedVl(25)
                                  .setCancelAction(cancelVl, () -> cancelAction(user, event))
                                  .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " jumped while having an open inventory."));
+    }
+
+    /**
+     * This checks all 9 blocks centered on where the player stands as well as the 9 blocks below to reliably check for materials like slabs.
+     * Checking all those blocks is required because stepping up a slab does not mean the player's block-location is already the slab.
+     */
+    private static boolean playerCanJumpDueToGroundMaterial(Location location)
+    {
+        return Stream.concat(WorldUtil.INSTANCE.getBlocksAround(location.getBlock(), WorldUtil.HORIZONTAL_FACES, Set.of()).stream(),
+                             WorldUtil.INSTANCE.getBlocksAround(location.getBlock().getRelative(BlockFace.DOWN), WorldUtil.HORIZONTAL_FACES, Set.of()).stream())
+                     .map(Block::getType)
+                     .anyMatch(InventoryMove.JUMP_ENABLING_MATERIALS::contains);
     }
 
     @Override

@@ -125,6 +125,30 @@ AutoEat:
     120: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoEat"
     200: "kick {player} AutoEat"
 
+# AutoTool detects mods that automatically switch to the optimal tool when breaking blocks.
+# Adds 5 – 30 VL depending on how fast the switch happens.
+AutoTool:
+  enabled: true
+
+  # VL at which tool switching is cancelled and a timeout starts. 0 = never cancel.
+  cancel_vl: 60
+
+  # Once cancel_vl is exceeded the player’s tool switching is blocked for this long (ms).
+  timeout: 3000
+
+  # Players whose ping is above this value are ignored. -1 disables the ping check.
+  max_ping: 400
+
+  # Any switch that happens sooner than this after the first block-hit is considered suspicious (ms).
+  #  ≤ 50 ms → 30 VL; ≤ 100 ms → 20 VL; ≤ min_switch_delay → 10 VL; otherwise 5 VL.
+  min_switch_delay: 150
+
+  # Optional commands that run when the player’s VL crosses the given thresholds.
+  thresholds:
+    50:  "staffchat {player} in {world} is suspected for AutoTool"
+    100: "staffchat {player} in {world} is highly suspected for AutoTool"
+    200: "kick {player} AutoTool"
+
 # AutoFish identifies automatic fishing bots.
 # If you have modified fishing time and/or behaviour, please test if this check is compatible with your setup.
 # This check automatically disables itself on Minecraft versions below 1.11 because of changes to the Spigot API.

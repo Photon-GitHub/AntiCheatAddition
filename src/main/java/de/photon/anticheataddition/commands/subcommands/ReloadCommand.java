@@ -12,16 +12,16 @@ import java.util.Queue;
 
 /**
  * /anticheataddition reload
- * <p>Reloads the plugin's config.yml without needing a full /reload.</p>
+ * Reloads config.yml at runtime.
  */
 public final class ReloadCommand extends InternalCommand {
 
     public ReloadCommand() {
         super("reload",
               CommandAttributes.builder()
-                               .setPermission(InternalPermission.INFO)
+                               .setPermission(InternalPermission.INFO)   // same level as /anticheataddition info
                                .exactArguments(0)
-                               .setDescription("Reloads AntiCheatAddition's config.")
+                               .setDescription("Reloads AntiCheatAddition's configuration.")
                                .build(),
               TabCompleteSupplier.builder());
     }

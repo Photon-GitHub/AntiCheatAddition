@@ -19,9 +19,9 @@ public final class ReloadCommand extends InternalCommand {
     public ReloadCommand() {
         super("reload",
               CommandAttributes.builder()
-                               .setPermission(InternalPermission.INFO)   // same level as /anticheataddition info
+                               .setPermission(InternalPermission.INFO)       // same perm level as /anticheataddition info
                                .exactArguments(0)
-                               .setDescription("Reloads AntiCheatAddition's configuration.")
+                               .addCommandHelp("Reloads AntiCheatAddition's configuration.")
                                .build(),
               TabCompleteSupplier.builder());
     }

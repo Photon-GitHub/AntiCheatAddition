@@ -2,6 +2,7 @@ package de.photon.anticheataddition.modules.checks.autotool;
 
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
@@ -22,20 +23,24 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Flags the classic “AutoTool” hack – instant switch from a non-tool
- * to the perfect tool in ≤150 ms after the player left-clicks a block.
+ * AutoTool detection – flags modules that switch to the best tool instantly.
+ * <p>
+ * The added VL scales with the delay: &lt;50 ms → 30 VL, &lt;=100 ms → 20 VL,
+ * &lt;=min_switch_delay ms → 10 VL, otherwise 5 VL.
  */
 public final class AutoTool extends ViolationModule implements Listener {
     public static final AutoTool INSTANCE = new AutoTool();
 
-    private static final long  SWITCH_WINDOW = 150L;   // ms
-    private static final int   MIN_NEIGHBOUR_DELAY = 50; // neighbour-slot scroll spam filter
+    // stores last left‑click on a block
     private static final Map<UUID, Long> LAST_CLICK = new ConcurrentHashMap<>();
 
-    private final int cancelVl = loadInt(".cancel_vl", 50);
-    private final int maxPing  = loadInt(".max_ping", 400);
+    /* ─────── Configurable values ─────── */
+    private final int  cancelVl        = loadInt(".cancel_vl",        60);
+    private final int  maxPing         = loadInt(".max_ping",         400);
+    private final int  minSwitchDelay  = loadInt(".min_switch_delay", 150);
+    private final int  timeout         = loadInt(".timeout",          3000);
 
-    private AutoTool() { super("Autotool"); }
+    private AutoTool() { super("AutoTool"); }
 
     /* ────────────────────── Events ────────────────────── */
 
@@ -47,31 +52,50 @@ public final class AutoTool extends ViolationModule implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onHotbarSwitch(PlayerItemHeldEvent event) {
-        final var user = User.getUser(event.getPlayer());
-        if (User.isUserInvalid(user, this) ||
-            !TPSProvider.INSTANCE.atLeastTPS(19) ||
+        var user = User.getUser(event.getPlayer());
+        if (User.isUserInvalid(user, this)) return;
+
+        // Global exemptions
+        if (!TPSProvider.INSTANCE.atLeastTPS(19) ||
+            !PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing) ||
             canBeLegit(event.getPreviousSlot(), event.getNewSlot())) return;
 
-        long last = LAST_CLICK.getOrDefault(event.getPlayer().getUniqueId(), -1L);
-        if (last == -1L || System.currentTimeMillis() - last > SWITCH_WINDOW) return;
-        if (!PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing)) return;
+        // Timeout from previous heavy violation
+        if (user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).recentlyUpdated(timeout)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        long click = LAST_CLICK.getOrDefault(event.getPlayer().getUniqueId(), -1L);
+        long delay = System.currentTimeMillis() - click;
+        if (click == -1L || delay > minSwitchDelay) return;
 
         ItemStack prev = event.getPlayer().getInventory().getItem(event.getPreviousSlot());
         ItemStack curr = event.getPlayer().getInventory().getItem(event.getNewSlot());
 
-        if (!isTool(curr) || isTool(prev)) return;   // only care about non-tool → tool
+        if (!isTool(curr) || isTool(prev)) return;   // non‑tool → tool only
+
+        int addedVl = vlFromDelay(delay);
 
         getManagement().flag(
             Flag.of(user)
-                .setAddedVl(20)
+                .setAddedVl(addedVl)
                 .setCancelAction(cancelVl, () -> {
                     event.setCancelled(true);
                     InventoryUtil.syncUpdateInventory(user.getPlayer());
+                    user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).update();
                 })
         );
     }
 
     /* ────────────────────── Helpers ────────────────────── */
+
+    private int vlFromDelay(long delay) {
+        if (delay <= 50) return 30;
+        if (delay <= 100) return 20;
+        if (delay <= minSwitchDelay) return 10;
+        return 5;
+    }
 
     private static boolean canBeLegit(int oldSlot, int newSlot) {
         return (oldSlot == 0 && newSlot == 8) ||
@@ -83,16 +107,13 @@ public final class AutoTool extends ViolationModule implements Listener {
     private static boolean isTool(Material m) {
         if (m == null) return false;
         String n = m.name();
-        return n.endsWith("_PICKAXE") || n.endsWith("_AXE") || n.endsWith("_SHOVEL") ||
-               n.endsWith("_HOE")     || m == Material.SHEARS;
+        return n.endsWith("_PICKAXE") || n.endsWith("_AXE") ||
+               n.endsWith("_SHOVEL")  || n.endsWith("_HOE") ||
+               m == Material.SHEARS;
     }
 
     @Override
     protected ViolationManagement createViolationManagement() {
-        // same decay curve as Fastswitch – works fine
-        return ViolationLevelManagement.builder(this)
-                                       .loadThresholdsToManagement()
-                                       .withDecay(120, 25)
-                                       .build();
+        return ViolationLevelManagement.builder(this).loadThresholdsToManagement().withDecay(6000L, 20).build();
     }
 }

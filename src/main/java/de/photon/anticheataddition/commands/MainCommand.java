@@ -12,6 +12,7 @@ import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import de.photon.anticheataddition.commands.subcommands.ReloadCommand;
 
 public final class MainCommand extends InternalCommand implements CommandExecutor, TabCompleter
 {
@@ -25,6 +26,7 @@ public final class MainCommand extends InternalCommand implements CommandExecuto
                                                                       new InfoCommand(),
                                                                       new InternalTestCommand(),
                                                                       new SetVlCommand())
+                                                                      new ReloadCommand(),
                                                     .build(), TabCompleteSupplier.builder());
         this.acaVersion = acaVersion;
     }

@@ -125,23 +125,20 @@ AutoEat:
     120: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoEat"
     200: "kick {player} AutoEat"
 
-# AutoTool detects mods that automatically switch to the optimal tool when breaking blocks.
-# Adds 5 – 30 VL depending on how fast the switch happens.
+# VL added depends on switch speed (≤50 ms → +30, ≤100 ms → +20,
+# ≤min_switch_delay → +10) +20 extra if the pattern repeats 3×.
+# At cancel_vl the slot-switch is cancelled and the player is put
+# on timeout to prevent further exploits.
+#
 AutoTool:
-  enabled: true
+  enabled: true               # disable here if you really must
 
-  # VL at which tool switching is cancelled and a timeout starts. 0 = never cancel.
-  cancel_vl: 60
+  cancel_vl: 60               # VL at which the switch gets cancelled
+  timeout: 3000               # (ms) block all further switches after cancel_vl
+  max_ping: 400               # ignore players with ping > this; -1 = no ping check
 
-  # Once cancel_vl is exceeded the player’s tool switching is blocked for this long (ms).
-  timeout: 3000
-
-  # Players whose ping is above this value are ignored. -1 disables the ping check.
-  max_ping: 400
-
-  # Any switch that happens sooner than this after the first block-hit is considered suspicious (ms).
-  #  ≤ 50 ms → 30 VL; ≤ 100 ms → 20 VL; ≤ min_switch_delay → 10 VL; otherwise 5 VL.
-  min_switch_delay: 150
+  min_switch_delay: 150       # swaps faster than this after LEFT_CLICK are suspicious
+  buffer_decay: 4000          # (ms) time after which the 3-in-a-row pattern resets
 
   # Optional commands that run when the player’s VL crosses the given thresholds.
   thresholds:

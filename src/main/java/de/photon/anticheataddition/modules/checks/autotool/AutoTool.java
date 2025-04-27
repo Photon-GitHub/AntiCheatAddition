@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * AutoTool – detects Meteor-style tool swaps,
+ * AutoTool – detects suspicious tool swaps,
  * including the “Switch Back” option.
  */
 public final class AutoTool extends ViolationModule implements Listener {

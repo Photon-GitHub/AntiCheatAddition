@@ -125,7 +125,7 @@ AutoEat:
     120: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoEat"
     200: "kick {player} AutoEat"
 
-# AutoTool detects “smart tool” cheats (e.g. Meteor) that swap to the
+# AutoTool detects “smart tool” cheats that swap to the
 # perfect tool either **just before** or **right after** hitting a block.
 #
 # ▸ Adds 20 VL when the swap is ≤ 80 ms from the hit,

@@ -8,9 +8,7 @@ import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.Data;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -19,176 +17,204 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * AutoTool check – v3
- *
- * <p>Detects BOTH patterns:</p>
- * <ol>
- *   <li>Swap happens <strong>after</strong> the first hit (wrong → right).</li>
- *   <li>Swap happens <strong>before</strong> the first hit (delay = 0 Meteor trick).</li>
- * </ol>
- *
- * Logic:<br>
- * • We store the most recent swap (old-slot, new-slot, old-item, new-item, time).<br>
- * • On a LEFT_CLICK_BLOCK we look back ≤150 ms:<br>
- *   – if the swap turned a wrong tool into the right tool → +VL.<br>
- * • We also keep the old “after-click” check (wrong at click, swap right afterwards).<br>
- * • ≤80 ms ⇒ +35 VL, otherwise +25 VL.<br>
- * • 4 detections in 5 s ⇒ +40 bonus VL.
+ * AutoTool – detects Meteor-style tool swaps,
+ * including the “Switch Back” option.
  */
 public final class AutoTool extends ViolationModule implements Listener {
 
     public static final AutoTool INSTANCE = new AutoTool();
     private AutoTool() { super("AutoTool"); }
 
-    /* ───────── config helpers ───────── */
+    /* ───────── per-player scratch data ───────── */
+
+    private record Swap(long time, int fromSlot, int toSlot,
+                        ItemStack fromItem, ItemStack toItem) {}
+    private record Click(long time, Material block, int slot,
+                         ItemStack heldAtClick) {}
+    private record Data(Swap lastSwap, Click lastClick,
+                        int streak, long streakStart,
+                        long lastCorrectSwapTime, int originalSlot) {}
+
+    private static final Map<User, Data> STATE = new ConcurrentHashMap<>();
+
     private int cfg(String k, int d) { return loadInt(k, d); }
-
-    /* ───────── per-player state ───────── */
-
-    @Data private static final class Swap {
-        long time;
-        int  fromSlot, toSlot;
-        ItemStack fromItem, toItem;
-    }
-    @Data private static final class Click {
-        long time;
-        Material block;
-        int slot;
-    }
-
-    private static final Map<UUID, Swap>  LAST_SWAP  = new ConcurrentHashMap<>();
-    private static final Map<UUID, Click> LAST_CLICK = new ConcurrentHashMap<>();
-    private static final Map<UUID, Integer> STREAK   = new ConcurrentHashMap<>();
-    private static final Map<UUID, Long>    STREAK_T = new ConcurrentHashMap<>();
 
     /* ───────── events ───────── */
 
     @EventHandler(ignoreCancelled = true)
-    public void onSlot(PlayerItemHeldEvent e) {
-        Swap s = new Swap();
-        s.time      = System.currentTimeMillis();
-        s.fromSlot  = e.getPreviousSlot();
-        s.toSlot    = e.getNewSlot();
-        s.fromItem  = e.getPlayer().getInventory().getItem(e.getPreviousSlot());
-        s.toItem    = e.getPlayer().getInventory().getItem(e.getNewSlot());
-        LAST_SWAP.put(e.getPlayer().getUniqueId(), s);
+    public void onHotbarSwap(PlayerItemHeldEvent e) {
+        User u = User.getUser(e.getPlayer());
+        if (User.isUserInvalid(u, this)) return;
+
+        long now  = System.currentTimeMillis();
+        int  newS = e.getNewSlot();
+
+        Data d = STATE.get(u);
+        /* detect instant “switch back” */
+        if (d != null && d.lastCorrectSwapTime > 0) {
+            int backDelay = cfg(".back_switch_delay", 150);
+            if (now - d.lastCorrectSwapTime <= backDelay && newS == d.originalSlot) {
+                addBackViolation(u, e.getPlayer());
+                d = new Data(d.lastSwap, d.lastClick,
+                             d.streak, d.streakStart,
+                             0, -1);                       // reset timer
+            }
+        }
+
+        Swap s = new Swap(now,
+                e.getPreviousSlot(), newS,
+                e.getPlayer().getInventory().getItem(e.getPreviousSlot()),
+                e.getPlayer().getInventory().getItem(newS));
+
+        if (d == null) d = new Data(null, null, 0, 0, 0, -1);
+        STATE.put(u, new Data(s, d.lastClick, d.streak, d.streakStart,
+                              d.lastCorrectSwapTime, d.originalSlot));
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onLeftClick(PlayerInteractEvent e) {
         if (e.getAction() != Action.LEFT_CLICK_BLOCK || e.getClickedBlock() == null) return;
 
-        UUID id = e.getPlayer().getUniqueId();
-        long now = System.currentTimeMillis();
+        User u = User.getUser(e.getPlayer());
+        if (User.isUserInvalid(u, this)) return;
 
-        /* store click for “swap-after” path */
-        Click c = new Click();
-        c.time  = now;
-        c.block = e.getClickedBlock().getType();
-        c.slot  = e.getPlayer().getInventory().getHeldItemSlot();
-        LAST_CLICK.put(id, c);
+        ItemStack held = e.getPlayer().getInventory()
+                          .getItem(e.getPlayer().getInventory().getHeldItemSlot());
 
-        /* handle “swap-before-click” path */
-        Swap s = LAST_SWAP.get(id);
-        if (s == null) return;
+        Click c = new Click(System.currentTimeMillis(),
+                            e.getClickedBlock().getType(),
+                            e.getPlayer().getInventory().getHeldItemSlot(),
+                            held);
 
-        long delay = now - s.time;                           // swap → click
-        int maxMs = cfg(".min_switch_delay", 150);
-        if (delay < 0 || delay > maxMs) return;              // swap not close enough
+        Data d = STATE.getOrDefault(u, new Data(null,null,0,0,0,-1));
+        STATE.put(u, new Data(d.lastSwap, c, d.streak, d.streakStart,
+                              d.lastCorrectSwapTime, d.originalSlot));
 
-        evaluateSuspicion(e.getPlayer().getInventory().getItem(s.fromSlot), // wrong?
-                          e.getPlayer().getInventory().getItem(s.toSlot),   // right?
-                          e.getClickedBlock().getType(),
-                          delay, e.getPlayer());
+        evaluateBeforeHit(u, e.getPlayer(), c);
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onLateSlot(PlayerItemHeldEvent e) {
-        /* handle “swap-after-click” path */
-        Click c = LAST_CLICK.get(e.getPlayer().getUniqueId());
-        if (c == null) return;
+    public void onSwapAfterClick(PlayerItemHeldEvent e) {
+        User u = User.getUser(e.getPlayer());
+        if (User.isUserInvalid(u, this)) return;
 
-        long now   = System.currentTimeMillis();
-        long delay = now - c.time;                            // click → swap
-        int maxMs  = cfg(".min_switch_delay", 150);
-        if (delay > maxMs) return;
+        Data d = STATE.get(u);
+        if (d == null || d.lastClick == null) return;
 
-        ItemStack oldItem = e.getPlayer().getInventory().getItem(c.slot);
-        ItemStack newItem = e.getPlayer().getInventory().getItem(e.getNewSlot());
+        long delay = System.currentTimeMillis() - d.lastClick.time();
+        if (delay > cfg(".min_switch_delay", 150)) return;
 
-        evaluateSuspicion(oldItem, newItem, c.block, delay, e.getPlayer());
+        ItemStack was = d.lastClick.heldAtClick();
+        ItemStack now = e.getPlayer().getInventory().getItem(e.getNewSlot());
+
+        evaluateSuspicion(u, e.getPlayer(), d,
+                was, now, delay, d.lastClick.block(), d.lastClick.slot());
     }
 
-    /* ───────── core evaluation ───────── */
+    /* swap-before-hit */
+    private void evaluateBeforeHit(User u, org.bukkit.entity.Player p, Click c) {
+        Data d = STATE.get(u);
+        if (d == null || d.lastSwap == null) return;
 
-    private void evaluateSuspicion(ItemStack wrongTool, ItemStack rightTool,
-                                   Material block, long delay, org.bukkit.entity.Player p) {
+        long delay = c.time() - d.lastSwap.time();
+        if (delay < 0 || delay > cfg(".min_switch_delay", 150)) return;
 
-        if (wrongTool == null || rightTool == null) return;
-        if (!isCorrectTool(block, rightTool)) return;          // new tool not correct
-        if (isCorrectTool(block, wrongTool)) return;           // old tool was already fine
+        evaluateSuspicion(u, p, d,
+                d.lastSwap.fromItem(), d.lastSwap.toItem(),
+                delay, c.block(), d.lastSwap.fromSlot());
+    }
 
-        User user = User.getUser(p);
-        if (User.isUserInvalid(user, this)) return;
+    /* ───────── core logic ───────── */
+
+    private void evaluateSuspicion(User u, org.bukkit.entity.Player p, Data d,
+                                   ItemStack wrongRaw, ItemStack right,
+                                   long delay, Material block, int originalSlot) {
+
+        if (right == null) return;
+        ItemStack wrong = wrongRaw == null ? new ItemStack(Material.AIR) : wrongRaw;
+
+        if (!isCorrectTool(block, right)) return;
+        if (wrong.getType() != Material.AIR && isCorrectTool(block, wrong)) return;
         if (!PingProvider.INSTANCE.atMostMaxPing(p, cfg(".max_ping", 400))) return;
 
-        int add = (delay <= 80) ? 35 : 25;
+        /* base VLs */
+        int add = (delay <= 80) ? 20 : 10;
 
-        long win = cfg(".streak_window", 5000);
-        UUID id  = p.getUniqueId();
         long now = System.currentTimeMillis();
-        if (now - STREAK_T.getOrDefault(id, 0L) <= win) {
-            int s = STREAK.merge(id, 1, Integer::sum);
-            if (s >= 4) add += 40;
-        } else {
-            STREAK.put(id, 1);
-        }
-        STREAK_T.put(id, now);
+        long win = cfg(".streak_window", 5000);
+        int  st  = (now - d.streakStart <= win) ? d.streak + 1 : 1;
+        long ss  = (st == 1) ? now : d.streakStart;
+        if (st >= 4) add += 30;
+
+        STATE.put(u, new Data(d.lastSwap, d.lastClick, st, ss,
+                              now, originalSlot));
 
         int cancelVl = cfg(".cancel_vl", 60);
 
         getManagement().flag(
-            Flag.of(user)
+            Flag.of(u)
                 .setAddedVl(add)
                 .setCancelAction(cancelVl, () -> {
                     InventoryUtil.syncUpdateInventory(p);
-                    user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).update();
+                    u.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).update();
                 })
         );
     }
 
-    /* ───────── helper ───────── */
+    /* extra VL for instant switch-back */
+    private void addBackViolation(User u, org.bukkit.entity.Player p) {
+        getManagement().flag(Flag.of(u).setAddedVl(10));   // mild penalty
+    }
 
+    /* ───── tool matcher (unchanged) ───── */
     private static boolean isCorrectTool(Material block, ItemStack tool) {
         if (tool == null) return false;
 
         Material t = tool.getType();
-        String b   = block.name();
+        String b = block.name();
 
         if (t == Material.SHEARS)
-            return b.contains("WOOL") || b.contains("LEAVES") || b.equals("COBWEB");
+            return b.contains("LEAVES") || b.contains("WOOL") || b.equals("COBWEB");
 
-        boolean axe    = t.name().endsWith("_AXE");
-        boolean pick   = t.name().endsWith("_PICKAXE");
+        if (t.name().endsWith("_SWORD"))
+            return b.equals("BAMBOO") || b.equals("BAMBOO_SHOOT");
+
+        boolean axe = t.name().endsWith("_AXE");
+        boolean pick = t.name().endsWith("_PICKAXE");
         boolean shovel = t.name().endsWith("_SHOVEL");
-        boolean hoe    = t.name().endsWith("_HOE");
+        boolean hoe = t.name().endsWith("_HOE");
 
-        if (axe    && (b.endsWith("_LOG") || b.contains("WOOD")   || b.contains("BAMBOO"))) return true;
-        if (pick   && (b.contains("STONE") || b.contains("ORE")   || b.equals("ANCIENT_DEBRIS"))) return true;
-        if (shovel && (b.contains("DIRT")  || b.contains("SAND")  || b.contains("GRAVEL") || b.contains("SNOW"))) return true;
-        if (hoe    && (b.contains("HAY")   || b.contains("CROP")  || b.contains("WART")))  return true;
+        if (pick && (b.contains("STONE") || b.contains("DEEPSLATE") || b.contains("ORE")
+                     || b.contains("TERRACOTTA") || b.endsWith("_BLOCK")
+                     || b.equals("OBSIDIAN") || b.equals("CRYING_OBSIDIAN")
+                     || b.equals("NETHERRACK") || b.equals("END_STONE")
+                     || (b.startsWith("RAW_") && b.endsWith("_BLOCK"))
+                     || b.equals("ANCIENT_DEBRIS"))) return true;
+
+        if (axe && (b.contains("WOOD") || b.endsWith("_LOG") || b.contains("PLANKS")
+                    || b.contains("BAMBOO") || b.contains("CHEST") || b.equals("BARREL")
+                    || b.contains("BOOKSHELF") || b.equals("LADDER")
+                    || b.contains("SIGN") || b.contains("CAMPFIRE")
+                    || b.equals("NOTE_BLOCK") || b.endsWith("_TABLE"))) return true;
+
+        if (shovel && (b.contains("DIRT") || b.contains("GRAVEL") || b.contains("SAND")
+                       || b.contains("SNOW") || b.contains("MUD") || b.contains("CLAY")
+                       || b.equals("GRASS_BLOCK") || b.equals("PODZOL") || b.equals("ROOTED_DIRT")
+                       || b.endsWith("CONCRETE_POWDER") || b.equals("SOUL_SAND") || b.equals("SOUL_SOIL")))
+            return true;
+
+        if (hoe && (b.contains("HAY") || b.contains("CROP") || b.contains("WART")
+                    || b.contains("LEAVES") || b.contains("MOSS") || b.equals("DRIED_KELP_BLOCK")
+                    || b.equals("TARGET"))) return true;
 
         return false;
     }
 
-    /* ───────── violation management ───────── */
-
-    @Override
-    protected ViolationManagement createViolationManagement() {
+    /* ───── violation mgmt ───── */
+    @Override protected ViolationManagement createViolationManagement() {
         return ViolationLevelManagement.builder(this)
                                        .loadThresholdsToManagement()
                                        .withDecay(6000L, 15)

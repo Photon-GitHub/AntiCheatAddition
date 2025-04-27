@@ -23,90 +23,131 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Bukkit-only AutoTool check (no PacketEvents dependency).
+ * AutoTool check – v3
  *
- * • Wrong-tool → correct-tool inside ≤150 ms → +25 VL<br>
- * • ≤80 ms → +35 VL<br>
- * • 4 detections in 5 s = extra +40 VL.<br>
- * This nails Meteor within ~3–4 blocks while staying completely inside the
- * API your current ACA version already uses.
+ * <p>Detects BOTH patterns:</p>
+ * <ol>
+ *   <li>Swap happens <strong>after</strong> the first hit (wrong → right).</li>
+ *   <li>Swap happens <strong>before</strong> the first hit (delay = 0 Meteor trick).</li>
+ * </ol>
+ *
+ * Logic:<br>
+ * • We store the most recent swap (old-slot, new-slot, old-item, new-item, time).<br>
+ * • On a LEFT_CLICK_BLOCK we look back ≤150 ms:<br>
+ *   – if the swap turned a wrong tool into the right tool → +VL.<br>
+ * • We also keep the old “after-click” check (wrong at click, swap right afterwards).<br>
+ * • ≤80 ms ⇒ +35 VL, otherwise +25 VL.<br>
+ * • 4 detections in 5 s ⇒ +40 bonus VL.
  */
 public final class AutoTool extends ViolationModule implements Listener {
 
     public static final AutoTool INSTANCE = new AutoTool();
     private AutoTool() { super("AutoTool"); }
 
-    /* --------------- config helpers --------------- */
-
+    /* ───────── config helpers ───────── */
     private int cfg(String k, int d) { return loadInt(k, d); }
 
-    /* --------------- per-player state --------------- */
+    /* ───────── per-player state ───────── */
 
-    @Data
-    private static final class Click {
+    @Data private static final class Swap {
+        long time;
+        int  fromSlot, toSlot;
+        ItemStack fromItem, toItem;
+    }
+    @Data private static final class Click {
         long time;
         Material block;
         int slot;
     }
+
+    private static final Map<UUID, Swap>  LAST_SWAP  = new ConcurrentHashMap<>();
     private static final Map<UUID, Click> LAST_CLICK = new ConcurrentHashMap<>();
     private static final Map<UUID, Integer> STREAK   = new ConcurrentHashMap<>();
     private static final Map<UUID, Long>    STREAK_T = new ConcurrentHashMap<>();
 
-    /* --------------- events --------------- */
+    /* ───────── events ───────── */
+
+    @EventHandler(ignoreCancelled = true)
+    public void onSlot(PlayerItemHeldEvent e) {
+        Swap s = new Swap();
+        s.time      = System.currentTimeMillis();
+        s.fromSlot  = e.getPreviousSlot();
+        s.toSlot    = e.getNewSlot();
+        s.fromItem  = e.getPlayer().getInventory().getItem(e.getPreviousSlot());
+        s.toItem    = e.getPlayer().getInventory().getItem(e.getNewSlot());
+        LAST_SWAP.put(e.getPlayer().getUniqueId(), s);
+    }
 
     @EventHandler(ignoreCancelled = true)
     public void onLeftClick(PlayerInteractEvent e) {
         if (e.getAction() != Action.LEFT_CLICK_BLOCK || e.getClickedBlock() == null) return;
 
+        UUID id = e.getPlayer().getUniqueId();
+        long now = System.currentTimeMillis();
+
+        /* store click for “swap-after” path */
         Click c = new Click();
-        c.time  = System.currentTimeMillis();
+        c.time  = now;
         c.block = e.getClickedBlock().getType();
         c.slot  = e.getPlayer().getInventory().getHeldItemSlot();
+        LAST_CLICK.put(id, c);
 
-        LAST_CLICK.put(e.getPlayer().getUniqueId(), c);
+        /* handle “swap-before-click” path */
+        Swap s = LAST_SWAP.get(id);
+        if (s == null) return;
+
+        long delay = now - s.time;                           // swap → click
+        int maxMs = cfg(".min_switch_delay", 150);
+        if (delay < 0 || delay > maxMs) return;              // swap not close enough
+
+        evaluateSuspicion(e.getPlayer().getInventory().getItem(s.fromSlot), // wrong?
+                          e.getPlayer().getInventory().getItem(s.toSlot),   // right?
+                          e.getClickedBlock().getType(),
+                          delay, e.getPlayer());
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onHotbarSwitch(PlayerItemHeldEvent e) {
-
-        User user = User.getUser(e.getPlayer());
-        if (User.isUserInvalid(user, this)) return;
-        if (!PingProvider.INSTANCE.atMostMaxPing(e.getPlayer(), cfg(".max_ping", 400))) return;
-
-        // honour timeout after cancel_vl breach
-        if (user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT)
-                .recentlyUpdated(cfg(".timeout", 3000))) {
-            e.setCancelled(true);
-            return;
-        }
-
+    public void onLateSlot(PlayerItemHeldEvent e) {
+        /* handle “swap-after-click” path */
         Click c = LAST_CLICK.get(e.getPlayer().getUniqueId());
         if (c == null) return;
 
-        long delay   = System.currentTimeMillis() - c.getTime();
-        int  minMs   = cfg(".min_switch_delay", 150);
-        if (delay > minMs) return;
+        long now   = System.currentTimeMillis();
+        long delay = now - c.time;                            // click → swap
+        int maxMs  = cfg(".min_switch_delay", 150);
+        if (delay > maxMs) return;
 
-        ItemStack was = e.getPlayer().getInventory().getItem(c.getSlot());
-        ItemStack now = e.getPlayer().getInventory().getItem(e.getNewSlot());
+        ItemStack oldItem = e.getPlayer().getInventory().getItem(c.slot);
+        ItemStack newItem = e.getPlayer().getInventory().getItem(e.getNewSlot());
 
-        if (isCorrectTool(c.getBlock(), was)) return;   // already good
-        if (!isCorrectTool(c.getBlock(), now)) return;  // still wrong
+        evaluateSuspicion(oldItem, newItem, c.block, delay, e.getPlayer());
+    }
 
-        /* ---------- suspicious swap ---------- */
+    /* ───────── core evaluation ───────── */
+
+    private void evaluateSuspicion(ItemStack wrongTool, ItemStack rightTool,
+                                   Material block, long delay, org.bukkit.entity.Player p) {
+
+        if (wrongTool == null || rightTool == null) return;
+        if (!isCorrectTool(block, rightTool)) return;          // new tool not correct
+        if (isCorrectTool(block, wrongTool)) return;           // old tool was already fine
+
+        User user = User.getUser(p);
+        if (User.isUserInvalid(user, this)) return;
+        if (!PingProvider.INSTANCE.atMostMaxPing(p, cfg(".max_ping", 400))) return;
 
         int add = (delay <= 80) ? 35 : 25;
 
-        // streak logic
         long win = cfg(".streak_window", 5000);
-        UUID id  = e.getPlayer().getUniqueId();
-        if (System.currentTimeMillis() - STREAK_T.getOrDefault(id, 0L) <= win) {
+        UUID id  = p.getUniqueId();
+        long now = System.currentTimeMillis();
+        if (now - STREAK_T.getOrDefault(id, 0L) <= win) {
             int s = STREAK.merge(id, 1, Integer::sum);
             if (s >= 4) add += 40;
         } else {
             STREAK.put(id, 1);
         }
-        STREAK_T.put(id, System.currentTimeMillis());
+        STREAK_T.put(id, now);
 
         int cancelVl = cfg(".cancel_vl", 60);
 
@@ -114,14 +155,13 @@ public final class AutoTool extends ViolationModule implements Listener {
             Flag.of(user)
                 .setAddedVl(add)
                 .setCancelAction(cancelVl, () -> {
-                    e.setCancelled(true);
-                    InventoryUtil.syncUpdateInventory(e.getPlayer());
+                    InventoryUtil.syncUpdateInventory(p);
                     user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).update();
                 })
         );
     }
 
-    /* --------------- helper --------------- */
+    /* ───────── helper ───────── */
 
     private static boolean isCorrectTool(Material block, ItemStack tool) {
         if (tool == null) return false;
@@ -145,13 +185,13 @@ public final class AutoTool extends ViolationModule implements Listener {
         return false;
     }
 
-    /* --------------- violation management --------------- */
+    /* ───────── violation management ───────── */
 
     @Override
     protected ViolationManagement createViolationManagement() {
         return ViolationLevelManagement.builder(this)
                                        .loadThresholdsToManagement()
-                                       .withDecay(6000L, 15)  // 15 per 6 s ≈ 150 per minute decay
+                                       .withDecay(6000L, 15)
                                        .build();
     }
 }

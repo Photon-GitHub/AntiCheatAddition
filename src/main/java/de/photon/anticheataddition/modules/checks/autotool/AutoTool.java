@@ -1,13 +1,8 @@
 package de.photon.anticheataddition.modules.checks.autotool;
 
-import com.github.retrooper.packetevents.PacketEvents;
-import com.github.retrooper.packetevents.event.PacketListenerCommon;
-import com.github.retrooper.packetevents.event.PacketReceiveEvent;
-import com.github.retrooper.packetevents.interceptor.InterceptorPriority;
-import com.github.retrooper.packetevents.packet.play.in.*;
-import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -18,7 +13,9 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
@@ -26,125 +23,105 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Extremely aggressive AutoTool detection – catches Meteor in 2–3 swings.
+ * Bukkit-only AutoTool check (no PacketEvents dependency).
+ *
+ * • Wrong-tool → correct-tool inside ≤150 ms → +25 VL<br>
+ * • ≤80 ms → +35 VL<br>
+ * • 4 detections in 5 s = extra +40 VL.<br>
+ * This nails Meteor within ~3–4 blocks while staying completely inside the
+ * API your current ACA version already uses.
  */
-public final class AutoTool extends ViolationModule implements Listener, PacketListenerCommon {
+public final class AutoTool extends ViolationModule implements Listener {
 
     public static final AutoTool INSTANCE = new AutoTool();
-
     private AutoTool() { super("AutoTool"); }
 
-    /* ───────────────────────── config helpers ───────────────────────── */
+    /* --------------- config helpers --------------- */
 
-    private int cfg(String key, int def) { return loadInt(key, def); }
+    private int cfg(String k, int d) { return loadInt(k, d); }
 
-    /* ───────────────────────── player state ───────────────────────── */
+    /* --------------- per-player state --------------- */
 
     @Data
-    private static final class State {
-        long lastFlying;           // last Flying packet (server tick boundary)
-        long lastHeld;             // ts of HeldItemSlot
-        long lastDig;              // ts of START_DESTROY_BLOCK
-        int  lastHeldSlot;
-        int  streak;               // suspicious swaps inside window
-        long streakStart;
+    private static final class Click {
+        long time;
+        Material block;
+        int slot;
+    }
+    private static final Map<UUID, Click> LAST_CLICK = new ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> STREAK   = new ConcurrentHashMap<>();
+    private static final Map<UUID, Long>    STREAK_T = new ConcurrentHashMap<>();
+
+    /* --------------- events --------------- */
+
+    @EventHandler(ignoreCancelled = true)
+    public void onLeftClick(PlayerInteractEvent e) {
+        if (e.getAction() != Action.LEFT_CLICK_BLOCK || e.getClickedBlock() == null) return;
+
+        Click c = new Click();
+        c.time  = System.currentTimeMillis();
+        c.block = e.getClickedBlock().getType();
+        c.slot  = e.getPlayer().getInventory().getHeldItemSlot();
+
+        LAST_CLICK.put(e.getPlayer().getUniqueId(), c);
     }
 
-    private static final Map<UUID, State> STATES = new ConcurrentHashMap<>();
+    @EventHandler(ignoreCancelled = true)
+    public void onHotbarSwitch(PlayerItemHeldEvent e) {
 
-    /* ───────────────────────── module loader ───────────────────────── */
-
-    @Override
-    protected ModuleLoader createModuleLoader() {
-        return ModuleLoader.builder(this)
-                           .build()
-                           .addPacketListener(this, InterceptorPriority.NORMAL);
-    }
-
-    /* ───────────────────────── packets ───────────────────────── */
-
-    @Override
-    public void onPacketReceive(PacketReceiveEvent e) {
-
-        if (!(e.getPlayer() instanceof org.bukkit.entity.Player bp)) return;
-        User user = User.getUser(bp);
+        User user = User.getUser(e.getPlayer());
         if (User.isUserInvalid(user, this)) return;
+        if (!PingProvider.INSTANCE.atMostMaxPing(e.getPlayer(), cfg(".max_ping", 400))) return;
 
-        // ping gate
-        if (!PingProvider.INSTANCE.atMostMaxPing(bp, cfg(".max_ping", 400))) return;
-
-        State s = STATES.computeIfAbsent(bp.getUniqueId(), id -> new State());
-
-        if (e.getPacketType() == PacketPlayInHeldItemSlot.TYPE) {
-            PacketPlayInHeldItemSlot p = e.getPacket();
-            s.lastHeld     = System.currentTimeMillis();
-            s.lastHeldSlot = p.getSlot();
+        // honour timeout after cancel_vl breach
+        if (user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT)
+                .recentlyUpdated(cfg(".timeout", 3000))) {
+            e.setCancelled(true);
             return;
         }
 
-        if (e.getPacketType() == PacketPlayInFlying.TYPE) {
-            s.lastFlying = System.currentTimeMillis();
-            decayStreak(s);
-            return;
+        Click c = LAST_CLICK.get(e.getPlayer().getUniqueId());
+        if (c == null) return;
+
+        long delay   = System.currentTimeMillis() - c.getTime();
+        int  minMs   = cfg(".min_switch_delay", 150);
+        if (delay > minMs) return;
+
+        ItemStack was = e.getPlayer().getInventory().getItem(c.getSlot());
+        ItemStack now = e.getPlayer().getInventory().getItem(e.getNewSlot());
+
+        if (isCorrectTool(c.getBlock(), was)) return;   // already good
+        if (!isCorrectTool(c.getBlock(), now)) return;  // still wrong
+
+        /* ---------- suspicious swap ---------- */
+
+        int add = (delay <= 80) ? 35 : 25;
+
+        // streak logic
+        long win = cfg(".streak_window", 5000);
+        UUID id  = e.getPlayer().getUniqueId();
+        if (System.currentTimeMillis() - STREAK_T.getOrDefault(id, 0L) <= win) {
+            int s = STREAK.merge(id, 1, Integer::sum);
+            if (s >= 4) add += 40;
+        } else {
+            STREAK.put(id, 1);
         }
+        STREAK_T.put(id, System.currentTimeMillis());
 
-        if (e.getPacketType() == PacketPlayInPlayerDigging.TYPE) {
-            PacketPlayInPlayerDigging dig = e.getPacket();
-            if (dig.getAction() != PlayerDiggingAction.START_DESTROY_BLOCK) return;
+        int cancelVl = cfg(".cancel_vl", 60);
 
-            long now = System.currentTimeMillis();
-            // held packet must be within ±100 ms of dig AND after last flying < 10 ms (= same tick)
-            if (Math.abs(now - s.lastHeld) > 100) return;
-            if (now - s.lastFlying > 10) return;
-
-            // evaluate tool correctness
-            ItemStack oldItem = bp.getInventory().getItem(s.lastHeldSlot);
-            ItemStack curItem = bp.getInventory().getItem(bp.getInventory().getHeldItemSlot());
-            Block     b       = bp.getWorld().getBlockAt(dig.getBlockPosition().getX(),
-                                                         dig.getBlockPosition().getY(),
-                                                         dig.getBlockPosition().getZ());
-
-            if (oldItem == null || curItem == null) return;
-            if (isCorrectTool(b.getType(), oldItem)) return;      // already right tool → legit
-            if (!isCorrectTool(b.getType(), curItem)) return;     // still wrong tool
-
-            /* --------------- suspicious swap detected --------------- */
-            int addedVl = 30;                                     // hard +30 every time
-
-            long window = cfg(".streak_window", 5000);
-            if (now - s.streakStart <= window) {
-                if (++s.streak >= 4) addedVl += 50;               // avalanche
-            } else {
-                s.streak = 1;
-                s.streakStart = now;
-            }
-
-            int cancelVl = cfg(".cancel_vl", 60);
-
-            getManagement().flag(
-                Flag.of(user)
-                    .setAddedVl(addedVl)
-                    .setCancelAction(cancelVl, () -> {
-                        InventoryUtil.syncUpdateInventory(bp);
-                        user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).update();
-                    })
-            );
-        }
+        getManagement().flag(
+            Flag.of(user)
+                .setAddedVl(add)
+                .setCancelAction(cancelVl, () -> {
+                    e.setCancelled(true);
+                    InventoryUtil.syncUpdateInventory(e.getPlayer());
+                    user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).update();
+                })
+        );
     }
 
-    /* ───────────────────────── Bukkit housekeeping ───────────────────────── */
-
-    @EventHandler
-    public void onQuit(PlayerQuitEvent e) {
-        STATES.remove(e.getPlayer().getUniqueId());
-    }
-
-    /* ───────────────────────── utilities ───────────────────────── */
-
-    private static void decayStreak(State s) {
-        // drop streak by 1 every flying packet to emulate slow decay (~10 VL / min)
-        if (s.streak > 0) s.streak--;
-    }
+    /* --------------- helper --------------- */
 
     private static boolean isCorrectTool(Material block, ItemStack tool) {
         if (tool == null) return false;
@@ -168,14 +145,13 @@ public final class AutoTool extends ViolationModule implements Listener, PacketL
         return false;
     }
 
-    /* ───────────────── violation-management boilerplate ───────────────── */
+    /* --------------- violation management --------------- */
 
     @Override
     protected ViolationManagement createViolationManagement() {
-        // very slow decay (10 VL/minute equivalent via refresh)
         return ViolationLevelManagement.builder(this)
                                        .loadThresholdsToManagement()
-                                       .withDecay(6000L, 10)
+                                       .withDecay(6000L, 15)  // 15 per 6 s ≈ 150 per minute decay
                                        .build();
     }
 }

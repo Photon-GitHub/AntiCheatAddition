@@ -217,7 +217,7 @@ public final class AutoTool extends ViolationModule implements Listener {
     @Override protected ViolationManagement createViolationManagement() {
         return ViolationLevelManagement.builder(this)
                                        .loadThresholdsToManagement()
-                                       .withDecay(6000L, 15)
+                                       .withDecay(2400L, 30)
                                        .build();
     }
 }

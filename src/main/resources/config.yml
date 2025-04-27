@@ -137,8 +137,7 @@ AutoTool:
   timeout: 3000               # (ms) block all further switches after cancel_vl
   max_ping: 400               # ignore players with ping > this; -1 = no ping check
 
-  min_switch_delay: 150       # swaps faster than this after LEFT_CLICK are suspicious
-  buffer_decay: 4000          # (ms) time after which the 3-in-a-row pattern resets
+  streak_window: 5000
 
   # Optional commands that run when the player’s VL crosses the given thresholds.
   thresholds:

@@ -26,11 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * AutoTool check designed to catch Meteor-style “smart-tool” mods.
  *
- * <p>Flags when the player starts mining with a <i>wrong</i> item and,
- * within ≤ min_switch_delay ms, hot-bar-switches to the correct tool.</p>
- *
- * VL logic:  ≤50 ms → +30 ◆ ≤100 ms → +20 ◆ ≤min_switch_delay → +10.  
- * Three detections inside buffer_decay adds +20 bonus VL.
+ * VL logic: ≤50 ms → +30 ◆ ≤100 ms → +20 ◆ ≤min_switch_delay → +10.  
+ * A 3-hit streak inside buffer_decay adds +20 VL.
  */
 public final class AutoTool extends ViolationModule implements Listener {
 
@@ -38,27 +35,24 @@ public final class AutoTool extends ViolationModule implements Listener {
 
     private AutoTool() { super("AutoTool"); }
 
-    /* ───────────────────────────────── data ───────────────────────────────── */
+    /* ─────────────────────────── data ─────────────────────────── */
 
     @Data
     private static final class ClickInfo {
-        private long     time;      // ms
-        private Material blockType; // material clicked
-        private int      slot;      // slot held on click
+        private long     time;
+        private Material blockType;
+        private int      slot;
     }
 
-    /** last LEFT_CLICK_BLOCK per player */
-    private static final Map<UUID, ClickInfo> LAST_CLICK = new ConcurrentHashMap<>();
+    private static final Map<UUID, ClickInfo> LAST_CLICK      = new ConcurrentHashMap<>();
+    private static final Map<UUID, Long>      LAST_DETECTION  = new ConcurrentHashMap<>();
+    private static final Map<UUID, Integer>   STREAK          = new ConcurrentHashMap<>();
 
-    /** pattern buffer (3 detections inside buffer_decay) */
-    private static final Map<UUID, Long>    LAST_DETECTION = new ConcurrentHashMap<>();
-    private static final Map<UUID, Integer> STREAK         = new ConcurrentHashMap<>();
+    /* ─────────────────────── config helper ─────────────────────── */
 
-    /* ───────────────────────── config helper ───────────────────────── */
+    private int cfg(String key, int def) { return loadInt(key, def); }
 
-    private int cfg(String path, int def) { return loadInt(path, def); }
-
-    /* ─────────────────────────── events ─────────────────────────── */
+    /* ───────────────────────── events ───────────────────────── */
 
     @EventHandler(ignoreCancelled = true)
     public void onLeftClick(PlayerInteractEvent e) {
@@ -75,13 +69,11 @@ public final class AutoTool extends ViolationModule implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onHotbarSwitch(PlayerItemHeldEvent e) {
 
-        /* quick global exemptions */
         User user = User.getUser(e.getPlayer());
         if (User.isUserInvalid(user, this)) return;
         if (!TPSProvider.INSTANCE.atLeastTPS(19)) return;
         if (!PingProvider.INSTANCE.atMostMaxPing(e.getPlayer(), cfg(".max_ping", 400))) return;
 
-        /* timeout after cancel_vl breach */
         if (user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT)
                 .recentlyUpdated(cfg(".timeout", 3000))) {
             e.setCancelled(true);
@@ -91,29 +83,29 @@ public final class AutoTool extends ViolationModule implements Listener {
         ClickInfo click = LAST_CLICK.get(e.getPlayer().getUniqueId());
         if (click == null) return;
 
-        long delay = System.currentTimeMillis() - click.getTime();
-        int minDelay = cfg(".min_switch_delay", 150);
-        if (delay > minDelay) return;                    // swap too slow
+        long delay   = System.currentTimeMillis() - click.getTime();
+        int  minMs   = cfg(".min_switch_delay", 150);
+        if (delay > minMs) return;
 
         ItemStack oldItem = e.getPlayer().getInventory().getItem(click.getSlot());
         ItemStack newItem = e.getPlayer().getInventory().getItem(e.getNewSlot());
 
         boolean oldGood = isCorrectTool(click.getBlockType(), oldItem);
         boolean newGood = isCorrectTool(click.getBlockType(), newItem);
-        if (oldGood || !newGood) return;                 // no suspicious change
+        if (oldGood || !newGood) return;
 
-        /* VL calculation */
+        /* ------------- VL calculation ------------- */
         int addedVl = (delay <= 50) ? 30 : (delay <= 100) ? 20 : 10;
 
-        long now = System.currentTimeMillis();
-        long last = LAST_DETECTION.getOrDefault(user.getUuid(), 0L);
+        long now   = System.currentTimeMillis();
+        long last  = LAST_DETECTION.getOrDefault(user.getUniqueId(), 0L);   // FIX
         if (now - last <= cfg(".buffer_decay", 4000)) {
-            int streak = STREAK.merge(user.getUuid(), 1, Integer::sum);
+            int streak = STREAK.merge(user.getUniqueId(), 1, Integer::sum);  // FIX
             if (streak >= 3) addedVl += 20;
         } else {
-            STREAK.put(user.getUuid(), 1);
+            STREAK.put(user.getUniqueId(), 1);                               // FIX
         }
-        LAST_DETECTION.put(user.getUuid(), now);
+        LAST_DETECTION.put(user.getUniqueId(), now);                         // FIX
 
         int cancelVl = cfg(".cancel_vl", 60);
 
@@ -128,33 +120,31 @@ public final class AutoTool extends ViolationModule implements Listener {
         );
     }
 
-    /* ────────────────────── tool / block matching ────────────────────── */
+    /* ─────────────── tool ↔ block matching ─────────────── */
 
     private static boolean isCorrectTool(Material block, ItemStack tool) {
         if (tool == null) return false;
 
-        Material m = tool.getType();
-        String b = block.name();
+        Material t = tool.getType();
+        String b   = block.name();
 
-        if (m == Material.SHEARS) {
+        if (t == Material.SHEARS)
             return b.contains("WOOL") || b.contains("LEAVES") || b.equals("COBWEB");
-        }
 
-        boolean axe    = m.name().endsWith("_AXE");
-        boolean pick   = m.name().endsWith("_PICKAXE");
-        boolean shovel = m.name().endsWith("_SHOVEL");
-        boolean hoe    = m.name().endsWith("_HOE");
+        boolean axe    = t.name().endsWith("_AXE");
+        boolean pick   = t.name().endsWith("_PICKAXE");
+        boolean shovel = t.name().endsWith("_SHOVEL");
+        boolean hoe    = t.name().endsWith("_HOE");
 
-        if (axe    && (b.endsWith("_LOG") || b.contains("WOOD") || b.contains("BAMBOO")))        return true;
-        if (pick   && (b.contains("STONE") || b.contains("ORE") || b.equals("ANCIENT_DEBRIS")))  return true;
-        if (shovel && (b.contains("DIRT") || b.contains("SAND") || b.contains("GRAVEL") ||
-                       b.contains("SNOW")))                                                      return true;
-        if (hoe    && (b.contains("HAY")  || b.contains("CROP") || b.contains("WART")))          return true;
+        if (axe    && (b.endsWith("_LOG") || b.contains("WOOD")   || b.contains("BAMBOO"))) return true;
+        if (pick   && (b.contains("STONE") || b.contains("ORE")   || b.equals("ANCIENT_DEBRIS"))) return true;
+        if (shovel && (b.contains("DIRT")  || b.contains("SAND")  || b.contains("GRAVEL") || b.contains("SNOW"))) return true;
+        if (hoe    && (b.contains("HAY")   || b.contains("CROP")  || b.contains("WART")))  return true;
 
         return false;
     }
 
-    /* ─────────────────── violation-management boilerplate ─────────────────── */
+    /* ───────────── violation-management boilerplate ───────────── */
 
     @Override
     protected ViolationManagement createViolationManagement() {

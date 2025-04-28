@@ -52,7 +52,7 @@ public final class AutoTool extends ViolationModule implements Listener {
         if (User.isUserInvalid(u, this)) return;
 
         /* --------------- timeout enforcement --------------- */
-        int timeout = cfg(".timeout", 3000);
+        int timeout = cfg(".timeout", 1500);
         if (u.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).recentlyUpdated(timeout)) {
             e.setCancelled(true);
             InventoryUtil.syncUpdateInventory(e.getPlayer());

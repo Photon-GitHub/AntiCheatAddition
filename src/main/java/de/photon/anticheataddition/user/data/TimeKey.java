@@ -3,6 +3,7 @@ package de.photon.anticheataddition.user.data;
 public enum TimeKey
 {
     AUTOEAT_TIMEOUT,
+    AUTOTOOL_TIMEOUT,
 
     AUTOFISH_DETECTION,
     AUTOFISH_AFK_DETECTION,

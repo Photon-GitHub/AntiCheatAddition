@@ -125,6 +125,35 @@ AutoEat:
     120: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoEat"
     200: "kick {player} AutoEat"
 
+# AutoTool detects “smart tool” cheats that swap to the perfect
+# tool either just before or right after hitting a block.
+# ▸ Adds 20 VL when the swap is ≤ 80 ms from the hit,
+#   10 VL when it’s ≤ min_switch_delay (default 150 ms).
+# ▸ +30 VL extra once the player performs 4 such swaps inside streak_window.
+# ▸ At cancel_vl the hot-bar switch is cancelled; further swaps are blocked
+#   for <timeout> ms and the player’s inventory is resynchronised.
+AutoTool:
+  enabled: true
+  # Violation-level at which further tool-swaps are cancelled.
+  # 0 = never cancel.
+  cancel_vl: 200
+  # Time (ms) during which all swaps are blocked after cancel_vl is reached.
+  timeout: 1500
+  # Ignore players whose ping is higher than this (ms). -1 = no ping check.
+  max_ping: 500
+  # Swaps faster than this after the first block-hit (or before it) are flagged.
+  # ↓ Lower = more lenient   ↑ Higher = stricter
+  min_switch_delay: 150
+  # ms window to detect instant “switch back” (+10 VL).
+  back_switch_delay: 150
+  # Window (ms) in which 4 rapid swaps trigger the +40 VL streak bonus.
+  streak_window: 5000
+  # Commands executed when the player’s VL crosses these thresholds.
+  thresholds:
+    100:  "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoTool"
+    200: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoTool"
+    400: "kick {player} AutoTool"
+
 # AutoFish identifies automatic fishing bots.
 # If you have modified fishing time and/or behaviour, please test if this check is compatible with your setup.
 # This check automatically disables itself on Minecraft versions below 1.11 because of changes to the Spigot API.

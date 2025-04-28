@@ -176,7 +176,7 @@ public final class AutoTool extends ViolationModule implements Listener {
         STATE.put(u, new Data(d.lastSwap, d.lastClick, d.digStart, st, ss,
                               now, originalSlot));
 
-        int cancelVl = cfg(".cancel_vl", 100);
+        int cancelVl = cfg(".cancel_vl", 200);
 
         getManagement().flag(
             Flag.of(u)

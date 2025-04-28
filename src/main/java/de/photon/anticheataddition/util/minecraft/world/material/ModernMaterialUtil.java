@@ -22,6 +22,24 @@ final class ModernMaterialUtil implements MaterialUtil
     private final Set<Material> freeSpaceContainers = combineToImmutable(EnumSet.of(CHEST, TRAPPED_CHEST, ENDER_CHEST), ofTags(Tag.SHULKER_BOXES));
     private final Set<Material> nonOpenableInventories = Set.of(CHISELED_BOOKSHELF, DECORATED_POT);
 
+    // Tools
+    private final Set<Material> axes = ofTags(Tag.ITEMS_AXES);
+    private final Set<Material> hoes = ofTags(Tag.ITEMS_HOES);
+    private final Set<Material> pickaxes = ofTags(Tag.ITEMS_PICKAXES);
+    private final Set<Material> shovels = ofTags(Tag.ITEMS_SHOVELS);
+    private final Set<Material> swords = ofTags(Tag.ITEMS_SWORDS);
+
+    // Mined by tools
+    private final Set<Material> minedByAxes = ofTags(Tag.MINEABLE_AXE);
+
+    private final Set<Material> minedByHoes = ofTags(Tag.MINEABLE_HOE);
+
+    private final Set<Material> minedByPickaxes = ofTags(Tag.MINEABLE_PICKAXE);
+
+    private final Set<Material> minedByShovels = ofTags(Tag.MINEABLE_SHOVEL);
+
+    private final Set<Material> minedBySwords = Sets.immutableEnumSet(BAMBOO, BAMBOO_SAPLING);
+
     private final Set<Material> liquids = Sets.immutableEnumSet(WATER, LAVA);
     private final Set<Material> signs = ofTags(Tag.ALL_SIGNS);
 }

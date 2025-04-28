@@ -34,6 +34,28 @@ public sealed interface MaterialUtil permits AncientMaterialUtil, ModernMaterial
 
     Set<Material> getSigns();
 
+    // All tools
+    Set<Material> getAxes();
+
+    Set<Material> getHoes();
+
+    Set<Material> getPickaxes();
+
+    Set<Material> getShovels();
+
+    Set<Material> getSwords();
+
+    // All materials mined by tools
+    Set<Material> getMinedByAxes();
+
+    Set<Material> getMinedByHoes();
+
+    Set<Material> getMinedByPickaxes();
+
+    Set<Material> getMinedByShovels();
+
+    Set<Material> getMinedBySwords();
+
     default Material getExpBottle()
     {
         return EXPERIENCE_BOTTLE;
@@ -42,6 +64,15 @@ public sealed interface MaterialUtil permits AncientMaterialUtil, ModernMaterial
     default Material getSpawner()
     {
         return SPAWNER;
+    }
+
+    default boolean correctToolType(Material material, Material tool)
+    {
+        return (getAxes().contains(tool) && getMinedByAxes().contains(material)) ||
+                (getHoes().contains(tool) && getMinedByHoes().contains(material)) ||
+                (getPickaxes().contains(tool) && getMinedByPickaxes().contains(material)) ||
+                (getShovels().contains(tool) && getMinedByShovels().contains(material)) ||
+                (getSwords().contains(tool) && getMinedBySwords().contains(material));
     }
 
     default boolean isAir(Material material)

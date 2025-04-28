@@ -8,6 +8,7 @@ import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -32,9 +33,10 @@ public final class AutoTool extends ViolationModule implements Listener {
 
     private record Swap(long time, int fromSlot, int toSlot,
                         ItemStack fromItem, ItemStack toItem) {}
-    private record Click(long time, Material block, int slot,
-                         ItemStack heldAtClick) {}
+    private record Click(long time, Location loc, Material block,
+                         int slot, ItemStack heldAtClick) {}
     private record Data(Swap lastSwap, Click lastClick,
+                        long digStart,
                         int streak, long streakStart,
                         long lastCorrectSwapTime, int originalSlot) {}
 
@@ -49,6 +51,15 @@ public final class AutoTool extends ViolationModule implements Listener {
         User u = User.getUser(e.getPlayer());
         if (User.isUserInvalid(u, this)) return;
 
+        /* --------------- timeout enforcement --------------- */
+        int timeout = cfg(".timeout", 3000);
+        if (u.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).recentlyUpdated(timeout)) {
+            e.setCancelled(true);
+            InventoryUtil.syncUpdateInventory(e.getPlayer());
+            return;
+        }
+        /* --------------------------------------------------- */
+
         long now  = System.currentTimeMillis();
         int  newS = e.getNewSlot();
 
@@ -59,8 +70,8 @@ public final class AutoTool extends ViolationModule implements Listener {
             if (now - d.lastCorrectSwapTime <= backDelay && newS == d.originalSlot) {
                 addBackViolation(u, e.getPlayer());
                 d = new Data(d.lastSwap, d.lastClick,
-                             d.streak, d.streakStart,
-                             0, -1);                       // reset timer
+                             d.digStart, d.streak, d.streakStart,
+                             0, -1);
             }
         }
 
@@ -69,8 +80,9 @@ public final class AutoTool extends ViolationModule implements Listener {
                 e.getPlayer().getInventory().getItem(e.getPreviousSlot()),
                 e.getPlayer().getInventory().getItem(newS));
 
-        if (d == null) d = new Data(null, null, 0, 0, 0, -1);
-        STATE.put(u, new Data(s, d.lastClick, d.streak, d.streakStart,
+        if (d == null) d = new Data(null, null, 0, 0, 0, 0, -1);
+        STATE.put(u, new Data(s, d.lastClick, d.digStart,
+                              d.streak, d.streakStart,
                               d.lastCorrectSwapTime, d.originalSlot));
     }
 
@@ -85,12 +97,19 @@ public final class AutoTool extends ViolationModule implements Listener {
                           .getItem(e.getPlayer().getInventory().getHeldItemSlot());
 
         Click c = new Click(System.currentTimeMillis(),
+                            e.getClickedBlock().getLocation(),
                             e.getClickedBlock().getType(),
                             e.getPlayer().getInventory().getHeldItemSlot(),
                             held);
 
-        Data d = STATE.getOrDefault(u, new Data(null,null,0,0,0,-1));
-        STATE.put(u, new Data(d.lastSwap, c, d.streak, d.streakStart,
+        Data d = STATE.getOrDefault(u, new Data(null,null,0,0,0,0,-1));
+
+        long digStart = (d.lastClick == null ||
+                         !d.lastClick.loc().equals(c.loc()))
+                        ? c.time()
+                        : d.digStart;
+
+        STATE.put(u, new Data(d.lastSwap, c, digStart, d.streak, d.streakStart,
                               d.lastCorrectSwapTime, d.originalSlot));
 
         evaluateBeforeHit(u, e.getPlayer(), c);
@@ -133,6 +152,11 @@ public final class AutoTool extends ViolationModule implements Listener {
                                    ItemStack wrongRaw, ItemStack right,
                                    long delay, Material block, int originalSlot) {
 
+        /* ignore corrections after min_switch_delay on the same block */
+        if (d.digStart > 0 &&
+            System.currentTimeMillis() - d.digStart > cfg(".min_switch_delay", 150))
+            return;
+
         if (right == null) return;
         ItemStack wrong = wrongRaw == null ? new ItemStack(Material.AIR) : wrongRaw;
 
@@ -149,10 +173,10 @@ public final class AutoTool extends ViolationModule implements Listener {
         long ss  = (st == 1) ? now : d.streakStart;
         if (st >= 4) add += 30;
 
-        STATE.put(u, new Data(d.lastSwap, d.lastClick, st, ss,
+        STATE.put(u, new Data(d.lastSwap, d.lastClick, d.digStart, st, ss,
                               now, originalSlot));
 
-        int cancelVl = cfg(".cancel_vl", 60);
+        int cancelVl = cfg(".cancel_vl", 100);
 
         getManagement().flag(
             Flag.of(u)

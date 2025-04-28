@@ -138,7 +138,7 @@ AutoTool:
   # 0 = never cancel.
   cancel_vl: 200
   # Time (ms) during which all swaps are blocked after cancel_vl is reached.
-  timeout: 3000
+  timeout: 1500
   # Ignore players whose ping is higher than this (ms). -1 = no ping check.
   max_ping: 400
   # Swaps faster than this after the first block-hit (or before it) are flagged.

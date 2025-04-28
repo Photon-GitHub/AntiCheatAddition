@@ -11,6 +11,7 @@ import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -115,48 +116,47 @@ public final class AutoTool extends ViolationModule implements Listener
         final Click c = Click.fromEvent(System.currentTimeMillis(), e);
 
         /* new dig session ALWAYS on mouse-down */
-        user.getData().object.autoToolData = new AutoToolData(null, c, c.time(), 0, 0, 0, -1);
-        evaluateBeforeHit(user, e.getPlayer(), c);
-    }
+        final AutoToolData data = new AutoToolData(null, c, c.time(), 0, 0, 0, -1);
+        user.getData().object.autoToolData = data;
 
-    @EventHandler(ignoreCancelled = true)
-    public void onSwapAfterClick(PlayerItemHeldEvent e)
-    {
-        User user = User.getUser(e.getPlayer());
-        if (User.isUserInvalid(user, this)) return;
-
-        AutoToolData data = user.getData().object.autoToolData;
-        if (data == null || data.lastClick == null) return;
-
-        long now = System.currentTimeMillis();
-        long delay = now - data.lastClick.time();
-        if (delay > minSwitchDelay) return;
-        if (now - data.digStart >= minSwitchDelay) return;           // late correction
-
-        ItemStack was = data.lastClick.heldAtClick();
-        ItemStack nowItem = e.getPlayer().getInventory().getItem(e.getNewSlot());
-
-        evaluateSuspicion(user, e.getPlayer(), data, was, nowItem, delay, data.lastClick.block(), data.lastClick.slot());
-    }
-
-    /* swap-before-hit */
-    private void evaluateBeforeHit(User user, org.bukkit.entity.Player p, Click c)
-    {
-        AutoToolData data = user.getData().object.autoToolData;
-        if (data == null || data.lastSwap == null) return;
+        // TODO: Always false?
+        if (data.lastSwap == null) return;
 
         long delay = c.time() - data.lastSwap.time();
         if (delay < 0 || delay > minSwitchDelay) return;
         if (data.lastSwap.time() - data.digStart >= minSwitchDelay) return;  // late correction
 
-        evaluateSuspicion(user, p, data,
+        evaluateSuspicion(user, e.getPlayer(), data,
                           data.lastSwap.fromItem(), data.lastSwap.toItem(),
                           delay, c.block(), data.lastSwap.fromSlot());
     }
 
+    @EventHandler(ignoreCancelled = true)
+    public void onSwapAfterClick(PlayerItemHeldEvent e)
+    {
+        final User user = User.getUser(e.getPlayer());
+        if (User.isUserInvalid(user, this)) return;
+
+        final AutoToolData data = user.getData().object.autoToolData;
+        if (data.lastClick == null) return;
+
+        final long now = System.currentTimeMillis();
+        final long delay = now - data.lastClick.time();
+        if (delay > minSwitchDelay ||
+            // late correction
+            now - data.digStart >= minSwitchDelay) return;
+
+        final ItemStack was = data.lastClick.heldAtClick();
+        final ItemStack nowItem = e.getPlayer().getInventory().getItem(e.getNewSlot());
+
+        evaluateSuspicion(user, e.getPlayer(), data, was, nowItem, delay, data.lastClick.block(), data.lastClick.slot());
+    }
+
+    /* swap-before-hit */
+
     /* ───────── core logic ───────── */
 
-    private void evaluateSuspicion(User user, org.bukkit.entity.Player p, AutoToolData d,
+    private void evaluateSuspicion(User user, Player p, AutoToolData d,
                                    ItemStack wrongRaw, ItemStack right,
                                    long delay, Material block, int originalSlot)
     {

@@ -140,7 +140,7 @@ AutoTool:
   # Time (ms) during which all swaps are blocked after cancel_vl is reached.
   timeout: 1500
   # Ignore players whose ping is higher than this (ms). -1 = no ping check.
-  max_ping: 400
+  max_ping: 500
   # Swaps faster than this after the first block-hit (or before it) are flagged.
   # ↓ Lower = more lenient   ↑ Higher = stricter
   min_switch_delay: 150

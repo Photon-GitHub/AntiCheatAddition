@@ -51,23 +51,21 @@ public final class AutoTool extends ViolationModule implements Listener {
         User u = User.getUser(e.getPlayer());
         if (User.isUserInvalid(u, this)) return;
 
-        /* --------------- timeout enforcement --------------- */
-        int timeout = cfg(".timeout", 1500);
-        if (u.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).recentlyUpdated(timeout)) {
+        /* cancel-VL timeout (inactive when cancel_vl = 0) */
+        if (cfg(".cancel_vl", 0) > 0 &&
+            u.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).recentlyUpdated(cfg(".timeout", 1500))) {
             e.setCancelled(true);
             InventoryUtil.syncUpdateInventory(e.getPlayer());
             return;
         }
-        /* --------------------------------------------------- */
 
-        long now  = System.currentTimeMillis();
-        int  newS = e.getNewSlot();
+        long now = System.currentTimeMillis();
 
         Data d = STATE.get(u);
-        /* detect instant “switch back” */
         if (d != null && d.lastCorrectSwapTime > 0) {
             int backDelay = cfg(".back_switch_delay", 150);
-            if (now - d.lastCorrectSwapTime <= backDelay && newS == d.originalSlot) {
+            if (now - d.lastCorrectSwapTime <= backDelay &&
+                e.getNewSlot() == d.originalSlot) {
                 addBackViolation(u, e.getPlayer());
                 d = new Data(d.lastSwap, d.lastClick,
                              d.digStart, d.streak, d.streakStart,
@@ -76,11 +74,11 @@ public final class AutoTool extends ViolationModule implements Listener {
         }
 
         Swap s = new Swap(now,
-                e.getPreviousSlot(), newS,
+                e.getPreviousSlot(), e.getNewSlot(),
                 e.getPlayer().getInventory().getItem(e.getPreviousSlot()),
-                e.getPlayer().getInventory().getItem(newS));
+                e.getPlayer().getInventory().getItem(e.getNewSlot()));
 
-        if (d == null) d = new Data(null, null, 0, 0, 0, 0, -1);
+        if (d == null) d = new Data(null,null,0,0,0,0,-1);
         STATE.put(u, new Data(s, d.lastClick, d.digStart,
                               d.streak, d.streakStart,
                               d.lastCorrectSwapTime, d.originalSlot));
@@ -102,15 +100,8 @@ public final class AutoTool extends ViolationModule implements Listener {
                             e.getPlayer().getInventory().getHeldItemSlot(),
                             held);
 
-        Data d = STATE.getOrDefault(u, new Data(null,null,0,0,0,0,-1));
-
-        long digStart = (d.lastClick == null ||
-                         !d.lastClick.loc().equals(c.loc()))
-                        ? c.time()
-                        : d.digStart;
-
-        STATE.put(u, new Data(d.lastSwap, c, digStart, d.streak, d.streakStart,
-                              d.lastCorrectSwapTime, d.originalSlot));
+        /* new dig session ALWAYS on mouse-down */
+        STATE.put(u, new Data(null, c, c.time(), 0, 0, 0, -1));
 
         evaluateBeforeHit(u, e.getPlayer(), c);
     }
@@ -123,14 +114,17 @@ public final class AutoTool extends ViolationModule implements Listener {
         Data d = STATE.get(u);
         if (d == null || d.lastClick == null) return;
 
-        long delay = System.currentTimeMillis() - d.lastClick.time();
-        if (delay > cfg(".min_switch_delay", 150)) return;
+        long now   = System.currentTimeMillis();
+        long delay = now - d.lastClick.time();
+        int  min   = cfg(".min_switch_delay", 150);
+        if (delay > min) return;
+        if (now - d.digStart >= min) return;           // late correction
 
         ItemStack was = d.lastClick.heldAtClick();
-        ItemStack now = e.getPlayer().getInventory().getItem(e.getNewSlot());
+        ItemStack nowItem = e.getPlayer().getInventory().getItem(e.getNewSlot());
 
         evaluateSuspicion(u, e.getPlayer(), d,
-                was, now, delay, d.lastClick.block(), d.lastClick.slot());
+                was, nowItem, delay, d.lastClick.block(), d.lastClick.slot());
     }
 
     /* swap-before-hit */
@@ -139,7 +133,9 @@ public final class AutoTool extends ViolationModule implements Listener {
         if (d == null || d.lastSwap == null) return;
 
         long delay = c.time() - d.lastSwap.time();
-        if (delay < 0 || delay > cfg(".min_switch_delay", 150)) return;
+        int  min   = cfg(".min_switch_delay", 150);
+        if (delay < 0 || delay > min) return;
+        if (d.lastSwap.time() - d.digStart >= min) return;  // late correction
 
         evaluateSuspicion(u, p, d,
                 d.lastSwap.fromItem(), d.lastSwap.toItem(),
@@ -152,19 +148,13 @@ public final class AutoTool extends ViolationModule implements Listener {
                                    ItemStack wrongRaw, ItemStack right,
                                    long delay, Material block, int originalSlot) {
 
-        /* ignore corrections after min_switch_delay on the same block */
-        if (d.digStart > 0 &&
-            System.currentTimeMillis() - d.digStart > cfg(".min_switch_delay", 150))
-            return;
-
-        if (right == null) return;
+        if (right == null) return;                       // empty hand
         ItemStack wrong = wrongRaw == null ? new ItemStack(Material.AIR) : wrongRaw;
 
-        if (!isCorrectTool(block, right)) return;
-        if (wrong.getType() != Material.AIR && isCorrectTool(block, wrong)) return;
-        if (!PingProvider.INSTANCE.atMostMaxPing(p, cfg(".max_ping", 500))) return;
+        if (!isCorrectTool(block, right)) return;        // swapped to wrong tool
+        if (wrong.getType() != Material.AIR && isCorrectTool(block, wrong)) return; // both good
+        if (!PingProvider.INSTANCE.atMostMaxPing(p, cfg(".max_ping", 400))) return;
 
-        /* base VLs */
         int add = (delay <= 80) ? 20 : 10;
 
         long now = System.currentTimeMillis();
@@ -188,12 +178,11 @@ public final class AutoTool extends ViolationModule implements Listener {
         );
     }
 
-    /* extra VL for instant switch-back */
     private void addBackViolation(User u, org.bukkit.entity.Player p) {
-        getManagement().flag(Flag.of(u).setAddedVl(10));   // mild penalty
+        getManagement().flag(Flag.of(u).setAddedVl(10));
     }
 
-    /* ───── tool matcher (unchanged) ───── */
+    /* tool matcher */
     private static boolean isCorrectTool(Material block, ItemStack tool) {
         if (tool == null) return false;
 
@@ -206,10 +195,10 @@ public final class AutoTool extends ViolationModule implements Listener {
         if (t.name().endsWith("_SWORD"))
             return b.equals("BAMBOO") || b.equals("BAMBOO_SHOOT");
 
-        boolean axe = t.name().endsWith("_AXE");
-        boolean pick = t.name().endsWith("_PICKAXE");
+        boolean axe    = t.name().endsWith("_AXE");
+        boolean pick   = t.name().endsWith("_PICKAXE");
         boolean shovel = t.name().endsWith("_SHOVEL");
-        boolean hoe = t.name().endsWith("_HOE");
+        boolean hoe    = t.name().endsWith("_HOE");
 
         if (pick && (b.contains("STONE") || b.contains("DEEPSLATE") || b.contains("ORE")
                      || b.contains("TERRACOTTA") || b.endsWith("_BLOCK")
@@ -237,7 +226,6 @@ public final class AutoTool extends ViolationModule implements Listener {
         return false;
     }
 
-    /* ───── violation mgmt ───── */
     @Override protected ViolationManagement createViolationManagement() {
         return ViolationLevelManagement.builder(this)
                                        .loadThresholdsToManagement()

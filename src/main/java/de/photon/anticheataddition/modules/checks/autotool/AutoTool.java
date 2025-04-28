@@ -162,7 +162,7 @@ public final class AutoTool extends ViolationModule implements Listener {
 
         if (!isCorrectTool(block, right)) return;
         if (wrong.getType() != Material.AIR && isCorrectTool(block, wrong)) return;
-        if (!PingProvider.INSTANCE.atMostMaxPing(p, cfg(".max_ping", 400))) return;
+        if (!PingProvider.INSTANCE.atMostMaxPing(p, cfg(".max_ping", 500))) return;
 
         /* base VLs */
         int add = (delay <= 80) ? 20 : 10;

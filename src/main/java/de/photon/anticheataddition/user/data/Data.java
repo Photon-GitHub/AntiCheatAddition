@@ -60,6 +60,8 @@ public final class Data
      */
     public static final class Counter
     {
+        public final ViolationCounter autoToolStreak = new ViolationCounter(5);
+
         public final ViolationCounter inventoryAverageHeuristicsMisclicks = new ViolationCounter(0);
         public final ViolationCounter inventoryFrequencyFails = new ViolationCounter(40);
         public final ViolationCounter inventoryPerfectExitFails = new ViolationCounter(6);

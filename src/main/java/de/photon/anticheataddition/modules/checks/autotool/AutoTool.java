@@ -11,13 +11,14 @@ import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * AutoTool – detects suspicious tool swaps,
@@ -31,6 +32,7 @@ public final class AutoTool extends ViolationModule implements Listener
 
     private final int cancelVl = loadInt(".cancel_vl", 0);
     private final int timeout = loadInt(".timeout", 1500);
+    private final int maxPing = loadInt(".max_ping", 400);
     private final int backSwitchDelay = loadInt(".back_switch_delay", 150);
     private final int minSwitchDelay = loadInt(".min_switch_delay", 150);
     private final long streakWindow = loadLong(".streak_window", 5000);
@@ -60,16 +62,16 @@ public final class AutoTool extends ViolationModule implements Listener
         }
     }
 
-    public record AutoToolData(Swap lastSwap, Click lastClick, long digStart, int streak, long streakStart, long lastCorrectSwapTime, int originalSlot)
+    public record AutoToolData(Swap lastSwap, Click lastClick, long digStart, long lastCorrectSwapTime, int originalSlot)
     {
         private AutoToolData replaceLastSwap(Swap lastSwap)
         {
-            return new AutoToolData(lastSwap, this.lastClick, this.digStart, this.streak, this.streakStart, this.lastCorrectSwapTime, this.originalSlot);
+            return new AutoToolData(lastSwap, this.lastClick, this.digStart, this.lastCorrectSwapTime, this.originalSlot);
         }
 
         private AutoToolData finishedSwap()
         {
-            return new AutoToolData(this.lastSwap, this.lastClick, this.digStart, this.streak, this.streakStart, 0, -1);
+            return new AutoToolData(this.lastSwap, this.lastClick, this.digStart, 0, -1);
         }
     }
 
@@ -116,19 +118,7 @@ public final class AutoTool extends ViolationModule implements Listener
         final Click c = Click.fromEvent(System.currentTimeMillis(), e);
 
         /* new dig session ALWAYS on mouse-down */
-        final AutoToolData data = new AutoToolData(null, c, c.time(), 0, 0, 0, -1);
-        user.getData().object.autoToolData = data;
-
-        // TODO: Always false?
-        if (data.lastSwap == null) return;
-
-        long delay = c.time() - data.lastSwap.time();
-        if (delay < 0 || delay > minSwitchDelay) return;
-        if (data.lastSwap.time() - data.digStart >= minSwitchDelay) return;  // late correction
-
-        evaluateSuspicion(user, e.getPlayer(), data,
-                          data.lastSwap.fromItem(), data.lastSwap.toItem(),
-                          delay, c.block(), data.lastSwap.fromSlot());
+        user.getData().object.autoToolData = new AutoToolData(null, c, c.time(), 0, -1);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -149,37 +139,48 @@ public final class AutoTool extends ViolationModule implements Listener
         final ItemStack was = data.lastClick.heldAtClick();
         final ItemStack nowItem = e.getPlayer().getInventory().getItem(e.getNewSlot());
 
-        evaluateSuspicion(user, e.getPlayer(), data, was, nowItem, delay, data.lastClick.block(), data.lastClick.slot());
+        evaluateSuspicion(user, data, was, nowItem, delay, data.lastClick.block(), data.lastClick.slot());
     }
 
     /* swap-before-hit */
 
     /* ───────── core logic ───────── */
 
-    private void evaluateSuspicion(User user, Player p, AutoToolData d,
-                                   ItemStack wrongRaw, ItemStack right,
+    private void evaluateSuspicion(@NotNull User user, AutoToolData data,
+                                   @Nullable ItemStack itemBeforeSwitch, @Nullable ItemStack itemAfterSwitch,
                                    long delay, Material block, int originalSlot)
     {
+        // Ignore if the player is not holding a tool
+        if (itemAfterSwitch == null) return;
+        if (itemBeforeSwitch == null) itemBeforeSwitch = new ItemStack(Material.AIR);
 
-        if (right == null) return;                       // empty hand
-        ItemStack wrong = wrongRaw == null ? new ItemStack(Material.AIR) : wrongRaw;
+        // Tool was already correct
+        if (isCorrectTool(itemBeforeSwitch, block) ||
+            // Swapped to wrong tool
+            !isCorrectTool(itemAfterSwitch, block) ||
+            // Too high player ping
+            !PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing)) return;
 
-        if (!isCorrectTool(right, block)) return;        // swapped to wrong tool
-        if (wrong.getType() != Material.AIR && isCorrectTool(wrong, block)) return; // both good
-        if (!PingProvider.INSTANCE.atMostMaxPing(p, loadInt(".max_ping", 400))) return;
+        int vl = 10;
+        if (delay <= 80) vl += 10;
 
-        int add = (delay <= 80) ? 20 : 10;
+        // Check if the player is in a streak.
+        if (user.getTimeMap().at(TimeKey.AUTOTOOL_STREAK_START).recentlyUpdated(streakWindow)) {
+            // If the player is in a streak increment the streak counter.
+            if (user.getData().counter.autoToolStreak.incrementCompareThreshold()) {
+                vl += 10;
+            }
+        } else {
+            // If the player is not in a streak, start a streak now.
+            user.getTimeMap().at(TimeKey.AUTOTOOL_STREAK_START).update();
+            user.getData().counter.autoToolStreak.setToZero();
+        }
 
-        long now = System.currentTimeMillis();
-        int st = (now - d.streakStart <= streakWindow) ? d.streak + 1 : 1;
-        long ss = (st == 1) ? now : d.streakStart;
-        if (st >= 4) add += 30;
-
-        user.getData().object.autoToolData = new AutoToolData(d.lastSwap, d.lastClick, d.digStart, st, ss, now, originalSlot);
+        user.getData().object.autoToolData = new AutoToolData(data.lastSwap, data.lastClick, data.digStart, System.currentTimeMillis(), originalSlot);
         getManagement().flag(Flag.of(user)
-                                 .setAddedVl(add)
+                                 .setAddedVl(vl)
                                  .setCancelAction(cancelVl, () -> {
-                                     InventoryUtil.syncUpdateInventory(p);
+                                     InventoryUtil.syncUpdateInventory(user.getPlayer());
                                      user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).update();
                                  }));
     }
@@ -189,6 +190,7 @@ public final class AutoTool extends ViolationModule implements Listener
         if (tool == null) return false;
         final Material toolType = tool.getType();
 
+        // Special case for shears as there are no tags for them.
         if (toolType == Material.SHEARS)
             return minedMaterial.name().contains("LEAVES") || minedMaterial.name().contains("WOOL") || minedMaterial.name().equals("COBWEB");
 

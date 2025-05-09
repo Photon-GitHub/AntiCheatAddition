@@ -48,17 +48,6 @@ public final class AutoTool extends ViolationModule implements Listener
     /* ───────── Internal data structures ───────── */
 
     /**
-     * Represents a hotbar swap event with timing and slot/item details.
-     */
-    private record Swap(long time, int fromSlot, int toSlot, ItemStack fromItem, ItemStack toItem)
-    {
-        private static Swap fromEvent(long time, PlayerItemHeldEvent e)
-        {
-            return new Swap(time, e.getPreviousSlot(), e.getNewSlot(), e.getPlayer().getInventory().getItem(e.getPreviousSlot()), e.getPlayer().getInventory().getItem(e.getNewSlot()));
-        }
-    }
-
-    /**
      * Represents a left-click interaction on a block with context.
      */
     private record Click(Location loc, Material block, int slot, ItemStack heldAtClick)
@@ -72,20 +61,14 @@ public final class AutoTool extends ViolationModule implements Listener
     /**
      * Immutable data for tracking a player's auto-tool state between events.
      *
-     * @param lastSwap     the last recorded swap action
      * @param lastClick    the last recorded block click
      * @param originalSlot the original slot index before swap
      */
-    public record AutoToolData(Swap lastSwap, Click lastClick, int originalSlot)
+    public record AutoToolData(Click lastClick, int originalSlot)
     {
-        private AutoToolData replaceLastSwap(Swap lastSwap)
-        {
-            return new AutoToolData(lastSwap, this.lastClick, this.originalSlot);
-        }
-
         private AutoToolData finishedSwap()
         {
-            return new AutoToolData(this.lastSwap, this.lastClick, -1);
+            return new AutoToolData(this.lastClick, -1);
         }
     }
 
@@ -109,10 +92,8 @@ public final class AutoTool extends ViolationModule implements Listener
         if (user.getTimeMap().at(TimeKey.AUTOTOOL_LAST_CORRECT_SWAP).recentlyUpdated(backSwitchDelay) &&
             e.getNewSlot() == data.originalSlot) {
             autoToolFlag(user, 10, e);
-            data = data.finishedSwap();
+            user.getData().object.autoToolData = data.finishedSwap();
         }
-
-        user.getData().object.autoToolData = data.replaceLastSwap(Swap.fromEvent(System.currentTimeMillis(), e));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -127,7 +108,7 @@ public final class AutoTool extends ViolationModule implements Listener
 
         /* new dig session ALWAYS on mouse-down */
         user.getTimeMap().at(TimeKey.AUTOTOOL_DIG_START).update();
-        user.getData().object.autoToolData = new AutoToolData(null, c, -1);
+        user.getData().object.autoToolData = new AutoToolData(c, -1);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -195,7 +176,7 @@ public final class AutoTool extends ViolationModule implements Listener
         }
 
         user.getTimeMap().at(TimeKey.AUTOTOOL_LAST_CORRECT_SWAP).update();
-        user.getData().object.autoToolData = new AutoToolData(data.lastSwap, data.lastClick, originalSlot);
+        user.getData().object.autoToolData = new AutoToolData(data.lastClick, originalSlot);
         this.autoToolFlag(user, vl, null);
     }
 

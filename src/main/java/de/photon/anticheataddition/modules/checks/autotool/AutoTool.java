@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 public final class AutoTool extends ViolationModule implements Listener
 {
     public static final AutoTool INSTANCE = new AutoTool();
+    private static final ItemStack AIR_STACK = new ItemStack(Material.AIR);
 
     private AutoTool()
     {
@@ -151,7 +152,7 @@ public final class AutoTool extends ViolationModule implements Listener
     {
         // Ignore if the player is not holding a tool
         if (itemAfterSwitch == null) return;
-        if (itemBeforeSwitch == null) itemBeforeSwitch = new ItemStack(Material.AIR);
+        if (itemBeforeSwitch == null) itemBeforeSwitch = AIR_STACK;
 
         // Tool was already correct
         if (isCorrectTool(itemBeforeSwitch, block) ||
@@ -191,8 +192,10 @@ public final class AutoTool extends ViolationModule implements Listener
      */
     private static boolean isCorrectTool(ItemStack tool, Material minedMaterial)
     {
-        if (tool == null) return false;
+        if (tool == null || minedMaterial == null) return false;
         final Material toolType = tool.getType();
+        // Early return for air
+        if (toolType == Material.AIR) return false;
 
         // Special case for shears as there are no tags for them.
         if (toolType == Material.SHEARS)

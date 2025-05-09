@@ -21,8 +21,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * AutoTool – detects suspicious tool swaps,
- * including the “Switch Back” option.
+ * {@code AutoTool} detects suspicious quick tool swaps around block interactions,
+ * aiming to identify and flag automated or illicit "auto-tool" behaviors.
+ * <p>
+ * This module watches for rapid hotbar switches before breaking blocks,
+ * enforces timeouts, streak penalties, and has ping-based exemptions.
+ * </p>
  */
 public final class AutoTool extends ViolationModule implements Listener
 {
@@ -37,8 +41,11 @@ public final class AutoTool extends ViolationModule implements Listener
     private final int minSwitchDelay = loadInt(".min_switch_delay", 150);
     private final long streakWindow = loadLong(".streak_window", 5000);
 
-    /* ───────── per-player scratch data ───────── */
+    /* ───────── Internal data structures ───────── */
 
+    /**
+     * Represents a hotbar swap event with timing and slot/item details.
+     */
     private record Swap(long time, int fromSlot, int toSlot, ItemStack fromItem, ItemStack toItem)
     {
         private static Swap fromEvent(long time, PlayerItemHeldEvent e)
@@ -50,6 +57,9 @@ public final class AutoTool extends ViolationModule implements Listener
         }
     }
 
+    /**
+     * Represents a left-click interaction on a block with context.
+     */
     private record Click(long time, Location loc, Material block, int slot, ItemStack heldAtClick)
     {
         private static Click fromEvent(long time, PlayerInteractEvent e)
@@ -62,6 +72,15 @@ public final class AutoTool extends ViolationModule implements Listener
         }
     }
 
+    /**
+     * Immutable data for tracking a player's auto-tool state between events.
+     *
+     * @param lastSwap            the last recorded swap action
+     * @param lastClick           the last recorded block click
+     * @param digStart            timestamp when current dig session began
+     * @param lastCorrectSwapTime timestamp of last valid swap
+     * @param originalSlot        the original slot index before swap
+     */
     public record AutoToolData(Swap lastSwap, Click lastClick, long digStart, long lastCorrectSwapTime, int originalSlot)
     {
         private AutoToolData replaceLastSwap(Swap lastSwap)
@@ -75,7 +94,7 @@ public final class AutoTool extends ViolationModule implements Listener
         }
     }
 
-    /* ───────── events ───────── */
+    /* ───────── Event handlers ───────── */
 
     @EventHandler(ignoreCancelled = true)
     public void onHotbarSwap(PlayerItemHeldEvent e)
@@ -146,9 +165,19 @@ public final class AutoTool extends ViolationModule implements Listener
 
     /* ───────── core logic ───────── */
 
-    private void evaluateSuspicion(@NotNull User user, AutoToolData data,
-                                   @Nullable ItemStack itemBeforeSwitch, @Nullable ItemStack itemAfterSwitch,
-                                   long delay, Material block, int originalSlot)
+    /**
+     * Analyzes a swap action's context to determine if it is suspicious.
+     * Flags violations based on tool correctness, delay thresholds, ping, and streaks.
+     *
+     * @param user             the user being evaluated
+     * @param data             prior auto-tool state
+     * @param itemBeforeSwitch tool held at click time (may be AIR)
+     * @param itemAfterSwitch  tool held after swap
+     * @param delay            time between click and swap in milliseconds
+     * @param block            block material being mined
+     * @param originalSlot     slot index before the swap
+     */
+    private void evaluateSuspicion(@NotNull User user, AutoToolData data, @Nullable ItemStack itemBeforeSwitch, @Nullable ItemStack itemAfterSwitch, long delay, Material block, int originalSlot)
     {
         // Ignore if the player is not holding a tool
         if (itemAfterSwitch == null) return;
@@ -185,6 +214,15 @@ public final class AutoTool extends ViolationModule implements Listener
                                  }));
     }
 
+    /**
+     * Determines whether the given tool is correct for mining the specified material.
+     * Includes a special-case for shears.
+     *
+     * @param tool          the ItemStack representing the tool
+     * @param minedMaterial the Material being mined
+     *
+     * @return {@code true} if the tool is appropriate, {@code false} otherwise
+     */
     private static boolean isCorrectTool(ItemStack tool, Material minedMaterial)
     {
         if (tool == null) return false;

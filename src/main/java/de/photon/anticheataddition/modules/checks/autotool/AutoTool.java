@@ -11,6 +11,7 @@ import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -32,7 +33,10 @@ public final class AutoTool extends ViolationModule implements Listener
 {
     public static final AutoTool INSTANCE = new AutoTool();
 
-    private AutoTool() {super("AutoTool");}
+    private AutoTool()
+    {
+        super("AutoTool");
+    }
 
     private final int cancelVl = loadInt(".cancel_vl", 0);
     private final int timeout = loadInt(".timeout", 1500);
@@ -50,47 +54,38 @@ public final class AutoTool extends ViolationModule implements Listener
     {
         private static Swap fromEvent(long time, PlayerItemHeldEvent e)
         {
-            return new Swap(time,
-                            e.getPreviousSlot(), e.getNewSlot(),
-                            e.getPlayer().getInventory().getItem(e.getPreviousSlot()),
-                            e.getPlayer().getInventory().getItem(e.getNewSlot()));
+            return new Swap(time, e.getPreviousSlot(), e.getNewSlot(), e.getPlayer().getInventory().getItem(e.getPreviousSlot()), e.getPlayer().getInventory().getItem(e.getNewSlot()));
         }
     }
 
     /**
      * Represents a left-click interaction on a block with context.
      */
-    private record Click(long time, Location loc, Material block, int slot, ItemStack heldAtClick)
+    private record Click(Location loc, Material block, int slot, ItemStack heldAtClick)
     {
-        private static Click fromEvent(long time, PlayerInteractEvent e)
+        private static Click fromEvent(PlayerInteractEvent e)
         {
-            return new Click(time,
-                             e.getClickedBlock().getLocation(),
-                             e.getClickedBlock().getType(),
-                             e.getPlayer().getInventory().getHeldItemSlot(),
-                             e.getPlayer().getInventory().getItem(e.getPlayer().getInventory().getHeldItemSlot()));
+            return new Click(e.getClickedBlock().getLocation(), e.getClickedBlock().getType(), e.getPlayer().getInventory().getHeldItemSlot(), e.getPlayer().getInventory().getItem(e.getPlayer().getInventory().getHeldItemSlot()));
         }
     }
 
     /**
      * Immutable data for tracking a player's auto-tool state between events.
      *
-     * @param lastSwap            the last recorded swap action
-     * @param lastClick           the last recorded block click
-     * @param digStart            timestamp when current dig session began
-     * @param lastCorrectSwapTime timestamp of last valid swap
-     * @param originalSlot        the original slot index before swap
+     * @param lastSwap     the last recorded swap action
+     * @param lastClick    the last recorded block click
+     * @param originalSlot the original slot index before swap
      */
-    public record AutoToolData(Swap lastSwap, Click lastClick, long digStart, long lastCorrectSwapTime, int originalSlot)
+    public record AutoToolData(Swap lastSwap, Click lastClick, int originalSlot)
     {
         private AutoToolData replaceLastSwap(Swap lastSwap)
         {
-            return new AutoToolData(lastSwap, this.lastClick, this.digStart, this.lastCorrectSwapTime, this.originalSlot);
+            return new AutoToolData(lastSwap, this.lastClick, this.originalSlot);
         }
 
         private AutoToolData finishedSwap()
         {
-            return new AutoToolData(this.lastSwap, this.lastClick, this.digStart, 0, -1);
+            return new AutoToolData(this.lastSwap, this.lastClick, -1);
         }
     }
 
@@ -110,20 +105,14 @@ public final class AutoTool extends ViolationModule implements Listener
         }
 
         // Detects switching back to the original tool too quickly
-        final long now = System.currentTimeMillis();
         AutoToolData data = user.getData().object.autoToolData;
-        if (data.lastCorrectSwapTime > 0 &&
-            now - data.lastCorrectSwapTime <= backSwitchDelay &&
+        if (user.getTimeMap().at(TimeKey.AUTOTOOL_LAST_CORRECT_SWAP).recentlyUpdated(backSwitchDelay) &&
             e.getNewSlot() == data.originalSlot) {
-            this.getManagement().flag(Flag.of(user).setAddedVl(10).setCancelAction(cancelVl, () -> {
-                e.setCancelled(true);
-                InventoryUtil.syncUpdateInventory(e.getPlayer());
-                user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).update();
-            }));
+            autoToolFlag(user, 10, e);
             data = data.finishedSwap();
         }
 
-        user.getData().object.autoToolData = data.replaceLastSwap(Swap.fromEvent(now, e));
+        user.getData().object.autoToolData = data.replaceLastSwap(Swap.fromEvent(System.currentTimeMillis(), e));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -134,10 +123,11 @@ public final class AutoTool extends ViolationModule implements Listener
         final User user = User.getUser(e.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
-        final Click c = Click.fromEvent(System.currentTimeMillis(), e);
+        final Click c = Click.fromEvent(e);
 
         /* new dig session ALWAYS on mouse-down */
-        user.getData().object.autoToolData = new AutoToolData(null, c, c.time(), 0, -1);
+        user.getTimeMap().at(TimeKey.AUTOTOOL_DIG_START).update();
+        user.getData().object.autoToolData = new AutoToolData(null, c, -1);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -149,11 +139,10 @@ public final class AutoTool extends ViolationModule implements Listener
         final AutoToolData data = user.getData().object.autoToolData;
         if (data.lastClick == null) return;
 
-        final long now = System.currentTimeMillis();
-        final long delay = now - data.lastClick.time();
-        if (delay > minSwitchDelay ||
-            // late correction
-            now - data.digStart >= minSwitchDelay) return;
+        final long delay = user.getTimeMap().at(TimeKey.AUTOTOOL_DIG_START).passedTime();
+
+        // Late correction
+        if (delay > minSwitchDelay) return;
 
         final ItemStack was = data.lastClick.heldAtClick();
         final ItemStack nowItem = e.getPlayer().getInventory().getItem(e.getNewSlot());
@@ -205,13 +194,9 @@ public final class AutoTool extends ViolationModule implements Listener
             user.getData().counter.autoToolStreak.setToZero();
         }
 
-        user.getData().object.autoToolData = new AutoToolData(data.lastSwap, data.lastClick, data.digStart, System.currentTimeMillis(), originalSlot);
-        getManagement().flag(Flag.of(user)
-                                 .setAddedVl(vl)
-                                 .setCancelAction(cancelVl, () -> {
-                                     InventoryUtil.syncUpdateInventory(user.getPlayer());
-                                     user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).update();
-                                 }));
+        user.getTimeMap().at(TimeKey.AUTOTOOL_LAST_CORRECT_SWAP).update();
+        user.getData().object.autoToolData = new AutoToolData(data.lastSwap, data.lastClick, originalSlot);
+        this.autoToolFlag(user, vl, null);
     }
 
     /**
@@ -233,6 +218,15 @@ public final class AutoTool extends ViolationModule implements Listener
             return minedMaterial.name().contains("LEAVES") || minedMaterial.name().contains("WOOL") || minedMaterial.name().equals("COBWEB");
 
         return MaterialUtil.INSTANCE.correctToolType(minedMaterial, toolType);
+    }
+
+    private void autoToolFlag(User user, int vl, @Nullable Cancellable eventToCancel)
+    {
+        this.getManagement().flag(Flag.of(user).setAddedVl(vl).setCancelAction(cancelVl, () -> {
+            if (eventToCancel != null) eventToCancel.setCancelled(true);
+            InventoryUtil.syncUpdateInventory(user.getPlayer());
+            user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).update();
+        }));
     }
 
     @Override

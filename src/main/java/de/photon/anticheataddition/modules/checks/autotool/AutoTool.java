@@ -56,7 +56,10 @@ public final class AutoTool extends ViolationModule implements Listener
     {
         private static Click fromEvent(PlayerInteractEvent e)
         {
-            return new Click(e.getClickedBlock().getLocation(), e.getClickedBlock().getType(), e.getPlayer().getInventory().getHeldItemSlot(), e.getPlayer().getInventory().getItem(e.getPlayer().getInventory().getHeldItemSlot()));
+            return new Click(e.getClickedBlock().getLocation(),
+                             e.getClickedBlock().getType(),
+                             e.getPlayer().getInventory().getHeldItemSlot(),
+                             e.getPlayer().getInventory().getItem(e.getPlayer().getInventory().getHeldItemSlot()));
         }
     }
 
@@ -76,6 +79,12 @@ public final class AutoTool extends ViolationModule implements Listener
 
     /* ───────── Event handlers ───────── */
 
+    /**
+     * This method detects switching to the old slot after a correct swap.
+     * <p>
+     * Many AutoTool cheats only switch to the tool until the player stops mining
+     * before switching back to the originally hold item.
+     */
     @EventHandler(ignoreCancelled = true)
     public void onHotbarSwap(PlayerItemHeldEvent e)
     {
@@ -90,7 +99,7 @@ public final class AutoTool extends ViolationModule implements Listener
         }
 
         // Detects switching back to the original tool too quickly
-        AutoToolData data = user.getData().object.autoToolData;
+        final AutoToolData data = user.getData().object.autoToolData;
         if (user.getTimeMap().at(TimeKey.AUTOTOOL_LAST_CORRECT_SWAP).recentlyUpdated(backSwitchDelay) &&
             e.getNewSlot() == data.originalSlot) {
             autoToolFlag(user, 10, e);

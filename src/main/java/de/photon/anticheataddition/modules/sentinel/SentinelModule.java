@@ -30,7 +30,7 @@ public abstract class SentinelModule extends ViolationModule
     {
         final User user = User.getUser(player);
         if (!User.isUserInvalid(user, this)) detection(user);
-        else Log.finer(() -> "SentinelModule " + this.getModuleId() + " detected player " + player.getName() + " but user is invalid, skipping detection.");
+        else Log.fine(() -> "SentinelModule " + this.getModuleId() + " detected player " + player.getName() + " but user is invalid, skipping detection.");
     }
 
     protected final void detection(User user)

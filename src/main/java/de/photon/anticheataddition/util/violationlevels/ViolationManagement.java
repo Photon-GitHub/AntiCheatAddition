@@ -85,4 +85,14 @@ public abstract class ViolationManagement
         // Only schedule the command execution if the plugin is loaded.
         if (AntiCheatAddition.getInstance().isEnabled()) this.thresholds.executeThresholds(fromVl, toVl, player);
     }
+
+    @Override
+    public String toString()
+    {
+        return "ViolationManagement{" +
+               "module=" + module +
+               ", thresholds=" + thresholds +
+               ", vlUpdateBus=" + vlUpdateBus +
+               '}';
+    }
 }

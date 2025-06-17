@@ -67,9 +67,9 @@ public final class AutoTool extends ViolationModule implements Listener
      * Immutable data for tracking a player's auto-tool state between events.
      *
      * @param lastClick    the last recorded block click
-     * @param originalSlot the original slot index before swap
+     * @param originalSlotBeforeCorrectSwap the original slot index before swap
      */
-    public record AutoToolData(Click lastClick, int originalSlot)
+    public record AutoToolData(Click lastClick, int originalSlotBeforeCorrectSwap)
     {
         private AutoToolData finishedSwap()
         {
@@ -85,8 +85,8 @@ public final class AutoTool extends ViolationModule implements Listener
      * Many AutoTool cheats only switch to the tool until the player stops mining
      * before switching back to the originally hold item.
      */
-    @EventHandler(ignoreCancelled = true)
-    public void onHotbarSwap(PlayerItemHeldEvent e)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void checkBackSwap(PlayerItemHeldEvent e)
     {
         final User user = User.getUser(e.getPlayer());
         if (User.isUserInvalid(user, this)) return;
@@ -101,7 +101,7 @@ public final class AutoTool extends ViolationModule implements Listener
         // Detects switching back to the original tool too quickly
         final AutoToolData data = user.getData().object.autoToolData;
         if (user.getTimeMap().at(TimeKey.AUTOTOOL_LAST_CORRECT_SWAP).recentlyUpdated(backSwitchDelay) &&
-            e.getNewSlot() == data.originalSlot) {
+            e.getNewSlot() == data.originalSlotBeforeCorrectSwap) {
             autoToolFlag(user, 10, e);
             user.getData().object.autoToolData = data.finishedSwap();
         }

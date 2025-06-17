@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -97,7 +98,7 @@ public final class AutoTool extends ViolationModule implements Listener
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLeftClick(PlayerInteractEvent e)
     {
         if (e.getAction() != Action.LEFT_CLICK_BLOCK || e.getClickedBlock() == null) return;
@@ -112,7 +113,7 @@ public final class AutoTool extends ViolationModule implements Listener
         user.getData().object.autoToolData = new AutoToolData(c, -1);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSwapAfterClick(PlayerItemHeldEvent e)
     {
         final User user = User.getUser(e.getPlayer());
@@ -156,10 +157,17 @@ public final class AutoTool extends ViolationModule implements Listener
 
         // Tool was already correct
         if (isCorrectTool(itemBeforeSwitch, block) ||
-            // Swapped to wrong tool
-            !isCorrectTool(itemAfterSwitch, block) ||
             // Too high player ping
             !PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing)) return;
+
+        // Swapped to wrong tool
+        if (!isCorrectTool(itemAfterSwitch, block)) {
+            user.getData().counter.autoToolCorrectSwitches.decrementAboveZero();
+            return;
+        }
+
+        // Enough correct switches to flag.
+        if (!user.getData().counter.autoToolCorrectSwitches.incrementCompareThreshold()) return;
 
         int vl = 10;
         if (delay <= 80) vl += 10;

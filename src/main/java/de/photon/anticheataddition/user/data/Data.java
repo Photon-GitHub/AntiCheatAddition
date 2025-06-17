@@ -88,7 +88,7 @@ public final class Data
     {
         public final Map<TimeKey, DoubleStatistics> autoFishConsistencyData = Map.of(TimeKey.AUTOFISH_DETECTION, new DoubleStatistics(), TimeKey.AUTOFISH_AFK_DETECTION, new DoubleStatistics());
         public AutoPotion.AutoPotionState autoPotionState = AutoPotion.AutoPotionState.AWAIT_POTION_THROW;
-        @NotNull public AutoTool.AutoToolData autoToolData = new AutoTool.AutoToolData(null, null, 0, 0, 0, 0, -1);
+        @NotNull public AutoTool.AutoToolData autoToolData = new AutoTool.AutoToolData(null, -1);
 
         public Material dupingDoubleDroppedMaterial = Material.BEDROCK;
 

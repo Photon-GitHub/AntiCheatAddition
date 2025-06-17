@@ -190,9 +190,9 @@ AutoTool:
   streak_window: 5000
   # Commands executed when the player’s VL crosses these thresholds.
   thresholds:
-    100:  "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoTool"
-    200: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoTool"
-    400: "kick {player} AutoTool"
+    50:  "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoTool"
+    100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoTool"
+    200: "kick {player} AutoTool"
 
 # Duping can pick out familiar behaviour patterns when duplicating items.
 # Since this only recognizes patterns, it is not entirely precise and may overlook cases of duping.

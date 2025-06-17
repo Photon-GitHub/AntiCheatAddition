@@ -102,7 +102,7 @@ public final class AutoTool extends ViolationModule implements Listener
         final AutoToolData data = user.getData().object.autoToolData;
         if (user.getTimeMap().at(TimeKey.AUTOTOOL_LAST_CORRECT_SWAP).recentlyUpdated(backSwitchDelay) &&
             e.getNewSlot() == data.originalSlotBeforeCorrectSwap) {
-            autoToolFlag(user, 10, e);
+            autoToolFlag(user, 5, e);
             user.getData().object.autoToolData = data.finishedSwap();
         }
     }
@@ -178,14 +178,14 @@ public final class AutoTool extends ViolationModule implements Listener
         // Enough correct switches to flag.
         if (!user.getData().counter.autoToolCorrectSwitches.incrementCompareThreshold()) return;
 
-        int vl = 10;
-        if (delay <= 80) vl += 10;
+        int vl = 5;
+        if (delay <= 80) vl += 5;
 
         // Check if the player is in a streak.
         if (user.getTimeMap().at(TimeKey.AUTOTOOL_STREAK_START).recentlyUpdated(streakWindow)) {
             // If the player is in a streak increment the streak counter.
             if (user.getData().counter.autoToolStreak.incrementCompareThreshold()) {
-                vl += 10;
+                vl += 5;
             }
         } else {
             // If the player is not in a streak, start a streak now.

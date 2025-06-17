@@ -12,6 +12,9 @@ import java.util.List;
 
 public class SentinelChannelModule extends SentinelModule implements ParsedPluginMessageListener
 {
+    // Delay for detection to allow user initialization.
+    private static final long DETECTION_DELAY_TICKS = 40L;
+
     private final List<String> containsAll = loadStringList(".containsAll");
     private final List<String> containsAny = loadStringList(".containsAny");
 
@@ -30,7 +33,10 @@ public class SentinelChannelModule extends SentinelModule implements ParsedPlugi
         // If containsAll or containsAny is empty, skip the respective check.
         if ((containsAll.isEmpty() || containsAll.stream().allMatch(message::contains)) &&
             (containsAny.isEmpty() || containsAny.stream().anyMatch(message::contains))) {
-            detection(player);
+            Log.finer(() -> "SentinelChannelModule " + this.getModuleId() + " detected player " + player.getName() + " with detections " + this.getManagement());
+
+            // Run the detection after a delay to allow for the user to be fully initialized.
+            Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(), () -> this.detection(player), DETECTION_DELAY_TICKS);
         }
     }
 

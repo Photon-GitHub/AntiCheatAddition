@@ -20,7 +20,7 @@ public class Module implements ConfigLoading, Comparable<Module>
 {
     @Getter protected final String configString;
     @Getter @EqualsAndHashCode.Include private final String moduleId;
-    @Getter private final String bypassPermission = (InternalPermission.BYPASS.getRealPermission() + '.') + this.getModuleId();
+    @Getter private final String bypassPermission;
     @Getter(lazy = true) private final ModuleLoader moduleLoader = Preconditions.checkNotNull(createModuleLoader(), "Tried to create null ModuleLoader.");
     @Getter private boolean enabled = false;
     @Getter private final SortedSet<Module> children;
@@ -35,6 +35,7 @@ public class Module implements ConfigLoading, Comparable<Module>
         }
         this.configString = configString;
         this.moduleId = configString.toLowerCase(Locale.ENGLISH);
+        this.bypassPermission = (InternalPermission.BYPASS.getRealPermission() + '.') + this.moduleId;
         this.children = ImmutableSortedSet.copyOf(children);
     }
 

@@ -47,7 +47,7 @@ public final class SkinBlinkerSprinting extends ViolationModule
     /**
      * Updates the saved skin components.
      *
-     * @return true if there was already a skin mask saved before and it differs from the new skin mask.
+     * @return true if there was already a skin mask saved before, and it differs from the new skin mask.
      */
     public boolean handleSentSkinMask(User user, int skinMask)
     {

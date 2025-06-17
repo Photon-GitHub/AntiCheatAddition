@@ -59,11 +59,11 @@ public final class ModuleManager
 
                 AutoPotion.INSTANCE,
 
+                AutoTool.INSTANCE,
+
                 ViolationModule.parentOf("Duping", DupingDoubleDropped.INSTANCE, DupingSecretCache.INSTANCE),
 
                 Fastswitch.INSTANCE,
-
-                AutoTool.INSTANCE,
 
                 ImpossibleChat.INSTANCE,
 

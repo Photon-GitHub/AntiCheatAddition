@@ -5,228 +5,234 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
+import de.photon.anticheataddition.util.minecraft.world.material.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * AutoTool – detects suspicious tool swaps,
- * including the “Switch Back” option.
+ * {@code AutoTool} detects suspicious quick tool swaps around block interactions,
+ * aiming to identify and flag automated or illicit "auto-tool" behaviors.
+ * <p>
+ * This module watches for rapid hotbar switches before breaking blocks,
+ * enforces timeouts, streak penalties, and has ping-based exemptions.
+ * </p>
  */
-public final class AutoTool extends ViolationModule implements Listener {
-
+public final class AutoTool extends ViolationModule implements Listener
+{
     public static final AutoTool INSTANCE = new AutoTool();
-    private AutoTool() { super("AutoTool"); }
+    private static final ItemStack AIR_STACK = new ItemStack(Material.AIR);
 
-    /* ───────── per-player scratch data ───────── */
+    private AutoTool()
+    {
+        super("AutoTool");
+    }
 
-    private record Swap(long time, int fromSlot, int toSlot,
-                        ItemStack fromItem, ItemStack toItem) {}
-    private record Click(long time, Location loc, Material block,
-                         int slot, ItemStack heldAtClick) {}
-    private record Data(Swap lastSwap, Click lastClick,
-                        long digStart,
-                        int streak, long streakStart,
-                        long lastCorrectSwapTime, int originalSlot) {}
+    private final int cancelVl = loadInt(".cancel_vl", 0);
+    private final int timeout = loadInt(".timeout", 1500);
+    private final int maxPing = loadInt(".max_ping", 400);
+    private final int backSwitchDelay = loadInt(".back_switch_delay", 150);
+    private final int minSwitchDelay = loadInt(".min_switch_delay", 150);
+    private final long streakWindow = loadLong(".streak_window", 5000);
 
-    private static final Map<User, Data> STATE = new ConcurrentHashMap<>();
+    /* ───────── Internal data structures ───────── */
 
-    private int cfg(String k, int d) { return loadInt(k, d); }
+    /**
+     * Represents a left-click interaction on a block with context.
+     */
+    private record Click(Location loc, Material block, int slot, ItemStack heldAtClick)
+    {
+        private static Click fromEvent(PlayerInteractEvent e)
+        {
+            return new Click(e.getClickedBlock().getLocation(),
+                             e.getClickedBlock().getType(),
+                             e.getPlayer().getInventory().getHeldItemSlot(),
+                             e.getPlayer().getInventory().getItem(e.getPlayer().getInventory().getHeldItemSlot()));
+        }
+    }
 
-    /* ───────── events ───────── */
+    /**
+     * Immutable data for tracking a player's auto-tool state between events.
+     *
+     * @param lastClick    the last recorded block click
+     * @param originalSlotBeforeCorrectSwap the original slot index before swap
+     */
+    public record AutoToolData(Click lastClick, int originalSlotBeforeCorrectSwap)
+    {
+        private AutoToolData finishedSwap()
+        {
+            return new AutoToolData(this.lastClick, -1);
+        }
+    }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onHotbarSwap(PlayerItemHeldEvent e) {
-        User u = User.getUser(e.getPlayer());
-        if (User.isUserInvalid(u, this)) return;
+    /* ───────── Event handlers ───────── */
 
-        /* cancel-VL timeout (inactive when cancel_vl = 0) */
-        if (cfg(".cancel_vl", 0) > 0 &&
-            u.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).recentlyUpdated(cfg(".timeout", 1500))) {
+    /**
+     * This method detects switching to the old slot after a correct swap.
+     * <p>
+     * Many AutoTool cheats only switch to the tool until the player stops mining
+     * before switching back to the originally hold item.
+     */
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void checkBackSwap(PlayerItemHeldEvent e)
+    {
+        final User user = User.getUser(e.getPlayer());
+        if (User.isUserInvalid(user, this)) return;
+
+        // cancel-VL timeout (inactive when cancel_vl = 0)
+        if (user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).recentlyUpdated(timeout)) {
             e.setCancelled(true);
             InventoryUtil.syncUpdateInventory(e.getPlayer());
             return;
         }
 
-        long now = System.currentTimeMillis();
-
-        Data d = STATE.get(u);
-        if (d != null && d.lastCorrectSwapTime > 0) {
-            int backDelay = cfg(".back_switch_delay", 150);
-            if (now - d.lastCorrectSwapTime <= backDelay &&
-                e.getNewSlot() == d.originalSlot) {
-                addBackViolation(u, e.getPlayer());
-                d = new Data(d.lastSwap, d.lastClick,
-                             d.digStart, d.streak, d.streakStart,
-                             0, -1);
-            }
+        // Detects switching back to the original tool too quickly
+        final AutoToolData data = user.getData().object.autoToolData;
+        if (user.getTimeMap().at(TimeKey.AUTOTOOL_LAST_CORRECT_SWAP).recentlyUpdated(backSwitchDelay) &&
+            e.getNewSlot() == data.originalSlotBeforeCorrectSwap) {
+            autoToolFlag(user, 5, e);
+            user.getData().object.autoToolData = data.finishedSwap();
         }
-
-        Swap s = new Swap(now,
-                e.getPreviousSlot(), e.getNewSlot(),
-                e.getPlayer().getInventory().getItem(e.getPreviousSlot()),
-                e.getPlayer().getInventory().getItem(e.getNewSlot()));
-
-        if (d == null) d = new Data(null,null,0,0,0,0,-1);
-        STATE.put(u, new Data(s, d.lastClick, d.digStart,
-                              d.streak, d.streakStart,
-                              d.lastCorrectSwapTime, d.originalSlot));
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onLeftClick(PlayerInteractEvent e) {
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onLeftClick(PlayerInteractEvent e)
+    {
         if (e.getAction() != Action.LEFT_CLICK_BLOCK || e.getClickedBlock() == null) return;
 
-        User u = User.getUser(e.getPlayer());
-        if (User.isUserInvalid(u, this)) return;
+        final User user = User.getUser(e.getPlayer());
+        if (User.isUserInvalid(user, this)) return;
 
-        ItemStack held = e.getPlayer().getInventory()
-                          .getItem(e.getPlayer().getInventory().getHeldItemSlot());
-
-        Click c = new Click(System.currentTimeMillis(),
-                            e.getClickedBlock().getLocation(),
-                            e.getClickedBlock().getType(),
-                            e.getPlayer().getInventory().getHeldItemSlot(),
-                            held);
+        final Click c = Click.fromEvent(e);
 
         /* new dig session ALWAYS on mouse-down */
-        STATE.put(u, new Data(null, c, c.time(), 0, 0, 0, -1));
-
-        evaluateBeforeHit(u, e.getPlayer(), c);
+        user.getTimeMap().at(TimeKey.AUTOTOOL_DIG_START).update();
+        user.getData().object.autoToolData = new AutoToolData(c, -1);
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onSwapAfterClick(PlayerItemHeldEvent e) {
-        User u = User.getUser(e.getPlayer());
-        if (User.isUserInvalid(u, this)) return;
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onSwapAfterClick(PlayerItemHeldEvent e)
+    {
+        final User user = User.getUser(e.getPlayer());
+        if (User.isUserInvalid(user, this)) return;
 
-        Data d = STATE.get(u);
-        if (d == null || d.lastClick == null) return;
+        final AutoToolData data = user.getData().object.autoToolData;
+        if (data.lastClick == null) return;
 
-        long now   = System.currentTimeMillis();
-        long delay = now - d.lastClick.time();
-        int  min   = cfg(".min_switch_delay", 150);
-        if (delay > min) return;
-        if (now - d.digStart >= min) return;           // late correction
+        final long delay = user.getTimeMap().at(TimeKey.AUTOTOOL_DIG_START).passedTime();
 
-        ItemStack was = d.lastClick.heldAtClick();
-        ItemStack nowItem = e.getPlayer().getInventory().getItem(e.getNewSlot());
+        // Late correction
+        if (delay > minSwitchDelay) return;
 
-        evaluateSuspicion(u, e.getPlayer(), d,
-                was, nowItem, delay, d.lastClick.block(), d.lastClick.slot());
+        final ItemStack was = data.lastClick.heldAtClick();
+        final ItemStack nowItem = e.getPlayer().getInventory().getItem(e.getNewSlot());
+
+        evaluateSuspicion(user, data, was, nowItem, delay, data.lastClick.block(), data.lastClick.slot());
     }
 
     /* swap-before-hit */
-    private void evaluateBeforeHit(User u, org.bukkit.entity.Player p, Click c) {
-        Data d = STATE.get(u);
-        if (d == null || d.lastSwap == null) return;
-
-        long delay = c.time() - d.lastSwap.time();
-        int  min   = cfg(".min_switch_delay", 150);
-        if (delay < 0 || delay > min) return;
-        if (d.lastSwap.time() - d.digStart >= min) return;  // late correction
-
-        evaluateSuspicion(u, p, d,
-                d.lastSwap.fromItem(), d.lastSwap.toItem(),
-                delay, c.block(), d.lastSwap.fromSlot());
-    }
 
     /* ───────── core logic ───────── */
 
-    private void evaluateSuspicion(User u, org.bukkit.entity.Player p, Data d,
-                                   ItemStack wrongRaw, ItemStack right,
-                                   long delay, Material block, int originalSlot) {
+    /**
+     * Analyzes a swap action's context to determine if it is suspicious.
+     * Flags violations based on tool correctness, delay thresholds, ping, and streaks.
+     *
+     * @param user             the user being evaluated
+     * @param data             prior auto-tool state
+     * @param itemBeforeSwitch tool held at click time (may be AIR)
+     * @param itemAfterSwitch  tool held after swap
+     * @param delay            time between click and swap in milliseconds
+     * @param block            block material being mined
+     * @param originalSlot     slot index before the swap
+     */
+    private void evaluateSuspicion(@NotNull User user, AutoToolData data, @Nullable ItemStack itemBeforeSwitch, @Nullable ItemStack itemAfterSwitch, long delay, Material block, int originalSlot)
+    {
+        // Ignore if the player is not holding a tool
+        if (itemAfterSwitch == null) return;
+        if (itemBeforeSwitch == null) itemBeforeSwitch = AIR_STACK;
 
-        if (right == null) return;                       // empty hand
-        ItemStack wrong = wrongRaw == null ? new ItemStack(Material.AIR) : wrongRaw;
+        // Tool was already correct
+        if (isCorrectTool(itemBeforeSwitch, block) ||
+            // Too high player ping
+            !PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing)) return;
 
-        if (!isCorrectTool(block, right)) return;        // swapped to wrong tool
-        if (wrong.getType() != Material.AIR && isCorrectTool(block, wrong)) return; // both good
-        if (!PingProvider.INSTANCE.atMostMaxPing(p, cfg(".max_ping", 400))) return;
+        // Swapped to wrong tool
+        if (!isCorrectTool(itemAfterSwitch, block)) {
+            user.getData().counter.autoToolCorrectSwitches.decrementAboveZero();
+            return;
+        }
 
-        int add = (delay <= 80) ? 20 : 10;
+        // Enough correct switches to flag.
+        if (!user.getData().counter.autoToolCorrectSwitches.incrementCompareThreshold()) return;
 
-        long now = System.currentTimeMillis();
-        long win = cfg(".streak_window", 5000);
-        int  st  = (now - d.streakStart <= win) ? d.streak + 1 : 1;
-        long ss  = (st == 1) ? now : d.streakStart;
-        if (st >= 4) add += 30;
+        int vl = 5;
+        if (delay <= 80) vl += 5;
 
-        STATE.put(u, new Data(d.lastSwap, d.lastClick, d.digStart, st, ss,
-                              now, originalSlot));
+        // Check if the player is in a streak.
+        if (user.getTimeMap().at(TimeKey.AUTOTOOL_STREAK_START).recentlyUpdated(streakWindow)) {
+            // If the player is in a streak increment the streak counter.
+            if (user.getData().counter.autoToolStreak.incrementCompareThreshold()) {
+                vl += 5;
+            }
+        } else {
+            // If the player is not in a streak, start a streak now.
+            user.getTimeMap().at(TimeKey.AUTOTOOL_STREAK_START).update();
+            user.getData().counter.autoToolStreak.setToZero();
+        }
 
-        int cancelVl = cfg(".cancel_vl", 200);
-
-        getManagement().flag(
-            Flag.of(u)
-                .setAddedVl(add)
-                .setCancelAction(cancelVl, () -> {
-                    InventoryUtil.syncUpdateInventory(p);
-                    u.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).update();
-                })
-        );
+        user.getTimeMap().at(TimeKey.AUTOTOOL_LAST_CORRECT_SWAP).update();
+        user.getData().object.autoToolData = new AutoToolData(data.lastClick, originalSlot);
+        this.autoToolFlag(user, vl, null);
     }
 
-    private void addBackViolation(User u, org.bukkit.entity.Player p) {
-        getManagement().flag(Flag.of(u).setAddedVl(10));
+    /**
+     * Determines whether the given tool is correct for mining the specified material.
+     * Includes a special-case for shears.
+     *
+     * @param tool          the ItemStack representing the tool
+     * @param minedMaterial the Material being mined
+     *
+     * @return {@code true} if the tool is appropriate, {@code false} otherwise
+     */
+    private static boolean isCorrectTool(ItemStack tool, Material minedMaterial)
+    {
+        if (tool == null || minedMaterial == null) return false;
+        final Material toolType = tool.getType();
+        // Early return for air
+        if (toolType == Material.AIR) return false;
+
+        // Special case for shears as there are no tags for them.
+        if (toolType == Material.SHEARS)
+            return minedMaterial.name().contains("LEAVES") || minedMaterial.name().contains("WOOL") || minedMaterial.name().equals("COBWEB");
+
+        return MaterialUtil.INSTANCE.correctToolType(minedMaterial, toolType);
     }
 
-    /* tool matcher */
-    private static boolean isCorrectTool(Material block, ItemStack tool) {
-        if (tool == null) return false;
-
-        Material t = tool.getType();
-        String b = block.name();
-
-        if (t == Material.SHEARS)
-            return b.contains("LEAVES") || b.contains("WOOL") || b.equals("COBWEB");
-
-        if (t.name().endsWith("_SWORD"))
-            return b.equals("BAMBOO") || b.equals("BAMBOO_SHOOT");
-
-        boolean axe    = t.name().endsWith("_AXE");
-        boolean pick   = t.name().endsWith("_PICKAXE");
-        boolean shovel = t.name().endsWith("_SHOVEL");
-        boolean hoe    = t.name().endsWith("_HOE");
-
-        if (pick && (b.contains("STONE") || b.contains("DEEPSLATE") || b.contains("ORE")
-                     || b.contains("TERRACOTTA") || b.endsWith("_BLOCK")
-                     || b.equals("OBSIDIAN") || b.equals("CRYING_OBSIDIAN")
-                     || b.equals("NETHERRACK") || b.equals("END_STONE")
-                     || (b.startsWith("RAW_") && b.endsWith("_BLOCK"))
-                     || b.equals("ANCIENT_DEBRIS"))) return true;
-
-        if (axe && (b.contains("WOOD") || b.endsWith("_LOG") || b.contains("PLANKS")
-                    || b.contains("BAMBOO") || b.contains("CHEST") || b.equals("BARREL")
-                    || b.contains("BOOKSHELF") || b.equals("LADDER")
-                    || b.contains("SIGN") || b.contains("CAMPFIRE")
-                    || b.equals("NOTE_BLOCK") || b.endsWith("_TABLE"))) return true;
-
-        if (shovel && (b.contains("DIRT") || b.contains("GRAVEL") || b.contains("SAND")
-                       || b.contains("SNOW") || b.contains("MUD") || b.contains("CLAY")
-                       || b.equals("GRASS_BLOCK") || b.equals("PODZOL") || b.equals("ROOTED_DIRT")
-                       || b.endsWith("CONCRETE_POWDER") || b.equals("SOUL_SAND") || b.equals("SOUL_SOIL")))
-            return true;
-
-        if (hoe && (b.contains("HAY") || b.contains("CROP") || b.contains("WART")
-                    || b.contains("LEAVES") || b.contains("MOSS") || b.equals("DRIED_KELP_BLOCK")
-                    || b.equals("TARGET"))) return true;
-
-        return false;
+    private void autoToolFlag(User user, int vl, @Nullable Cancellable eventToCancel)
+    {
+        this.getManagement().flag(Flag.of(user).setAddedVl(vl).setCancelAction(cancelVl, () -> {
+            if (eventToCancel != null) eventToCancel.setCancelled(true);
+            InventoryUtil.syncUpdateInventory(user.getPlayer());
+            user.getTimeMap().at(TimeKey.AUTOTOOL_TIMEOUT).update();
+        }));
     }
 
-    @Override protected ViolationManagement createViolationManagement() {
+    @Override
+    protected ViolationManagement createViolationManagement()
+    {
         return ViolationLevelManagement.builder(this)
                                        .loadThresholdsToManagement()
                                        .withDecay(2400L, 30)

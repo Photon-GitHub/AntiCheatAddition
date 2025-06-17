@@ -4,10 +4,13 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientSettings;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
+import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
+
+import java.util.OptionalInt;
 
 public final class SkinBlinkerSprinting extends ViolationModule
 {
@@ -31,14 +34,29 @@ public final class SkinBlinkerSprinting extends ViolationModule
 
                                // Sprinting or sneaking (detection)
                                if ((user.getPlayer().isSprinting() || user.getPlayer().isSneaking())
-                                   // updateSkinComponents returns true if the skin has changed.
-                                   && user.updateSkinComponents(skinMask)) {
+                                   // The skin mask has been changed
+                                   && handleSentSkinMask(user, skinMask)) {
                                    getManagement().flag(Flag.of(user)
                                                             .setAddedVl(50)
                                                             .setDebug(() -> "SkinBlinkerSprinting: Skin changed while sprinting or sneaking. New skinmask is %x".formatted(skinMask)));
                                }
                            }).build())
                            .build();
+    }
+
+    /**
+     * Updates the saved skin components.
+     *
+     * @return true if there was already a skin mask saved before, and it differs from the new skin mask.
+     */
+    public boolean handleSentSkinMask(User user, int skinMask)
+    {
+        final OptionalInt oldSkin = user.getData().object.skinComponents;
+        final boolean skinChange = oldSkin.isPresent() && oldSkin.getAsInt() != skinMask;
+
+        // Update the skin components.
+        user.getData().object.skinComponents = OptionalInt.of(skinMask);
+        return skinChange;
     }
 
     @Override

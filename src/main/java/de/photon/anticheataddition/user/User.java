@@ -334,23 +334,6 @@ public final class User implements Permissible
         return rTreeEntryFromPlayer(this.player);
     }
 
-    // Skin
-
-    /**
-     * Updates the saved skin components.
-     *
-     * @return true if the skinComponents changed and there have already been some skin components beforehand.
-     */
-    public boolean updateSkinComponents(int newSkinComponents)
-    {
-        final OptionalInt oldSkin = this.data.object.skinComponents;
-        final boolean result = oldSkin.isPresent() && oldSkin.getAsInt() == newSkinComponents;
-
-        // Update the skin components.
-        this.data.object.skinComponents = OptionalInt.of(newSkinComponents);
-        return result;
-    }
-
 
     /**
      * Gets the debug state (determines whether an {@link User} gets debug messages).

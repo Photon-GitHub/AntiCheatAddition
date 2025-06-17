@@ -1,10 +1,12 @@
 package de.photon.anticheataddition.user.data;
 
 import de.photon.anticheataddition.modules.checks.autopotion.AutoPotion;
+import de.photon.anticheataddition.modules.checks.autotool.AutoTool;
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.OptionalInt;
@@ -58,6 +60,9 @@ public final class Data
      */
     public static final class Counter
     {
+        public final ViolationCounter autoToolCorrectSwitches = new ViolationCounter(2);
+        public final ViolationCounter autoToolStreak = new ViolationCounter(5);
+
         public final ViolationCounter inventoryAverageHeuristicsMisclicks = new ViolationCounter(0);
         public final ViolationCounter inventoryFrequencyFails = new ViolationCounter(40);
         public final ViolationCounter inventoryPerfectExitFails = new ViolationCounter(6);
@@ -84,6 +89,7 @@ public final class Data
     {
         public final Map<TimeKey, DoubleStatistics> autoFishConsistencyData = Map.of(TimeKey.AUTOFISH_DETECTION, new DoubleStatistics(), TimeKey.AUTOFISH_AFK_DETECTION, new DoubleStatistics());
         public AutoPotion.AutoPotionState autoPotionState = AutoPotion.AutoPotionState.AWAIT_POTION_THROW;
+        @NotNull public AutoTool.AutoToolData autoToolData = new AutoTool.AutoToolData(null, -1);
 
         public Material dupingDoubleDroppedMaterial = Material.BEDROCK;
 

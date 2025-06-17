@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 class DetectionManagementTest
@@ -100,5 +101,44 @@ class DetectionManagementTest
         Assertions.assertEquals(1, management.getVL(player.getUniqueId()));
         management.addVL(player, 0);
         Assertions.assertEquals(1, management.getVL(player.getUniqueId()));
+    }
+
+
+    @Test
+    void testPunishPlayerCalledOnTransitionToOne() {
+        final var player = Dummy.mockPlayer();
+        final AtomicInteger punishCount = new AtomicInteger(0);
+
+        // Create a DetectionManagement that counts punishPlayer calls
+        var management = new DetectionManagement(dummyVlModule) {
+            @Override
+            protected void punishPlayer(@NotNull Player p, int fromVl, int toVl) {
+                // Should only ever be called with fromVl=0, toVl=1
+                Assertions.assertEquals(player, p, "Wrong player in punishPlayer");
+                Assertions.assertEquals(0, fromVl, "Expected fromVl to be 0");
+                Assertions.assertEquals(1, toVl, "Expected toVl to be 1");
+                punishCount.incrementAndGet();
+            }
+        };
+
+        // Initial set to 0: no punishment
+        management.setVL(player, 0);
+        Assertions.assertEquals(0, punishCount.get(), "No punish on setVL(0)");
+
+        // First transition 0 -> 1: punish once
+        management.setVL(player, 1);
+        Assertions.assertEquals(1, punishCount.get(), "punishPlayer should have been called once");
+
+        // Repeated set to 1: no additional punishment
+        management.setVL(player, 1);
+        Assertions.assertEquals(1, punishCount.get(), "punishPlayer should NOT be called again for idempotent setVL(1)");
+
+        // Reset back to 0: no punishment
+        management.setVL(player, 0);
+        Assertions.assertEquals(1, punishCount.get(), "No punish on setVL(0) reset");
+
+        // Another 0 -> 1 transition: punish again
+        management.setVL(player, 1);
+        Assertions.assertEquals(2, punishCount.get(), "punishPlayer should be called again on new transition 0->1");
     }
 }

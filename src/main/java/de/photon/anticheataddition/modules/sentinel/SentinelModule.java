@@ -2,6 +2,7 @@ package de.photon.anticheataddition.modules.sentinel;
 
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
+import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.violationlevels.DetectionManagement;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -29,6 +30,7 @@ public abstract class SentinelModule extends ViolationModule
     {
         final User user = User.getUser(player);
         if (!User.isUserInvalid(user, this)) detection(user);
+        else Log.fine(() -> "SentinelModule " + this.getModuleId() + " detected player " + player.getName() + " but user is invalid, skipping detection.");
     }
 
     protected final void detection(User user)

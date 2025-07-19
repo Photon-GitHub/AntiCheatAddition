@@ -194,6 +194,19 @@ AutoTool:
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoTool"
     200: "kick {player} AutoTool"
 
+# AutoTotem detects cheats that instantly refill the offhand with a
+# totem of undying after one was consumed.
+# Adds 20 VL when the refill happens within min_refill_delay.
+AutoTotem:
+  enabled: true
+  # Refilling the offhand faster than this (ms) is flagged.
+  min_refill_delay: 150
+  # Commands executed when the player’s VL crosses these thresholds.
+  thresholds:
+    50:  "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoTotem"
+    100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoTotem"
+    200: "kick {player} AutoTotem"
+
 # Duping can pick out familiar behaviour patterns when duplicating items.
 # Since this only recognizes patterns, it is not entirely precise and may overlook cases of duping.
 # To help with investigations, AntiCheatAddition records the location of any suspicious behavior in its log file.

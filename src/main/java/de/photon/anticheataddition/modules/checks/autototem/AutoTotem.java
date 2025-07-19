@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.modules.checks.autototem;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
@@ -9,7 +8,6 @@ import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,7 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Detects automatic refilling of the offhand with a totem of undying shortly
@@ -59,9 +56,10 @@ public final class AutoTotem extends ViolationModule implements Listener
         final var user = User.getUser(player);
         if (User.isUserInvalid(user, this)) return;
 
-        final ItemStack off = player.getInventory().getItemInOffHand();
-        if (off != null && off.getType() == Material.TOTEM_OF_UNDYING &&
-            user.getTimeMap().at(TimeKey.AUTOTOTEM_TOTEM_USE).recentlyUpdated(minRefillDelay)) {
+        // Player must have a totem in the offhand
+        if (player.getInventory().getItemInOffHand().getType() == Material.TOTEM_OF_UNDYING
+            // And the last totem use was recorded recently.
+            && user.getTimeMap().at(TimeKey.AUTOTOTEM_TOTEM_USE).recentlyUpdated(minRefillDelay)) {
             getManagement().flag(Flag.of(user).setAddedVl(20));
         }
     }
@@ -69,16 +67,14 @@ public final class AutoTotem extends ViolationModule implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSwap(PlayerSwapHandItemsEvent event)
     {
-        // The item that will end up in the offhand after the swap is the main hand item.
-        if (event.getMainHandItem() == null || event.getMainHandItem().getType() != Material.TOTEM_OF_UNDYING) return;
-        Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> checkForFastRefill(event.getPlayer()));
+        checkForFastRefill(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event)
     {
         if (!(event.getWhoClicked() instanceof Player player)) return;
-        Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> checkForFastRefill(player));
+        checkForFastRefill(player);
     }
 
     @Override

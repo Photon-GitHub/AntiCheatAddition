@@ -145,13 +145,6 @@ public final class DataUpdaterEvents implements Listener
         userUpdate(event.getPlayer().getUniqueId(), TimeKey.HOTBAR_SWITCH);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onTotemUse(final EntityResurrectEvent event)
-    {
-        if (!(event.getEntity() instanceof Player player)) return;
-        userUpdate(player.getUniqueId(), TimeKey.AUTOTOTEM_TOTEM_USE);
-    }
-
     @EventHandler
     public void onItemInteract(PlayerInteractEvent event)
     {

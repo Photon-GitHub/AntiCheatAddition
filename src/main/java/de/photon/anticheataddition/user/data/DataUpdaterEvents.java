@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -142,6 +143,13 @@ public final class DataUpdaterEvents implements Listener
     public void onItemHeld(PlayerItemHeldEvent event)
     {
         userUpdate(event.getPlayer().getUniqueId(), TimeKey.HOTBAR_SWITCH);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onTotemUse(final EntityResurrectEvent event)
+    {
+        if (!(event.getEntity() instanceof Player player)) return;
+        userUpdate(player.getUniqueId(), TimeKey.AUTOTOTEM_TOTEM_USE);
     }
 
     @EventHandler

@@ -41,6 +41,8 @@ permissions:
       anticheataddition.bypass.autofish.parts.consistency: true
       anticheataddition.bypass.autofish.parts.inhuman_reaction: true
       anticheataddition.bypass.autopotion: true
+      anticheataddition.bypass.autotool: true
+      anticheataddition.bypass.autototem: true
       anticheataddition.bypass.duping: true
       anticheataddition.bypass.duping.parts.double_dropped: true
       anticheataddition.bypass.duping.parts.secretcache: true
@@ -49,6 +51,7 @@ permissions:
       anticheataddition.bypass.fastswitch: true
       anticheataddition.bypass.impossiblechat: true
       anticheataddition.bypass.informationhider: true
+      anticheataddition.bypass.informationhider.parts.durability: true
       anticheataddition.bypass.informationhider.parts.enchantments: true
       anticheataddition.bypass.informationhider.parts.item_count: true
       anticheataddition.bypass.inventory: true
@@ -61,6 +64,7 @@ permissions:
       anticheataddition.bypass.inventory.parts.sprinting: true
       anticheataddition.bypass.inventory.parts.statistical: true
       anticheataddition.bypass.packetanalysis: true
+      anticheataddition.bypass.packetanalysis.parts.aimstep: true
       anticheataddition.bypass.packetanalysis.parts.animation: true
       anticheataddition.bypass.packetanalysis.parts.equalrotation: true
       anticheataddition.bypass.packetanalysis.parts.illegalpitch: true

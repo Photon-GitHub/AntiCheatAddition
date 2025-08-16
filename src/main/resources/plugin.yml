@@ -2,7 +2,7 @@ name: AntiCheatAddition
 version: ${project.version}
 description: ${project.description}
 author: Photon
-api-version: 1.16
+api-version: 1.19
 website: https://www.spigotmc.org/resources/anticheataddition.33590/
 
 depend:

@@ -188,6 +188,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-buffer</artifactId>
+        <version>4.2.4.Final</version>
+        </dependency>
+        <dependency>
             <groupId>com.viaversion</groupId>
             <artifactId>viaversion-api</artifactId>
             <version>5.4.2</version>

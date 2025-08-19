@@ -6,6 +6,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
 import de.photon.anticheataddition.util.log.Log;
+import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.minecraft.world.entity.EntityUtil;
@@ -65,7 +66,7 @@ public final class InventoryMove extends ViolationModule implements Listener
         return BASE_BREAKING_TIME + InternalPotion.SPEED.getPotionEffect(user.getPlayer())
                                                         .map(PotionEffect::getAmplifier)
                                                         // If a speed effect exists calculate the speed millis, otherwise the speedMillis are 0.
-                                                        .map(amplifier -> Math.max(100, amplifier + 1) * 50L)
+                                                        .map(amplifier -> TimeUtil.toMillis(Math.max(100, amplifier + 1)))
                                                         .orElse(0L);
     }
 

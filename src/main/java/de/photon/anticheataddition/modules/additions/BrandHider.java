@@ -42,11 +42,16 @@ public final class BrandHider extends Module implements Listener
     private void updateBrand(final Player player)
     {
         final ByteBuf buf = Unpooled.buffer();
+        try
+        {
+            ByteBufUtil.writeString(buf, Placeholders.replacePlaceholders(this.brand, player));
 
-        ByteBufUtil.writeString(buf, Placeholders.replacePlaceholders(this.brand, player));
-
-        player.sendPluginMessage(AntiCheatAddition.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel().orElseThrow(), ByteBufUtil.toArray(buf));
-        buf.release();
+            player.sendPluginMessage(AntiCheatAddition.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel().orElseThrow(), ByteBufUtil.toArray(buf));
+        }
+        finally
+        {
+            buf.release();
+        }
     }
 
     @Override

@@ -13,7 +13,7 @@ import java.util.List;
 public class SentinelChannelModule extends SentinelModule implements ParsedPluginMessageListener
 {
     // Delay for detection to allow user initialization.
-    private static final long DETECTION_DELAY_TICKS = 60L;
+    private static final long DETECTION_DELAY_TICKS = 40L;
 
     private final List<String> containsAll = loadStringList(".containsAll");
     private final List<String> containsAny = loadStringList(".containsAny");

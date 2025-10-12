@@ -18,8 +18,8 @@ import java.util.*;
 
 public final class Dummy
 {
-    public static final String SERVER_VERSION_STRING = "This server is running CraftBukkit version 3661-Spigot-19641c7-8434e36 (MC: 1.19.4) (Implementing API version 1.19.4-R0.1-SNAPSHOT)";
-    public static final String BUKKIT_VERSION_STRING = "1.19.4-R0.1-SNAPSHOT";
+    public static final String SERVER_VERSION_STRING = "This server is running CraftBukkit version 4541-Spigot-6e369ba-aa5381f (MC: 1.21.10) (Implementing API version 1.21.10-R0.1-SNAPSHOT)";
+    public static final String BUKKIT_VERSION_STRING = "1.21.10-R0.1-SNAPSHOT";
 
     private static final List<Player> mockedPlayers;
     private static final List<User> mockedUsers;

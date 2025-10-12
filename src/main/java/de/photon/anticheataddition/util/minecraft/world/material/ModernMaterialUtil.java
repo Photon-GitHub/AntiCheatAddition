@@ -19,7 +19,7 @@ final class ModernMaterialUtil implements MaterialUtil {
     private final Set<Material> autoStepMaterials = combineToImmutable(EnumSet.of(CHEST, TRAPPED_CHEST, ENDER_CHEST), ofTags(Tag.SLABS, Tag.STAIRS, Tag.COPPER_CHESTS));
     private final Set<Material> bounceMaterials = combineToImmutable(EnumSet.of(SLIME_BLOCK), ofTags(Tag.BEDS));
     private final Set<Material> freeSpaceContainers = combineToImmutable(EnumSet.of(CHEST, TRAPPED_CHEST, ENDER_CHEST), ofTags(Tag.SHULKER_BOXES, Tag.COPPER_CHESTS));
-    private final Set<Material> nonOpenableInventories = combineToImmutable(Set.of(CHISELED_BOOKSHELF, DECORATED_POT), ofTags(Tag.WOODEN_SHELVES));
+    private final Set<Material> nonOpenableInventories = combineToImmutable(EnumSet.of(CHISELED_BOOKSHELF, DECORATED_POT), ofTags(Tag.WOODEN_SHELVES));
 
     // Tools
     private final Set<Material> axes = ofTags(Tag.ITEMS_AXES);

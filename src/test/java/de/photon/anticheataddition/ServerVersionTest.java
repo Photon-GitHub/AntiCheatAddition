@@ -17,7 +17,7 @@ class ServerVersionTest
     static {
         // IMPORTANT: Mock first, otherwise ServerVersion will try to access Bukkit without mocks.
         Dummy.mockEnvironment();
-        TEST_SERVER_VERSION = ServerVersion.MC119;
+        TEST_SERVER_VERSION = ServerVersion.MC121_10;
     }
 
     @BeforeAll

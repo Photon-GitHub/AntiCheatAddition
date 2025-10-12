@@ -781,6 +781,24 @@ Sentinel:
       commands:
         - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses Rift"
 
+    # This detects Vanilla clients.
+    # You can use this to debug Sentinel.
+    Vanilla:
+      enabled: false
+      # The channels AntiCheatAddition will listen to.
+      incoming_channels:
+        - "minecraft:brand"
+        - "MC|Brand"
+      # The message must include all strings in the list to trigger a detection. [ ] is an empty list.
+      # If the list is empty, all messages are accepted.
+      containsAll: [ ]
+      # The message must include at least one of the strings in the list to trigger a detection. [ ] is an empty list.
+      # If the list is empty, all messages are accepted.
+      containsAny: [ "vanilla" ]
+      # What commands will be executed if the mod is detected?
+      commands:
+        - "say {player} in {world} uses Vanilla"
+
     # This detects Winterware.
     Winterware:
       enabled: true

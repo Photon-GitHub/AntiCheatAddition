@@ -5,8 +5,7 @@ import de.photon.anticheataddition.exception.UnknownMinecraftException;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public final class EntityMetadataIndex
-{
+public final class EntityMetadataIndex {
     public static final int HEALTH;
     public static final int ARROWS_IN_ENTITY;
     public static final int SKIN_PARTS;
@@ -23,10 +22,15 @@ public final class EntityMetadataIndex
                 ARROWS_IN_ENTITY = 10;
                 SKIN_PARTS = 13;
             }
-            case MC119, MC120, MC121 -> {
+            case MC119, MC120, MC121_5, MC121_8 -> {
                 HEALTH = 9;
                 ARROWS_IN_ENTITY = 12;
                 SKIN_PARTS = 17;
+            }
+            case MC121_10 -> {
+                HEALTH = 9;
+                ARROWS_IN_ENTITY = 12;
+                SKIN_PARTS = 16;
             }
             default -> throw new UnknownMinecraftException();
         }

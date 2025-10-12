@@ -13,14 +13,13 @@ import static de.photon.anticheataddition.util.minecraft.world.material.Material
 import static org.bukkit.Material.*;
 
 @Getter
-final class ModernMaterialUtil implements MaterialUtil
-{
+final class ModernMaterialUtil implements MaterialUtil {
     private final Set<Material> airMaterials = Sets.immutableEnumSet(AIR, CAVE_AIR, VOID_AIR);
 
-    private final Set<Material> autoStepMaterials = combineToImmutable(EnumSet.of(CHEST, TRAPPED_CHEST, ENDER_CHEST), ofTags(Tag.SLABS, Tag.STAIRS));
+    private final Set<Material> autoStepMaterials = combineToImmutable(EnumSet.of(CHEST, TRAPPED_CHEST, ENDER_CHEST), ofTags(Tag.SLABS, Tag.STAIRS, Tag.COPPER_CHESTS));
     private final Set<Material> bounceMaterials = combineToImmutable(EnumSet.of(SLIME_BLOCK), ofTags(Tag.BEDS));
-    private final Set<Material> freeSpaceContainers = combineToImmutable(EnumSet.of(CHEST, TRAPPED_CHEST, ENDER_CHEST), ofTags(Tag.SHULKER_BOXES));
-    private final Set<Material> nonOpenableInventories = Set.of(CHISELED_BOOKSHELF, DECORATED_POT);
+    private final Set<Material> freeSpaceContainers = combineToImmutable(EnumSet.of(CHEST, TRAPPED_CHEST, ENDER_CHEST), ofTags(Tag.SHULKER_BOXES, Tag.COPPER_CHESTS));
+    private final Set<Material> nonOpenableInventories = combineToImmutable(Set.of(CHISELED_BOOKSHELF, DECORATED_POT), ofTags(Tag.WOODEN_SHELVES));
 
     // Tools
     private final Set<Material> axes = ofTags(Tag.ITEMS_AXES);
@@ -38,7 +37,7 @@ final class ModernMaterialUtil implements MaterialUtil
 
     private final Set<Material> minedByShovels = ofTags(Tag.MINEABLE_SHOVEL);
 
-    private final Set<Material> minedBySwords = Sets.immutableEnumSet(BAMBOO, BAMBOO_SAPLING);
+    private final Set<Material> minedBySwords = ofTags(Tag.SWORD_EFFICIENT, Tag.SWORD_INSTANTLY_MINES);
 
     private final Set<Material> liquids = Sets.immutableEnumSet(WATER, LAVA);
     private final Set<Material> signs = ofTags(Tag.ALL_SIGNS);

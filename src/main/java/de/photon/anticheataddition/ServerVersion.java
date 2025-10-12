@@ -15,8 +15,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Getter
-public enum ServerVersion
-{
+public enum ServerVersion {
 
     // As we compare the versions these MUST be sorted.
     MC18("1.8.8", true, 47),
@@ -30,15 +29,17 @@ public enum ServerVersion
     MC116("1.16.5", false, 735, 736, 751, 753, 754),
     MC117("1.17.1", false, 755, 756),
     MC118("1.18.2", false, 757, 758),
-    MC119("1.19.4", true, 759, 760, 761, 762),
+    MC119("1.19.4", false, 759, 760, 761, 762),
     MC120("1.20", true, 763, 764, 765, 766),
-    MC121("1.21", true, 767, 768, 769, 770);
+    MC121_5("1.21.5", true, 767, 768, 769, 770),
+    MC121_8("1.21.8", true, 771, 772),
+    MC121_10("1.21.10", true, 773);
 
     private static final Map<Integer, ServerVersion> PROTOCOL_VERSION_MAP = EnumSet.allOf(ServerVersion.class)
-                                                                                   .stream()
-                                                                                   // Map each protocol version number to the ServerVersion.
-                                                                                   .flatMap(sv -> sv.getProtocolVersions().stream().map(vn -> Pair.of(vn, sv)))
-                                                                                   .collect(Collectors.toUnmodifiableMap(Pair::first, Pair::second));
+            .stream()
+            // Map each protocol version number to the ServerVersion.
+            .flatMap(sv -> sv.getProtocolVersions().stream().map(vn -> Pair.of(vn, sv)))
+            .collect(Collectors.toUnmodifiableMap(Pair::first, Pair::second));
 
     public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS = MC18.getSupVersionsFrom();
     public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = MC112.getSupVersionsTo();
@@ -50,10 +51,10 @@ public enum ServerVersion
      */
     @NotNull
     public static final ServerVersion ACTIVE = EnumSet.allOf(ServerVersion.class)
-                                                      .stream()
-                                                      .filter(serverVersion -> Bukkit.getBukkitVersion().startsWith(serverVersion.getVersionOutputString()))
-                                                      .findFirst()
-                                                      .orElseThrow(UnknownMinecraftException::new);
+            .stream()
+            .filter(serverVersion -> Bukkit.getBukkitVersion().startsWith(serverVersion.getVersionOutputString()))
+            .findFirst()
+            .orElseThrow(UnknownMinecraftException::new);
 
     /**
      * This is the string that is searched for on startup.
@@ -120,7 +121,6 @@ public enum ServerVersion
      * Checks whether the current server version is included in a set of supported server versions.
      *
      * @param supportedServerVersions the {@link Set} of supported server versions of the module
-     *
      * @return true if the active server version is included in the provided set, false otherwise.
      */
     public static boolean containsActive(Set<ServerVersion> supportedServerVersions)
@@ -139,8 +139,8 @@ public enum ServerVersion
     private static Set<ServerVersion> getSupportedVersions(Predicate<ServerVersion> filter)
     {
         return EnumSet.allOf(ServerVersion.class).stream()
-                      .filter(ServerVersion::isSupported)
-                      .filter(filter)
-                      .collect(SetUtil.toImmutableEnumSet());
+                .filter(ServerVersion::isSupported)
+                .filter(filter)
+                .collect(SetUtil.toImmutableEnumSet());
     }
 }

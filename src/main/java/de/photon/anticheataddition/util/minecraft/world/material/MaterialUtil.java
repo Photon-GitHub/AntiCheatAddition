@@ -13,7 +13,7 @@ import static org.bukkit.Material.*;
 
 public sealed interface MaterialUtil permits AncientMaterialUtil, ModernMaterialUtil, OldMaterialUtil
 {
-    MaterialUtil INSTANCE = ServerVersion.MC112.activeIsEarlierOrEqual() ? new AncientMaterialUtil() : (ServerVersion.MC119.activeIsEarlierOrEqual() ? new OldMaterialUtil() : new ModernMaterialUtil());
+    MaterialUtil INSTANCE = ServerVersion.MC112.activeIsEarlierOrEqual() ? new AncientMaterialUtil() : (ServerVersion.MC121_8.activeIsEarlierOrEqual() ? new OldMaterialUtil() : new ModernMaterialUtil());
 
     Set<Material> getAirMaterials();
 

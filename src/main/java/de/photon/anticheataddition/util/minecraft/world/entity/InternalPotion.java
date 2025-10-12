@@ -12,8 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public enum InternalPotion
-{
+public enum InternalPotion {
     /**
      * Increases movement speed.
      */
@@ -182,7 +181,13 @@ public enum InternalPotion
     /**
      * Causes the player's vision to dim occasionally.
      */
-    DARKNESS(ServerVersion.MC119);
+    DARKNESS(ServerVersion.MC119),
+    TRIAL_OMEN(ServerVersion.MC121_5),
+    RAID_OMEN(ServerVersion.MC121_5),
+    WIND_CHARGED(ServerVersion.MC121_5),
+    WEAVING(ServerVersion.MC121_5),
+    OOZING(ServerVersion.MC121_5),
+    INFESTED(ServerVersion.MC121_5);
 
     private final boolean available;
 
@@ -206,8 +211,8 @@ public enum InternalPotion
     public static Set<PotionEffectType> getAvailablePotionTypes(InternalPotion... types)
     {
         return Arrays.stream(types).filter(InternalPotion::isAvailable)
-                     .map(InternalPotion::getMapping)
-                     .collect(Collectors.toUnmodifiableSet());
+                .map(InternalPotion::getMapping)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     /**
@@ -222,7 +227,6 @@ public enum InternalPotion
      * Checks if a {@link LivingEntity} has this potion effect.
      *
      * @param livingEntity the {@link LivingEntity} which should be tested
-     *
      * @return true if the potion effect is found, else false.
      */
     public boolean hasPotionEffect(LivingEntity livingEntity)
@@ -234,7 +238,6 @@ public enum InternalPotion
      * Gets a {@link PotionEffect} of a {@link LivingEntity}.
      *
      * @param livingEntity the {@link LivingEntity} which should be tested
-     *
      * @return the {@link PotionEffect} with the provided {@link PotionEffectType} or null if the {@link LivingEntity}
      * doesn't have such a {@link PotionEffect}.
      */
@@ -243,8 +246,8 @@ public enum InternalPotion
         if (!this.isAvailable()) return Optional.empty();
 
         return ServerVersion.is18() ?
-               // Workaround for missing method in MC 1.8.8
-               livingEntity.getActivePotionEffects().stream().filter(pe -> pe.getType().equals(this.mapping)).findAny() :
-               Optional.ofNullable(livingEntity.getPotionEffect(this.mapping));
+                // Workaround for missing method in MC 1.8.8
+                livingEntity.getActivePotionEffects().stream().filter(pe -> pe.getType().equals(this.mapping)).findAny() :
+                Optional.ofNullable(livingEntity.getPotionEffect(this.mapping));
     }
 }

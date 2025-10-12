@@ -15,6 +15,7 @@ import de.photon.anticheataddition.modules.checks.duping.DupingDoubleDropped;
 import de.photon.anticheataddition.modules.checks.duping.DupingSecretCache;
 import de.photon.anticheataddition.modules.checks.fastswitch.Fastswitch;
 import de.photon.anticheataddition.modules.checks.autotool.AutoTool;
+import de.photon.anticheataddition.modules.checks.autototem.AutoTotem;
 import de.photon.anticheataddition.modules.checks.impossiblechat.ImpossibleChat;
 import de.photon.anticheataddition.modules.checks.inventory.Inventory;
 import de.photon.anticheataddition.modules.checks.packetanalysis.*;
@@ -60,6 +61,7 @@ public final class ModuleManager
                 AutoPotion.INSTANCE,
 
                 AutoTool.INSTANCE,
+                AutoTotem.INSTANCE,
 
                 ViolationModule.parentOf("Duping", DupingDoubleDropped.INSTANCE, DupingSecretCache.INSTANCE),
 

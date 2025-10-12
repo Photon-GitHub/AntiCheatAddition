@@ -7,7 +7,7 @@
     <groupId>de.photon</groupId>
     <artifactId>AntiCheatAddition</artifactId>
 
-    <version>9.4.0</version>
+    <version>9.4.1</version>
 
     <name>AntiCheatAddition</name>
     <description>This plugin provides niche checks for cheats which are not covered by most anticheats.</description>
@@ -188,15 +188,14 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-buffer</artifactId>
-            <version>4.1.119.Final</version>
-            <scope>provided</scope>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-buffer</artifactId>
+        <version>4.2.4.Final</version>
         </dependency>
         <dependency>
             <groupId>com.viaversion</groupId>
             <artifactId>viaversion-api</artifactId>
-            <version>5.3.1</version>
+            <version>5.4.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -208,7 +207,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>26.0.1</version>
+            <version>26.0.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -232,7 +231,7 @@
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
-            <version>7.0.13</version>
+            <version>7.0.14</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

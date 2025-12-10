@@ -34,8 +34,9 @@ public enum ServerVersion {
     MC121_5("1.21.5", true, 767, 768, 769, 770),
     MC121_8("1.21.8", true, 771, 772),
     MC121_10("1.21.10", true, 773),
+    MC121_11("1.21.11", true, 774),
     // This is a placeholder for future versions to make sure that ACA will continue to work.
-    MC121_X("1.21", true, 774);
+    MC121_X("1.21", true, 775);
 
     private static final Map<Integer, ServerVersion> PROTOCOL_VERSION_MAP = EnumSet.allOf(ServerVersion.class)
             .stream()

@@ -187,7 +187,8 @@ public enum InternalPotion {
     WIND_CHARGED(ServerVersion.MC121_5),
     WEAVING(ServerVersion.MC121_5),
     OOZING(ServerVersion.MC121_5),
-    INFESTED(ServerVersion.MC121_5);
+    INFESTED(ServerVersion.MC121_5),
+    BREATH_OF_THE_NAUTILUS(ServerVersion.MC121_11);
 
     private final boolean available;
 

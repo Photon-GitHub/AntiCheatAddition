@@ -6,15 +6,14 @@ import com.github.retrooper.packetevents.protocol.entity.type.EntityType;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
+import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.modules.ModuleLoader;
-import de.photon.anticheataddition.util.protocol.EntityMetadataIndex;
 import de.photon.anticheataddition.util.protocol.LivingEntityIdLookup;
 import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
 import org.bukkit.entity.Player;
 
-public final class DamageIndicator extends Module
-{
+public final class DamageIndicator extends Module {
     public static final DamageIndicator INSTANCE = new DamageIndicator();
 
     private final boolean spoofOthers = loadBoolean(".spoof.others", true);
@@ -57,7 +56,7 @@ public final class DamageIndicator extends Module
 
                         for (EntityData data : wrapper.getEntityMetadata()) {
                             // Search for health.
-                            if (data.getIndex() == EntityMetadataIndex.HEALTH
+                            if (data.getIndex() == ServerVersion.ACTIVE.getMetadataPositionIndex().healthIndex()
                                 // Only modify alive entities (health > 0).
                                 && ((Float) data.getValue() > 0)) {
                                 data.setValue(0.5F);

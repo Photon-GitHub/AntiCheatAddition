@@ -3,6 +3,7 @@ package de.photon.anticheataddition;
 import de.photon.anticheataddition.exception.UnknownMinecraftException;
 import de.photon.anticheataddition.util.datastructure.Pair;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
+import de.photon.anticheataddition.util.protocol.MetadataPositionIndex;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
@@ -18,25 +19,25 @@ import java.util.stream.Collectors;
 public enum ServerVersion {
 
     // As we compare the versions these MUST be sorted.
-    MC18("1.8.8", true, 47),
-    MC19("1.9", false, 107, 108, 109, 110),
-    MC110("1.10", false, 210),
-    MC111("1.11.2", false, 315, 316),
-    MC112("1.12.2", true, 335, 338, 340),
-    MC113("1.13", false, 393, 401, 404),
-    MC114("1.14", false, 477, 480, 485, 490, 498),
-    MC115("1.15.2", false, 573, 575),
-    MC116("1.16.5", false, 735, 736, 751, 753, 754),
-    MC117("1.17.1", false, 755, 756),
-    MC118("1.18.2", false, 757, 758),
-    MC119("1.19.4", false, 759, 760, 761, 762),
-    MC120("1.20", true, 763, 764, 765, 766),
-    MC121_5("1.21.5", true, 767, 768, 769, 770),
-    MC121_8("1.21.8", true, 771, 772),
-    MC121_10("1.21.10", true, 773),
-    MC121_11("1.21.11", true, 774),
+    MC18("1.8.8", true, new MetadataPositionIndex(6, 9, 10), 47),
+    MC19("1.9", false, null, 107, 108, 109, 110),
+    MC110("1.10", false, null, 210),
+    MC111("1.11.2", false, null, 315, 316),
+    MC112("1.12.2", true, new MetadataPositionIndex(7, 10, 13), 335, 338, 340),
+    MC113("1.13", false, null, 393, 401, 404),
+    MC114("1.14", false, null, 477, 480, 485, 490, 498),
+    MC115("1.15.2", false, null, 573, 575),
+    MC116("1.16.5", false, null, 735, 736, 751, 753, 754),
+    MC117("1.17.1", false, null, 755, 756),
+    MC118("1.18.2", false, null, 757, 758),
+    MC119("1.19.4", false, null, 759, 760, 761, 762),
+    MC120("1.20", true, new MetadataPositionIndex(9, 12, 17), 763, 764, 765, 766),
+    MC121_5("1.21.5", true, new MetadataPositionIndex(9, 12, 17), 767, 768, 769, 770),
+    MC121_8("1.21.8", true, new MetadataPositionIndex(9, 12, 17), 771, 772),
+    MC121_10("1.21.10", true, new MetadataPositionIndex(9, 12, 16), 773),
+    MC121_11("1.21.11", true, new MetadataPositionIndex(9, 12, 16), 774),
     // This is a placeholder for future versions to make sure that ACA will continue to work.
-    MC121_X("1.21", true, 775);
+    MC121_X("1.21", true, new MetadataPositionIndex(9, 12, 16), 775);
 
     private static final Map<Integer, ServerVersion> PROTOCOL_VERSION_MAP = EnumSet.allOf(ServerVersion.class)
             .stream()
@@ -72,15 +73,24 @@ public enum ServerVersion {
     private final boolean supported;
 
     /**
+     * The relevant entity metadata indices for the Minecraft protocol versions.
+     */
+    private final MetadataPositionIndex metadataPositionIndex;
+
+    /**
      * The protocol versions of the major Minecraft version.
      * E.g. even though the name is 1.18.2, this shall include the protocol versions of 1.18, 1.18.1 and 1.18.2.
      */
     private final Set<Integer> protocolVersions;
 
-    ServerVersion(String versionOutputString, boolean supported, Integer... protocolVersions)
+    ServerVersion(String versionOutputString, boolean supported, MetadataPositionIndex metadataPositionIndex, Integer... protocolVersions)
     {
+        if (supported && metadataPositionIndex == null)
+            throw new IllegalArgumentException("MetadataPositionIndex must not be null if the version is supported.");
+
         this.versionOutputString = versionOutputString;
         this.supported = supported;
+        this.metadataPositionIndex = metadataPositionIndex;
         this.protocolVersions = Set.of(protocolVersions);
     }
 

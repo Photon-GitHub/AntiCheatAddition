@@ -27,7 +27,7 @@ public final class EntityMetadataIndex {
                 ARROWS_IN_ENTITY = 12;
                 SKIN_PARTS = 17;
             }
-            case MC121_10 -> {
+            case MC121_10, MC121_11, MC121_X -> {
                 HEALTH = 9;
                 ARROWS_IN_ENTITY = 12;
                 SKIN_PARTS = 16;

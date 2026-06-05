@@ -34,9 +34,15 @@ class PlaceholderTest {
     @Test
     void simplePlaceholdersWithoutPlayer()
     {
-        Assertions.assertEquals("Some Spigot", Placeholders.replacePlaceholders("Some Spigot", null));
-        Assertions.assertEquals("  ", Placeholders.replacePlaceholders("{player} {ping} {world}", null));
-        Assertions.assertTrue(Placeholders.replacePlaceholders("{date}", null).matches("\\d{4}-\\d{2}-\\d{2}"));
+        Assertions.assertEquals("Some Spigot", Placeholders.replacePlaceholdersSafely("Some Spigot"));
+        Assertions.assertEquals("{player} {ping} {world}", Placeholders.replacePlaceholdersSafely("{player} {ping} {world}"));
+        Assertions.assertTrue(Placeholders.replacePlaceholdersSafely("{date}").matches("\\d{4}-\\d{2}-\\d{2}"));
+    }
+
+    @Test
+    void normalPlaceholdersRequirePlayer()
+    {
+        Assertions.assertThrows(NullPointerException.class, () -> Placeholders.replacePlaceholders("{player}", null));
     }
 
     @Test
@@ -71,7 +77,7 @@ class PlaceholderTest {
     @Test
     void unknownPlaceholdersStayLiteral()
     {
-        Assertions.assertEquals("Hello {unknown}", Placeholders.replacePlaceholders("Hello {unknown}", null));
+        Assertions.assertEquals("Hello {unknown}", Placeholders.replacePlaceholdersSafely("Hello {unknown}"));
         Assertions.assertEquals("{player_name}", Placeholders.replacePlaceholders("{player_name}", Dummy.mockPlayer()));
     }
 
@@ -87,7 +93,7 @@ class PlaceholderTest {
     @Test
     void simpleDateAndTimePlaceholders()
     {
-        Assertions.assertTrue(Placeholders.replacePlaceholders("{date}", null).matches("\\d{4}-\\d{2}-\\d{2}"));
-        Assertions.assertTrue(Placeholders.replacePlaceholders("{time}", null).matches("\\d{2}:\\d{2}:\\d{2}"));
+        Assertions.assertTrue(Placeholders.replacePlaceholdersSafely("{date}").matches("\\d{4}-\\d{2}-\\d{2}"));
+        Assertions.assertTrue(Placeholders.replacePlaceholdersSafely("{time}").matches("\\d{2}:\\d{2}:\\d{2}"));
     }
 }

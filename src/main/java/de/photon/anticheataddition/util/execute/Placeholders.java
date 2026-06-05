@@ -1,6 +1,6 @@
 package de.photon.anticheataddition.util.execute;
 
-import de.photon.anticheataddition.util.log.Log;
+import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +8,7 @@ import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
@@ -17,17 +18,59 @@ import java.util.function.Supplier;
 
 @UtilityClass
 public final class Placeholders {
+
+
+    public static String replacePlaceholdersSafely(@NotNull String original)
+    {
+        Preconditions.checkNotNull(original, "Tried to process placeholders null string.");
+        return processPlaceholders(original, null, null);
+    }
+
+    private static String safeReplacementFunction(@NotNull String placeholder)
+    {
+        return switch (placeholder) {
+            // Usually one placeholder is only once in the string, thus recalculation should not be a problem.
+            case "date" -> SimplePlaceholders.DATE.getReplacement();
+            case "time" -> SimplePlaceholders.TIME.getReplacement();
+            case "server" -> SimplePlaceholders.SERVER.getReplacement();
+            case "tps" -> SimplePlaceholders.TPS.getReplacement();
+            // Otherwise, add the placeholder as plain-string
+            default -> '{' + placeholder + '}';
+        };
+    }
+
     /**
      * Applies a placeholder to a {@link String}.
      *
      * @param original the original {@link String} containing all placeholders
      * @return original with the placeholder replaced.
      */
-    public static String replacePlaceholders(String original, @Nullable Player player)
+    public static String replacePlaceholders(@NotNull String original, @NotNull Player player)
     {
-        if (player == null) Log.finer(() -> "Placeholder replacement with null player: " + original);
+        Preconditions.checkNotNull(original, "Tried to process placeholders null string.");
+        Preconditions.checkNotNull(player, "Tried to replace player placeholders with null player.");
+        return processPlaceholders(original, player, player.getWorld());
+    }
 
-        final var world = player == null ? null : player.getWorld();
+    private static String nonNullPlayerReplacementFunction(@NotNull String placeholder, @NotNull Player player, @NotNull World world)
+    {
+        return switch (placeholder) {
+            // Usually one placeholder is only once in the string, thus recalculation should not be a problem.
+            case "player" -> PlayerPlaceholders.PLAYER.getReplacement(player);
+            case "ping" -> PlayerPlaceholders.PING.getReplacement(player);
+            case "world" -> WorldPlaceholders.WORLD.getReplacement(world);
+            case "date" -> SimplePlaceholders.DATE.getReplacement();
+            case "time" -> SimplePlaceholders.TIME.getReplacement();
+            case "server" -> SimplePlaceholders.SERVER.getReplacement();
+            case "tps" -> SimplePlaceholders.TPS.getReplacement();
+            // Otherwise, add the placeholder as plain-string
+            default -> '{' + placeholder + '}';
+        };
+    }
+
+    private static String processPlaceholders(@NotNull String original, @Nullable Player player, World world)
+    {
+        final boolean safeReplacement = player == null;
 
         final var placeholderBuilder = new StringBuilder();
         final var result = new StringBuilder();
@@ -46,18 +89,8 @@ public final class Placeholders {
                 placeholderStarted = false;
 
                 // See if the recorded chars match a placeholder
-                switch (placeholderBuilder.toString()) {
-                    // Usually one placeholder is only once in the string, thus recalculation should not be a problem.
-                    case "player" -> result.append(PlayerPlaceholders.PLAYER.getReplacement(player));
-                    case "ping" -> result.append(PlayerPlaceholders.PING.getReplacement(player));
-                    case "world" -> result.append(WorldPlaceholders.WORLD.getReplacement(world));
-                    case "date" -> result.append(SimplePlaceholders.DATE.getReplacement());
-                    case "time" -> result.append(SimplePlaceholders.TIME.getReplacement());
-                    case "server" -> result.append(SimplePlaceholders.SERVER.getReplacement());
-                    case "tps" -> result.append(SimplePlaceholders.TPS.getReplacement());
-                    // Otherwise, add the placeholder as plain-string
-                    default -> result.append('{').append(placeholderBuilder).append('}');
-                }
+                if (safeReplacement) result.append(safeReplacementFunction(placeholderBuilder.toString()));
+                else result.append(nonNullPlayerReplacementFunction(placeholderBuilder.toString(), player, world));
 
                 // Make sure the '}' char is not recorded.
                 continue;

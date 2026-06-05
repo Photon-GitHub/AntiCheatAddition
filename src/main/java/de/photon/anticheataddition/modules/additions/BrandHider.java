@@ -20,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.jetbrains.annotations.Nullable;
 
 public final class BrandHider extends Module implements PacketListener, Listener {
     public static final BrandHider INSTANCE = new BrandHider();
@@ -47,8 +46,12 @@ public final class BrandHider extends Module implements PacketListener, Listener
     private void updateBrand(final Player player)
     {
         final String brand = Placeholders.replacePlaceholders(this.brand, player);
-        final byte[] payload = createBrandPayload(brand);
+        sendBrand(player, brand);
+    }
 
+    private void sendBrand(final Player player, final String brand)
+    {
+        final byte[] payload = createBrandPayload(brand);
         PacketEvents.getAPI().getPlayerManager().sendPacket(player, new WrapperPlayServerPluginMessage(this.channel, payload));
     }
 
@@ -91,8 +94,7 @@ public final class BrandHider extends Module implements PacketListener, Listener
                                Log.finer(() -> "BrandHider got PLUGIN_MESSAGE in channel " + channel + " | equals: " + this.channel.equals(channel));
 
                                if (this.channel.equals(channel)) {
-                                   final @Nullable Player player = event.getPlayer();
-                                   final String brand = Placeholders.replacePlaceholders(this.brand, player);
+                                   final String brand = Placeholders.replacePlaceholdersSafely(this.brand);
                                    packet.setData(createBrandPayload(brand));
                                    event.markForReEncode(true);
                                }

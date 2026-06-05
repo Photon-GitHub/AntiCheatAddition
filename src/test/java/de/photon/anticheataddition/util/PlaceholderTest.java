@@ -2,13 +2,16 @@ package de.photon.anticheataddition.util;
 
 import de.photon.anticheataddition.Dummy;
 import de.photon.anticheataddition.util.execute.Placeholders;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PlaceholderTest {
     @BeforeAll
@@ -18,52 +21,44 @@ class PlaceholderTest {
     }
 
     @Test
-    void noPlaceholder()
+    void returnsOriginalStringWhenNoPlaceholderIsPresent()
     {
         final var empty = "";
-        final var player = Dummy.mockPlayer();
-        Assertions.assertEquals(empty, Placeholders.replacePlaceholders(empty, player));
+        final var original = "Some Spigot";
+        final var player = Mockito.mock(Player.class);
 
-        final var string = "Some Spigot";
-        Assertions.assertEquals(string, Placeholders.replacePlaceholders(string, player));
-
-        final var color = ChatColor.translateAlternateColorCodes('&', "&4Some Spigot") + ChatColor.RESET;
-        Assertions.assertEquals(color, Placeholders.replacePlaceholders(color, player));
+        assertSame(empty, Placeholders.replacePlaceholders(empty, player));
+        assertSame(empty, Placeholders.replacePlaceholdersSafely(empty));
+        assertSame(original, Placeholders.replacePlaceholders(original, player));
+        assertSame(original, Placeholders.replacePlaceholdersSafely(original));
     }
 
     @Test
-    void simplePlaceholdersWithoutPlayer()
+    void safeReplacementOnlyHandlesGlobalPlaceholders()
     {
-        Assertions.assertEquals("Some Spigot", Placeholders.replacePlaceholdersSafely("Some Spigot"));
-        Assertions.assertEquals("{player} {ping} {world}", Placeholders.replacePlaceholdersSafely("{player} {ping} {world}"));
-        Assertions.assertTrue(Placeholders.replacePlaceholdersSafely("{date}").matches("\\d{4}-\\d{2}-\\d{2}"));
+        assertEquals("{player} {ping} {world}", Placeholders.replacePlaceholdersSafely("{player} {ping} {world}"));
+        assertTrue(Placeholders.replacePlaceholdersSafely("{date}").matches("\\d{4}-\\d{2}-\\d{2}"));
+        assertTrue(Placeholders.replacePlaceholdersSafely("{time}").matches("\\d{2}:\\d{2}:\\d{2}"));
     }
 
     @Test
-    void normalPlaceholdersRequirePlayer()
+    void playerReplacementRequiresPlayer()
     {
-        Assertions.assertThrows(NullPointerException.class, () -> Placeholders.replacePlaceholders("{player}", null));
+        assertThrows(NullPointerException.class, () -> Placeholders.replacePlaceholders("{player}", null));
     }
 
     @Test
-    void playerPlaceholders()
-    {
-        final var player = Dummy.mockPlayer();
-        Assertions.assertEquals(player.getName(), Placeholders.replacePlaceholders("{player}", player));
-        Assertions.assertEquals("0", Placeholders.replacePlaceholders("{ping}", player));
-    }
-
-    @Test
-    void playerPlaceholderIsLimited()
+    void playerPlaceholdersAreReplaced()
     {
         final var player = Mockito.mock(Player.class);
-        Mockito.when(player.getName()).thenReturn("123456789012345678901234567890extra");
+        Mockito.when(player.getName()).thenReturn("Photon");
+        Mockito.when(player.getPing()).thenReturn(47);
 
-        Assertions.assertEquals("123456789012345678901234567890", Placeholders.replacePlaceholders("{player}", player));
+        assertEquals("Photon/47", Placeholders.replacePlaceholders("{player}/{ping}", player));
     }
 
     @Test
-    void worldPlaceholder()
+    void worldPlaceholderIsReplaced()
     {
         final var world = Mockito.mock(World.class);
         Mockito.when(world.getName()).thenReturn("world_nether");
@@ -71,29 +66,36 @@ class PlaceholderTest {
         final var player = Mockito.mock(Player.class);
         Mockito.when(player.getWorld()).thenReturn(world);
 
-        Assertions.assertEquals("world_nether", Placeholders.replacePlaceholders("{world}", player));
+        assertEquals("world_nether", Placeholders.replacePlaceholders("{world}", player));
     }
 
     @Test
     void unknownPlaceholdersStayLiteral()
     {
-        Assertions.assertEquals("Hello {unknown}", Placeholders.replacePlaceholdersSafely("Hello {unknown}"));
-        Assertions.assertEquals("{player_name}", Placeholders.replacePlaceholders("{player_name}", Dummy.mockPlayer()));
+        final var player = Mockito.mock(Player.class);
+
+        assertEquals("Hello {unknown}", Placeholders.replacePlaceholdersSafely("Hello {unknown}"));
+        assertEquals("{player_name}", Placeholders.replacePlaceholders("{player_name}", player));
     }
 
     @Test
-    void repeatedPlaceholdersAreAllReplaced()
+    void adjacentAndRepeatedPlaceholdersAreAllReplaced()
     {
-        final var player = Dummy.mockPlayer();
-        final var expected = player.getName() + "/" + player.getName();
+        final var player = Mockito.mock(Player.class);
+        Mockito.when(player.getName()).thenReturn("Photon");
 
-        Assertions.assertEquals(expected, Placeholders.replacePlaceholders("{player}/{player}", player));
+        assertEquals("PhotonPhoton/Photon", Placeholders.replacePlaceholders("{player}{player}/{player}", player));
     }
 
     @Test
-    void simpleDateAndTimePlaceholders()
+    void literalBraceCasesStayLiteral()
     {
-        Assertions.assertTrue(Placeholders.replacePlaceholdersSafely("{date}").matches("\\d{4}-\\d{2}-\\d{2}"));
-        Assertions.assertTrue(Placeholders.replacePlaceholdersSafely("{time}").matches("\\d{2}:\\d{2}:\\d{2}"));
+        final var player = Mockito.mock(Player.class);
+        Mockito.when(player.getName()).thenReturn("Photon");
+
+        assertEquals("Hello {player", Placeholders.replacePlaceholders("Hello {player", player));
+        assertEquals("Photon {world", Placeholders.replacePlaceholders("{player} {world", player));
+        assertEquals("Hello {}", Placeholders.replacePlaceholdersSafely("Hello {}"));
+        assertEquals("Hello }", Placeholders.replacePlaceholdersSafely("Hello }"));
     }
 }

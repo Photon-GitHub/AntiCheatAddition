@@ -72,36 +72,31 @@ public final class Placeholders {
     {
         final boolean safeReplacement = player == null;
 
-        final var placeholderBuilder = new StringBuilder();
-        final var result = new StringBuilder();
-        boolean placeholderStarted = false;
+        int placeholderStart = original.indexOf('{');
+        // Fast check if there are any placeholders present in the string.
+        if (placeholderStart == -1) return original;
 
-        for (char c : original.toCharArray()) {
-            if (c == '{') {
-                // Clear any old placeholder that is still present.
-                placeholderBuilder.delete(0, placeholderBuilder.length());
-                // Start the recording of the placeholder
-                placeholderStarted = true;
-                // Make sure the '{' char is not recorded.
-                continue;
-            } else if (c == '}') {
-                // End the recording of the placeholder
-                placeholderStarted = false;
+        final var result = new StringBuilder(original.length());
+        int lastAppendEnd = 0;
 
-                // See if the recorded chars match a placeholder
-                if (safeReplacement) result.append(safeReplacementFunction(placeholderBuilder.toString()));
-                else result.append(nonNullPlayerReplacementFunction(placeholderBuilder.toString(), player, world));
+        while (placeholderStart != -1) {
+            final int placeholderEnd = original.indexOf('}', placeholderStart + 1);
+            if (placeholderEnd == -1) break;
 
-                // Make sure the '}' char is not recorded.
-                continue;
-            }
+            // Append everything before the placeholder.
+            result.append(original, lastAppendEnd, placeholderStart);
 
-            // Record any char in the correct builder.
-            if (placeholderStarted) placeholderBuilder.append(c);
-            else result.append(c);
+            // Append the placeholder (substring without the brackets).
+            final String placeholder = original.substring(placeholderStart + 1, placeholderEnd);
+            if (safeReplacement) result.append(safeReplacementFunction(placeholder));
+            else result.append(nonNullPlayerReplacementFunction(placeholder, player, world));
+
+            // Compute the next iteration's start.'
+            lastAppendEnd = placeholderEnd + 1;
+            placeholderStart = original.indexOf('{', lastAppendEnd);
         }
 
-        return result.toString();
+        return result.append(original, lastAppendEnd, original.length()).toString();
     }
 
     @RequiredArgsConstructor

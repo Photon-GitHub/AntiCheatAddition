@@ -46,15 +46,10 @@ public final class BrandHider extends Module implements PacketListener, Listener
 
     private void updateBrand(final Player player)
     {
-        final String brand = createFinalBrand(player);
+        final String brand = Placeholders.replacePlaceholders(this.brand, player);
         final byte[] payload = createBrandPayload(brand);
 
         PacketEvents.getAPI().getPlayerManager().sendPacket(player, new WrapperPlayServerPluginMessage(this.channel, payload));
-    }
-
-    private String createFinalBrand(@Nullable final Player player)
-    {
-        return Placeholders.replacePlaceholders(this.brand, player);
     }
 
     private static byte[] createBrandPayload(final String brand)
@@ -96,7 +91,8 @@ public final class BrandHider extends Module implements PacketListener, Listener
                                Log.finer(() -> "BrandHider got PLUGIN_MESSAGE in channel " + channel + " | equals: " + this.channel.equals(channel));
 
                                if (this.channel.equals(channel)) {
-                                   final String brand = createFinalBrand(event.getPlayer());
+                                   final @Nullable Player player = event.getPlayer();
+                                   final String brand = Placeholders.replacePlaceholders(this.brand, player);
                                    packet.setData(createBrandPayload(brand));
                                    event.markForReEncode(true);
                                }

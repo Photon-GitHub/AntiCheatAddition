@@ -17,8 +17,12 @@ import io.netty.buffer.Unpooled;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.jetbrains.annotations.Nullable;
 
-public final class BrandHider extends Module implements PacketListener {
+public final class BrandHider extends Module implements PacketListener, Listener {
     public static final BrandHider INSTANCE = new BrandHider();
 
     private String brand;
@@ -42,10 +46,15 @@ public final class BrandHider extends Module implements PacketListener {
 
     private void updateBrand(final Player player)
     {
-        final String renderedBrand = Placeholders.replacePlaceholders(this.brand, player);
-        final byte[] payload = createBrandPayload(renderedBrand);
+        final String brand = createFinalBrand(player);
+        final byte[] payload = createBrandPayload(brand);
 
         PacketEvents.getAPI().getPlayerManager().sendPacket(player, new WrapperPlayServerPluginMessage(this.channel, payload));
+    }
+
+    private String createFinalBrand(@Nullable final Player player)
+    {
+        return Placeholders.replacePlaceholders(this.brand, player);
     }
 
     private static byte[] createBrandPayload(final String brand)
@@ -57,6 +66,12 @@ public final class BrandHider extends Module implements PacketListener {
         } finally {
             buf.release();
         }
+    }
+
+    @EventHandler
+    public void onJoin(final PlayerJoinEvent event)
+    {
+        updateBrand(event.getPlayer());
     }
 
     @Override
@@ -81,8 +96,8 @@ public final class BrandHider extends Module implements PacketListener {
                                Log.finer(() -> "BrandHider got PLUGIN_MESSAGE in channel " + channel + " | equals: " + this.channel.equals(channel));
 
                                if (this.channel.equals(channel)) {
-                                   final String renderedBrand = Placeholders.replacePlaceholders(this.brand, event.getPlayer());
-                                   packet.setData(createBrandPayload(renderedBrand));
+                                   final String brand = createFinalBrand(event.getPlayer());
+                                   packet.setData(createBrandPayload(brand));
                                    event.markForReEncode(true);
                                }
                            }).build()).build();

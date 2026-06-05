@@ -3,6 +3,7 @@ package de.photon.anticheataddition.modules.additions;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListener;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.wrapper.configuration.server.WrapperConfigServerPluginMessage;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPluginMessage;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
@@ -20,12 +21,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitTask;
 
 public final class BrandHider extends Module implements PacketListener, Listener {
     public static final BrandHider INSTANCE = new BrandHider();
 
     private String brand;
     private final String channel = MessageChannel.MC_BRAND_CHANNEL.getChannel().orElseThrow();
+    private BukkitTask updateTask;
 
     private BrandHider()
     {
@@ -45,13 +48,8 @@ public final class BrandHider extends Module implements PacketListener, Listener
 
     private void updateBrand(final Player player)
     {
-        final String brand = Placeholders.replacePlaceholders(this.brand, player);
-        sendBrand(player, brand);
-    }
-
-    private void sendBrand(final Player player, final String brand)
-    {
-        final byte[] payload = createBrandPayload(brand);
+        // Just send an empty brand message, as this will be replaced by the Packet Adapter below anyways.
+        final byte[] payload = createBrandPayload("");
         PacketEvents.getAPI().getPlayerManager().sendPacket(player, new WrapperPlayServerPluginMessage(this.channel, payload));
     }
 
@@ -80,24 +78,47 @@ public final class BrandHider extends Module implements PacketListener, Listener
 
         final long refreshRate = loadLong(".refresh_rate", 0);
         if (refreshRate > 0) {
-            Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), this::updateAllBrands, 20L, refreshRate);
+            this.updateTask = Bukkit.getScheduler().runTaskTimer(AntiCheatAddition.getInstance(), this::updateAllBrands, 20L, refreshRate);
         }
+    }
+
+    @Override
+    public void disable()
+    {
+        if (this.updateTask != null) this.updateTask.cancel();
     }
 
     @Override
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addPacketListeners(PacketAdapterBuilder.of(this, PacketType.Configuration.Server.PLUGIN_MESSAGE, PacketType.Play.Server.PLUGIN_MESSAGE).onSendingRaw((event) -> {
-                               final WrapperPlayServerPluginMessage packet = new WrapperPlayServerPluginMessage(event);
-                               final String channel = packet.getChannelName();
-                               Log.finer(() -> "BrandHider got PLUGIN_MESSAGE in channel " + channel + " | equals: " + this.channel.equals(channel));
+                           //
+                           .addPacketListeners(
+                                   // For Configuration.Server, the player might still be null, as they are currently being constructed.
+                                   PacketAdapterBuilder.of(this, PacketType.Configuration.Server.PLUGIN_MESSAGE).onSendingRaw((event) -> {
+                                       final WrapperConfigServerPluginMessage packet = new WrapperConfigServerPluginMessage(event);
+                                       final String channel = packet.getChannelName();
+                                       Log.finer(() -> "BrandHider got PLUGIN_MESSAGE in channel " + channel + " | equals: " + this.channel.equals(channel));
 
-                               if (this.channel.equals(channel)) {
-                                   final String brand = Placeholders.replacePlaceholdersSafely(this.brand);
-                                   packet.setData(createBrandPayload(brand));
-                                   event.markForReEncode(true);
-                               }
-                           }).build()).build();
+                                       if (this.channel.equals(channel)) {
+                                           // Only replace non-player placeholders
+                                           final String brand = Placeholders.replacePlaceholdersSafely(this.brand);
+                                           packet.setData(createBrandPayload(brand));
+                                           event.markForReEncode(true);
+                                       }
+                                   }).build(),
+                                   // For Play.Server, the player is already fully initialized on the server, so non-null.
+                                   PacketAdapterBuilder.of(this, PacketType.Play.Server.PLUGIN_MESSAGE).onSendingRaw((event) -> {
+                                       final WrapperPlayServerPluginMessage packet = new WrapperPlayServerPluginMessage(event);
+                                       final String channel = packet.getChannelName();
+                                       Log.finer(() -> "BrandHider got PLUGIN_MESSAGE in channel " + channel + " | equals: " + this.channel.equals(channel));
+
+                                       if (this.channel.equals(channel)) {
+                                           // Replace all placeholders.
+                                           final String brand = Placeholders.replacePlaceholders(this.brand, event.getPlayer());
+                                           packet.setData(createBrandPayload(brand));
+                                           event.markForReEncode(true);
+                                       }
+                                   }).build()).build();
     }
 }

@@ -55,12 +55,12 @@ public final class Flag
     /**
      * This method defines what action should be taken once a certain vl is surpassed to cancel a flagged action.
      *
-     * @param cancelVl the vl needed to trigger the action. Must be greater or equal to 0, otherwise no action will be taken.
+     * @param cancelVl the vl needed to trigger the action. Must be greater than 0, otherwise no action will be taken.
      * @param onCancel the action that will be performed once the cancelVl is reached.
      */
     public Flag setCancelAction(int cancelVl, Runnable onCancel)
     {
-        if (cancelVl < 0) return this;
+        if (cancelVl <= 0) return this;
         this.cancelVl = cancelVl;
         this.onCancel = Preconditions.checkNotNull(onCancel, "Tried to set null onCancel action in flag.");
         return this;

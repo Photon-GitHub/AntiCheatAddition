@@ -20,7 +20,7 @@ import java.util.Set;
  */
 public final class StatisticalBatchProcessor extends SyncBatchProcessor<InventoryBatch.InventoryClick>
 {
-    private static final double PROBABILITY_THRESHOLD = 0.5;
+    private static final double P_VALUE_THRESHOLD = 0.5;
     // Polynomial for calculating violation levels based on the D-statistic.
     private static final Polynomial D_TEST_VL_CALCULATOR = new Polynomial(59, 1);
 
@@ -62,12 +62,13 @@ public final class StatisticalBatchProcessor extends SyncBatchProcessor<Inventor
         final long[] timeOffsetsOutliersRemoved = DataUtil.removeOutliers(2, timeOffsets);
         final KolmogorovSmirnov.KsResult result = KolmogorovSmirnov.uniformTest(timeOffsetsOutliersRemoved);
 
-        Log.finer(() -> "Inventory-Debug | Statistical Player: %s, p-value: %f, p-threshold: %f".formatted(user.getPlayer().getName(), result.pValue(), PROBABILITY_THRESHOLD));
+        Log.finer(() -> "Inventory-Debug | Statistical Player: %s, p-value: %f, p-threshold: %f".formatted(user.getPlayer().getName(), result.pValue(), P_VALUE_THRESHOLD));
 
-        // If the p-value is above the threshold, we are reasonably sure that the distribution is uniform.
-        if (result.pValue() < PROBABILITY_THRESHOLD) return;
+        // High p-values mean this heuristic did not distinguish the delays from a uniform shape.
+        // The cutoff gates the detection; the polynomial below scales the VL contribution.
+        if (result.pValue() < P_VALUE_THRESHOLD) return;
         this.getModule().getManagement().flag(Flag.of(user)
                                                   .setAddedVl(D_TEST_VL_CALCULATOR.apply(result.pValue()).intValue())
-                                                  .setDebug(() -> "Inventory-Debug | Player: %s has suspiciously distributed click delays. (p-value: %f, p-threshold: %f)".formatted(user.getPlayer().getName(), result.pValue(), PROBABILITY_THRESHOLD)));
+                                                  .setDebug(() -> "Inventory-Debug | Player: %s has suspiciously distributed click delays. (p-value: %f, p-threshold: %f)".formatted(user.getPlayer().getName(), result.pValue(), P_VALUE_THRESHOLD)));
     }
 }

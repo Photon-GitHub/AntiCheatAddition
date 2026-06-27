@@ -13,14 +13,12 @@ import java.util.Comparator;
  * Supports primitive types int, long, and double.
  */
 @UtilityClass
-public final class DataUtil
-{
+public final class DataUtil {
 
     /**
      * Calculates the sum of the given int values.
      *
      * @param data the ints to sum
-     *
      * @return the total sum of the provided values
      */
     public static int sum(int... data)
@@ -34,7 +32,6 @@ public final class DataUtil
      * Calculates the sum of the given long values.
      *
      * @param data the longs to sum
-     *
      * @return the total sum of the provided values
      */
     public static long sum(long... data)
@@ -48,7 +45,6 @@ public final class DataUtil
      * Calculates the sum of the given double values.
      *
      * @param data the doubles to sum
-     *
      * @return the total sum of the provided values
      */
     public static double sum(double... data)
@@ -62,10 +58,8 @@ public final class DataUtil
      * Computes the arithmetic mean (average) of the given int values.
      *
      * @param data the ints to average
-     *
      * @return the mean value as a double
-     *
-     * @throws ArithmeticException if {@code data.length == 0}
+     * @throws IllegalArgumentException if {@code data.length == 0}
      */
     public static double average(int... data)
     {
@@ -77,10 +71,8 @@ public final class DataUtil
      * Computes the arithmetic mean (average) of the given long values.
      *
      * @param data the longs to average
-     *
      * @return the mean value as a double
-     *
-     * @throws ArithmeticException if {@code data.length == 0}
+     * @throws IllegalArgumentException if {@code data.length == 0}
      */
     public static double average(long... data)
     {
@@ -92,10 +84,8 @@ public final class DataUtil
      * Computes the arithmetic mean (average) of the given double values.
      *
      * @param data the doubles to average
-     *
      * @return the mean value as a double
-     *
-     * @throws ArithmeticException if {@code data.length == 0}
+     * @throws IllegalArgumentException if {@code data.length == 0}
      */
     public static double average(double... data)
     {
@@ -110,7 +100,6 @@ public final class DataUtil
      *
      * @param reference the reference or expected value
      * @param value     the observed value
-     *
      * @return the squared difference {@code (value - reference)^2}
      */
     public static double variance(final double reference, final double value)
@@ -124,7 +113,6 @@ public final class DataUtil
      *
      * @param reference the reference value to compare against
      * @param data      the int values to evaluate
-     *
      * @return the sum of squared differences
      */
     public static double variance(double reference, int... data)
@@ -139,7 +127,6 @@ public final class DataUtil
      *
      * @param reference the reference value to compare against
      * @param data      the long values to evaluate
-     *
      * @return the sum of squared differences
      */
     public static double variance(double reference, long... data)
@@ -154,7 +141,6 @@ public final class DataUtil
      *
      * @param reference the reference value to compare against
      * @param data      the double values to evaluate
-     *
      * @return the sum of squared differences
      */
     public static double variance(double reference, double... data)
@@ -173,14 +159,14 @@ public final class DataUtil
      *
      * @param numberOutliers the count of farthest elements to remove
      * @param data           the int array to process
-     *
      * @return a new array containing the remaining elements
-     *
      * @throws IllegalArgumentException if {@code data} is null or too small
      */
     public static int[] removeOutliers(int numberOutliers, int... data)
     {
-        if (data == null || data.length <= numberOutliers) throw new IllegalArgumentException("Not enough data to remove outliers.");
+        Preconditions.checkArgument(data != null, "Data must not be null.");
+        Preconditions.checkArgument(numberOutliers >= 0, "Number of outliers must not be negative.");
+        Preconditions.checkArgument(data.length > numberOutliers, "Not enough data to remove outliers.");
 
         final double mean = average(data);
         return Arrays.stream(data)
@@ -203,14 +189,14 @@ public final class DataUtil
      *
      * @param numberOutliers the count of farthest elements to remove
      * @param data           the long array to process
-     *
      * @return a new array containing the remaining elements
-     *
      * @throws IllegalArgumentException if {@code data} is null or too small
      */
     public static long[] removeOutliers(int numberOutliers, long... data)
     {
-        if (data == null || data.length <= numberOutliers) throw new IllegalArgumentException("Not enough data to remove outliers.");
+        Preconditions.checkArgument(data != null, "Data must not be null.");
+        Preconditions.checkArgument(numberOutliers >= 0, "Number of outliers must not be negative.");
+        Preconditions.checkArgument(data.length > numberOutliers, "Not enough data to remove outliers.");
 
         final double mean = average(data);
         return Arrays.stream(data)
@@ -233,14 +219,14 @@ public final class DataUtil
      *
      * @param numberOutliers the count of farthest elements to remove
      * @param data           the double array to process
-     *
      * @return a new array containing the remaining elements
-     *
      * @throws IllegalArgumentException if {@code data} is null or too small
      */
     public static double[] removeOutliers(int numberOutliers, double... data)
     {
-        if (data == null || data.length <= numberOutliers) throw new IllegalArgumentException("Not enough data to remove outliers.");
+        Preconditions.checkArgument(data != null, "Data must not be null.");
+        Preconditions.checkArgument(numberOutliers >= 0, "Number of outliers must not be negative.");
+        Preconditions.checkArgument(data.length > numberOutliers, "Not enough data to remove outliers.");
 
         final double mean = average(data);
         return Arrays.stream(data)

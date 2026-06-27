@@ -5,8 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 @UtilityClass
-public final class MathUtil
-{
+public final class MathUtil {
     /**
      * Simple method to calculate the absolute offset of two numbers.
      *
@@ -107,7 +106,6 @@ public final class MathUtil
      *
      * @param yaw1 the first angle in degrees
      * @param yaw2 the second angle in degrees
-     *
      * @return the absolute shortest angular distance in degrees
      */
     public static double yawDistance(double yaw1, double yaw2)
@@ -121,7 +119,6 @@ public final class MathUtil
      *
      * @param yaw1 the first angle in degrees (Minecraft yaw, typically in [-180, 180])
      * @param yaw2 the second angle in degrees (could be any real number)
-     *
      * @return the sum normalized into [-180, 180]
      */
     public static double yawAdd(double yaw1, double yaw2)
@@ -134,7 +131,6 @@ public final class MathUtil
      * Normalizes the yaw to the range [-180, 180].
      *
      * @param yaw the yaw angle in degrees
-     *
      * @return the normalized yaw angle in degrees
      */
     public static double normalizeYaw(double yaw)
@@ -164,15 +160,24 @@ public final class MathUtil
     }
 
     /**
-     * Calculates the angle between two rotations using {@link Vector}s.
+     * Calculates the angle between two rotations.
      *
      * @return The angle between the two rotations in degrees.
      */
     public static float getAngleBetweenRotations(final float firstYaw, final float firstPitch, final float secondYaw, final float secondPitch)
     {
-        final Vector first = getDirection(firstYaw, firstPitch);
-        final Vector second = getDirection(secondYaw, secondPitch);
+        if (firstYaw == secondYaw && firstPitch == secondPitch) return 0F;
 
-        return (float) Math.toDegrees(first.angle(second));
+        final double yawCos = Math.cos(Math.toRadians(firstYaw - secondYaw));
+
+        final double firstPitchRadians = Math.toRadians(firstPitch);
+        final double secondPitchRadians = Math.toRadians(secondPitch);
+        final double dot = Math.sin(firstPitchRadians) * Math.sin(secondPitchRadians) +
+                           Math.cos(firstPitchRadians) * Math.cos(secondPitchRadians) * yawCos;
+
+        if (dot >= 1.0) return 0F;
+        if (dot <= -1.0) return 180F;
+
+        return (float) Math.toDegrees(Math.acos(dot));
     }
 }

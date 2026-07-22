@@ -346,6 +346,10 @@ PacketAnalysis:
     # Adds 5 VL.
     EqualRotation:
       enabled: true
+    # ExtremeYaw detects very large yaw deltas that even with extreme mouse sensitivity are impossible to achieve.
+    # Adds 50 VL.
+    ExtremeYaw:
+      enabled: true
     # IllegalPitch detects illegal pitches that a vanilla client cannot send.
     # Adds 150 VL.
     IllegalPitch:

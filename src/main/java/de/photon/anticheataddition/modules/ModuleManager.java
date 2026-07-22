@@ -11,11 +11,11 @@ import de.photon.anticheataddition.modules.checks.autoeat.AutoEat;
 import de.photon.anticheataddition.modules.checks.autofish.AutoFishConsistency;
 import de.photon.anticheataddition.modules.checks.autofish.AutoFishInhumanReaction;
 import de.photon.anticheataddition.modules.checks.autopotion.AutoPotion;
+import de.photon.anticheataddition.modules.checks.autotool.AutoTool;
+import de.photon.anticheataddition.modules.checks.autototem.AutoTotem;
 import de.photon.anticheataddition.modules.checks.duping.DupingDoubleDropped;
 import de.photon.anticheataddition.modules.checks.duping.DupingSecretCache;
 import de.photon.anticheataddition.modules.checks.fastswitch.Fastswitch;
-import de.photon.anticheataddition.modules.checks.autotool.AutoTool;
-import de.photon.anticheataddition.modules.checks.autototem.AutoTotem;
 import de.photon.anticheataddition.modules.checks.impossiblechat.ImpossibleChat;
 import de.photon.anticheataddition.modules.checks.inventory.Inventory;
 import de.photon.anticheataddition.modules.checks.packetanalysis.*;
@@ -23,6 +23,7 @@ import de.photon.anticheataddition.modules.checks.scaffold.Scaffold;
 import de.photon.anticheataddition.modules.checks.shield.ShieldHit;
 import de.photon.anticheataddition.modules.checks.skinblinker.SkinBlinkerSprinting;
 import de.photon.anticheataddition.modules.checks.skinblinker.SkinBlinkerUnusedBit;
+import de.photon.anticheataddition.modules.checks.targeting.Targeting;
 import de.photon.anticheataddition.modules.checks.teaming.Teaming;
 import de.photon.anticheataddition.modules.checks.tower.Tower;
 import de.photon.anticheataddition.modules.sentinel.SentinelChannelModule;
@@ -37,8 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ModuleManager
-{
+public final class ModuleManager {
     @Getter private static final ModuleMap<Module> moduleMap;
     @Getter private static final ModuleMap<ViolationModule> violationModuleMap;
 
@@ -71,7 +71,7 @@ public final class ModuleManager
 
                 Inventory.INSTANCE,
 
-                ViolationModule.parentOf("PacketAnalysis", PacketAnalysisAimStep.INSTANCE, PacketAnalysisAnimation.INSTANCE, PacketAnalysisEqualRotation.INSTANCE, PacketAnalysisIllegalPitch.INSTANCE, PacketAnalysisPerfectRotation.INSTANCE),
+                ViolationModule.parentOf("PacketAnalysis", PacketAnalysisAimStep.INSTANCE, PacketAnalysisAnimation.INSTANCE, PacketAnalysisEqualRotation.INSTANCE, PacketAnalysisExtremeYaw.INSTANCE, PacketAnalysisIllegalPitch.INSTANCE, PacketAnalysisPerfectRotation.INSTANCE),
 
                 Scaffold.INSTANCE,
 

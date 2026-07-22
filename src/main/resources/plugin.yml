@@ -67,6 +67,7 @@ permissions:
       anticheataddition.bypass.packetanalysis.parts.aimstep: true
       anticheataddition.bypass.packetanalysis.parts.animation: true
       anticheataddition.bypass.packetanalysis.parts.equalrotation: true
+      anticheataddition.bypass.packetanalysis.parts.extremeyaw: true
       anticheataddition.bypass.packetanalysis.parts.illegalpitch: true
       anticheataddition.bypass.packetanalysis.parts.perfectrotation: true
       anticheataddition.bypass.scaffold: true

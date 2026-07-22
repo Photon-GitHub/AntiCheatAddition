@@ -31,7 +31,7 @@ public enum ServerVersion {
     MC117("1.17.1", false, null, 755, 756),
     MC118("1.18.2", false, null, 757, 758),
     MC119("1.19.4", false, null, 759, 760, 761, 762),
-    MC120("1.20", true, new MetadataPositionIndex(9, 12, 17), 763, 764, 765, 766),
+    MC120("1.20", false, new MetadataPositionIndex(9, 12, 17), 763, 764, 765, 766),
     MC121_5("1.21.5", true, new MetadataPositionIndex(9, 12, 17), 767, 768, 769, 770),
     MC121_8("1.21.8", true, new MetadataPositionIndex(9, 12, 17), 771, 772),
     MC121_10("1.21.10", true, new MetadataPositionIndex(9, 12, 16), 773),

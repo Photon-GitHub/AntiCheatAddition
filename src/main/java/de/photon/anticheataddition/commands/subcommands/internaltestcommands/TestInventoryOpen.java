@@ -1,7 +1,6 @@
 package de.photon.anticheataddition.commands.subcommands.internaltestcommands;
 
 import de.photon.anticheataddition.InternalPermission;
-import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.commands.CommandAttributes;
 import de.photon.anticheataddition.commands.InternalCommand;
 import de.photon.anticheataddition.commands.TabCompleteSupplier;
@@ -30,11 +29,6 @@ public class TestInventoryOpen extends InternalCommand
     {
         final var user = parseUser(sender, arguments.peek());
         if (user == null) return;
-
-        if (ServerVersion.ACTIVE == ServerVersion.MC120) {
-            ChatMessage.sendMessage(sender, "Due to various API changes this command is not available on Minecraft 1.20.");
-            return;
-        }
 
         final var view = InventoryViewUtil.INSTANCE.createTestView(user);
         DataUpdaterEvents.INSTANCE.onInventoryOpen(new InventoryOpenEvent(view));

@@ -84,6 +84,16 @@ permissions:
       anticheataddition.bypass.skinblinker: true
       anticheataddition.bypass.skinblinker.parts.sprinting: true
       anticheataddition.bypass.skinblinker.parts.unusedbit: true
+      anticheataddition.bypass.targeting: true
+      anticheataddition.bypass.targeting.parts.noise: true
+      anticheataddition.bypass.targeting.parts.precision: true
+      anticheataddition.bypass.targeting.parts.pattern: true
+      anticheataddition.bypass.targeting.parts.switching: true
+      anticheataddition.bypass.targeting.parts.mixed: true
+      anticheataddition.bypass.targeting.parts.replay: true
+      anticheataddition.bypass.targeting.parts.snapback: true
+      anticheataddition.bypass.targeting.parts.reversal: true
+      anticheataddition.bypass.targeting.parts.discontinuity: true
       anticheataddition.bypass.teaming: true
       anticheataddition.bypass.tower: true
 

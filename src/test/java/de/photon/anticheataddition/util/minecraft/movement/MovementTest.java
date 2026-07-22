@@ -31,7 +31,7 @@ class MovementTest
     {
         Vector vector = new Vector(1, 1, 1);
 
-        Vector result = Movement.PLAYER.applyAirResistance(vector.clone());
+        Vector result = Movement.applyAirResistance(vector.clone());
         assertEquals(0.98, result.getX(), 0.001);
         assertEquals(0.98, result.getY(), 0.001);
         assertEquals(0.98, result.getZ(), 0.001);

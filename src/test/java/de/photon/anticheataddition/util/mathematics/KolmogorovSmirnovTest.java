@@ -3,11 +3,11 @@ package de.photon.anticheataddition.util.mathematics;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
-import java.util.stream.DoubleStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class KolmogorovSmirnovTest {
+class KolmogorovSmirnovTest
+{
     private static final double DELTA = 1e-12;
 
     @Test

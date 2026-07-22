@@ -79,6 +79,8 @@ public final class ModuleManager {
 
                 ViolationModule.parentOf("Skinblinker", SkinBlinkerUnusedBit.INSTANCE, SkinBlinkerSprinting.INSTANCE),
 
+                Targeting.INSTANCE,
+
                 Teaming.INSTANCE,
 
                 Tower.INSTANCE,

@@ -82,6 +82,17 @@ public final class Data
         public final ViolationCounter scaffoldSafewalkPositionFails = new ViolationCounter(4);
         public final ViolationCounter scaffoldSafewalkTimingFails = new ViolationCounter(3);
         public final ViolationCounter scaffoldSprintingFails = new ViolationCounter(5);
+
+        public final ViolationCounter targetingAcquisitionFails = new ViolationCounter(6);
+        public final ViolationCounter targetingDiscontinuityFails = new ViolationCounter(12);
+        public final ViolationCounter targetingMixedFails = new ViolationCounter(4);
+        public final ViolationCounter targetingNoiseFails = new ViolationCounter(12);
+        public final ViolationCounter targetingPatternFails = new ViolationCounter(8);
+        public final ViolationCounter targetingPrecisionFails = new ViolationCounter(12);
+        public final ViolationCounter targetingReplayFails = new ViolationCounter(3);
+        public final ViolationCounter targetingReversalFails = new ViolationCounter(12);
+        public final ViolationCounter targetingSnapBackFails = new ViolationCounter(5);
+        public final ViolationCounter targetingSwitchingFails = new ViolationCounter(12);
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")

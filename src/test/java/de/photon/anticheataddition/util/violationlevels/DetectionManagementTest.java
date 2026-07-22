@@ -105,14 +105,17 @@ class DetectionManagementTest
 
 
     @Test
-    void testPunishPlayerCalledOnTransitionToOne() {
+    void testPunishPlayerCalledOnTransitionToOne()
+    {
         final var player = Dummy.mockPlayer();
         final AtomicInteger punishCount = new AtomicInteger(0);
 
         // Create a DetectionManagement that counts punishPlayer calls
-        var management = new DetectionManagement(dummyVlModule) {
+        var management = new DetectionManagement(dummyVlModule)
+        {
             @Override
-            protected void punishPlayer(@NotNull Player p, int fromVl, int toVl) {
+            protected void punishPlayer(@NotNull Player p, int fromVl, int toVl)
+            {
                 // Should only ever be called with fromVl=0, toVl=1
                 Assertions.assertEquals(player, p, "Wrong player in punishPlayer");
                 Assertions.assertEquals(0, fromVl, "Expected fromVl to be 0");

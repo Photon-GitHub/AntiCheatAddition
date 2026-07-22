@@ -448,6 +448,57 @@ Skinblinker:
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Skinblinker"
     200: "kick {player} Skinblinker"
 
+# Targeting analyzes player look rotations around combat attacks and scaffold-like block placements.
+Targeting:
+  enabled: true
+  parts:
+    # Detects ghost-client aim assists which apply a repeatable slowdown after the crosshair enters a fixed angular
+    # region around another player.
+    # Adds 15 to 25 VLs.
+    Acquisition:
+      enabled: true
+    # Detects repeated oscillating head movements.
+    # Adds 10 to 20 VL.
+    Discontinuity:
+      enabled: true
+    # Detects repeated alternation between different suspicious aiming strategies.
+    # Adds 8 VL.
+    Mixed:
+      enabled: true
+    # Detects aiming behavior with added noise.
+    # Adds 10 to 20 VL.
+    Noise:
+      enabled: true
+    # Detects repeated deterministic aiming patterns.
+    # Adds 8 to 16 VL.
+    Pattern:
+      enabled: true
+    # Detects unnaturally precise aiming.
+    # Adds 8 to 16 VL.
+    Precision:
+      enabled: true
+    # Detects replayed aiming traces.
+    # Adds 14 to 28 VL.
+    Replay:
+      enabled: true
+    # Detects suspicious reversals immediately before an interaction.
+    # Adds 10 to 20 VL.
+    Reversal:
+      enabled: true
+    # Detects snap-back aiming after an interaction.
+    # Adds 12 to 24 VL.
+    SnapBack:
+      enabled: true
+    # Detects repeated switching between different aiming behaviors.
+    # Adds 6 to 12 VL.
+    Switching:
+      enabled: true
+  # Commands to execute at specific violation levels.
+  thresholds:
+    110: " {player} in {world} is suspected for unnatural targeting"
+    160: " {player} in {world} is highly suspected for unnatural targeting"
+    200: "kick {player} Unnatural targeting"
+
 # Teaming detects potentially teaming players.
 Teaming:
   enabled: false

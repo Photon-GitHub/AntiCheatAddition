@@ -146,17 +146,13 @@ public final class MathUtil {
     {
         final double yawRadians = Math.toRadians((double) yaw);
         final double pitchRadians = Math.toRadians((double) pitch);
+        final double pitchCosine = Math.cos(pitchRadians);
 
-        final var vector = new Vector();
-
-        vector.setY(-Math.sin(pitchRadians));
-
-        final double xz = Math.cos(pitchRadians);
-
-        vector.setX(-xz * Math.sin(yawRadians));
-        vector.setZ(xz * Math.cos(yawRadians));
-
-        return vector;
+        return new Vector(
+                -pitchCosine * Math.sin(yawRadians),
+                -Math.sin(pitchRadians),
+                pitchCosine * Math.cos(yawRadians)
+        );
     }
 
     /**
@@ -168,12 +164,12 @@ public final class MathUtil {
     {
         if (firstYaw == secondYaw && firstPitch == secondPitch) return 0F;
 
-        final double yawCos = Math.cos(Math.toRadians(firstYaw - secondYaw));
+        final double deltaYawCos = Math.cos(Math.toRadians(firstYaw - secondYaw));
 
         final double firstPitchRadians = Math.toRadians(firstPitch);
         final double secondPitchRadians = Math.toRadians(secondPitch);
         final double dot = Math.sin(firstPitchRadians) * Math.sin(secondPitchRadians) +
-                           Math.cos(firstPitchRadians) * Math.cos(secondPitchRadians) * yawCos;
+                           Math.cos(firstPitchRadians) * Math.cos(secondPitchRadians) * deltaYawCos;
 
         if (dot >= 1.0) return 0F;
         if (dot <= -1.0) return 180F;

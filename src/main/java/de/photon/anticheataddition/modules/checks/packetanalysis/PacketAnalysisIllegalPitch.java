@@ -4,15 +4,14 @@ import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
+import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.util.protocol.PacketEventUtils;
-import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 
-public final class PacketAnalysisIllegalPitch extends ViolationModule
-{
+public final class PacketAnalysisIllegalPitch extends ViolationModule {
     public static final PacketAnalysisIllegalPitch INSTANCE = new PacketAnalysisIllegalPitch();
 
     private PacketAnalysisIllegalPitch()

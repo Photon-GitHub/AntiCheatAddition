@@ -70,7 +70,6 @@ public class LabyProtocolUtil
      *
      * @param messageKey      the message's key
      * @param messageContents the message's contents
-     *
      * @return the byte array that should be the payload
      */
     public static byte[] getBytesToSend(String messageKey, String messageContents)
@@ -78,20 +77,17 @@ public class LabyProtocolUtil
         // Getting an empty buffer
         final ByteBuf byteBuf = Unpooled.buffer();
 
-        // Writing the message-key to the buffer
-        ByteBufUtil.writeString(byteBuf, messageKey);
+        try {
+            // Writing the message-key to the buffer
+            ByteBufUtil.writeString(byteBuf, messageKey);
 
-        // Writing the contents to the buffer
-        ByteBufUtil.writeString(byteBuf, messageContents);
+            // Writing the contents to the buffer
+            ByteBufUtil.writeString(byteBuf, messageContents);
 
-        // Copying the buffer's bytes to the byte array
-        final byte[] bytes = new byte[byteBuf.readableBytes()];
-        byteBuf.readBytes(bytes);
-
-        // Release the buffer
-        byteBuf.release();
-
-        // Returning the byte array
-        return bytes;
+            // Copying the buffer's bytes to the byte array
+            return ByteBufUtil.toArray(byteBuf);
+        } finally {
+            byteBuf.release();
+        }
     }
 }

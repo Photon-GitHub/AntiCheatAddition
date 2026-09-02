@@ -28,7 +28,15 @@ public final class LabyModSentinel extends SentinelModule implements Listener, P
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] message)
     {
         final var byteBuf = Unpooled.wrappedBuffer(message);
-        final var key = ByteBufUtil.readString(byteBuf);
+        final String key;
+        try {
+            key = ByteBufUtil.readString(byteBuf);
+        } catch (RuntimeException ignored) {
+            // Plugin-message payloads are attacker controlled. Ignore malformed data after releasing the buffer.
+            return;
+        } finally {
+            byteBuf.release();
+        }
 
         // LabyMod user joins the server
         if ("INFO".equals(key)) {
@@ -42,8 +50,6 @@ public final class LabyModSentinel extends SentinelModule implements Listener, P
             if (!voicechat) LabyProtocolUtil.disableVoiceChat(player);
             if (tablistBanner) LabyProtocolUtil.sendServerBanner(player, tablistBannerUrl);
         }
-
-        byteBuf.release();
     }
 
     @Override

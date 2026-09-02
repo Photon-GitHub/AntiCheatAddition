@@ -23,19 +23,22 @@ public final class SchematicaSentinel extends SentinelModule implements Listener
     {
         super("Schematica");
         final ByteBuf byteBuf = Unpooled.buffer();
-        byteBuf.writeByte(0);
+        try {
+            byteBuf.writeByte(0);
 
-        /*
-         * This array holds what features of schematica should be disabled.
-         * SENDING 1 MEANS ALLOWING THE FEATURE -> NEGATION.
-         * Link to the original plugin: https://www.spigotmc.org/resources/schematicaplugin.14411/
-         */
-        byteBuf.writeBoolean(!loadBoolean(".disable.printer", true));
-        byteBuf.writeBoolean(!loadBoolean(".disable.save", true));
-        byteBuf.writeBoolean(!loadBoolean(".disable.load", false));
+            /*
+             * This array holds what features of schematica should be disabled.
+             * SENDING 1 MEANS ALLOWING THE FEATURE -> NEGATION.
+             * Link to the original plugin: https://www.spigotmc.org/resources/schematicaplugin.14411/
+             */
+            byteBuf.writeBoolean(!loadBoolean(".disable.printer", true));
+            byteBuf.writeBoolean(!loadBoolean(".disable.save", true));
+            byteBuf.writeBoolean(!loadBoolean(".disable.load", false));
 
-        this.sentMessage = Arrays.copyOf(byteBuf.array(), byteBuf.array().length);
-        byteBuf.release();
+            this.sentMessage = Arrays.copyOf(byteBuf.array(), byteBuf.array().length);
+        } finally {
+            byteBuf.release();
+        }
     }
 
     @EventHandler(ignoreCancelled = true)

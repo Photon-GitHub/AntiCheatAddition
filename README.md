@@ -1,48 +1,75 @@
 # AntiCheatAddition
 
-This plugin for spigot was originally developed to aid AAC with additional checks to cover more cheats.
+AntiCheatAddition is a Spigot anti-cheat extension focused on cheat classes and player-information leaks that are not consistently addressed by general-purpose anti-cheat solutions.
+It provides configurable detection modules, Sentinel modules, packet-level information hiding, and operational tooling.
 
-## Getting Started
+This repository is a development resource for experienced Java and Minecraft server developers.
+For supported releases, administration guidance, and customer support, use the [official Spigot resource](https://www.spigotmc.org/resources/anticheataddition.33590/).
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+## Scope
 
-### Prerequisites
+- **Detection modules** cover behaviour including automated inventory interaction, fishing, potion use, tool switching, scaffold behaviour, targeting, and packet anomalies.
+- **Sentinel modules** address selected exploit patterns and client or modification identification.
+- **Information-protection additions** provide entity-visibility, item-data, damage-indicator, and server-brand controls.
+- **Violation management** supplies configurable thresholds, cancellation behaviour, logging, and Bukkit events for integrations.
 
-The current JDK version for this project is 21.
+Checks are deliberately modular.
+A module may be unavailable because of a server-version restriction, a missing optional integration, or an explicit configuration setting.
 
-### Installing
+## Runtime Contracts
 
-As maven automatically handles all dependencies for you, you just need to clone the project and add it as a maven project.
+AntiCheatAddition is a Spigot plugin and requires [PacketEvents](https://www.spigotmc.org/resources/packetevents-api.80279/).
+It also integrates with ViaVersion, Floodgate, and WorldGuard.
 
-## Deployment
+Supported server versions are defined in [`ServerVersion`](src/main/java/de/photon/anticheataddition/ServerVersion.java).
+The plugin refuses to load on unsupported server versions, and forcing such a load likely leads to runtime errors.
 
-You need to set up a spigot server with the correct version of [PacketEvents](https://www.spigotmc.org/resources/packetevents-api.80279/) installed.
+## Project Structure
 
-## Built With
+| Location | Purpose |
+| --- | --- |
+| [`src/main/java/de/photon/anticheataddition`](src/main/java/de/photon/anticheataddition) | Plugin bootstrap, public API, modules, events, user state, and shared utilities. |
+| [`modules`](src/main/java/de/photon/anticheataddition/modules) | Module definitions, loading rules, detection checks, additions, and Sentinel functionality. |
+| [`api`](src/main/java/de/photon/anticheataddition/api) | Public integration surface for querying and controlling modules and violation levels. |
+| [`events`](src/main/java/de/photon/anticheataddition/events) | Bukkit events emitted when module activity produces a violation. |
+| [`src/main/resources/config.yml`](src/main/resources/config.yml) | Default module configuration, thresholds, and operational settings. |
+| [`src/test`](src/test) | Unit tests for logic that can be isolated from a live server. |
 
-* [Maven](https://maven.apache.org/) - Dependency Management
+## Architecture Notes
+
+`ModuleManager` owns the built-in module registry.
+Each `Module` has a stable configuration path and is activated through a `ModuleLoader`, which applies configuration, platform, dependency, compatibility, listener, packet-listener, and message-channel requirements.
+`ViolationModule` extends that model with violation-level management.
+
+The public `AntiCheatAdditionApi` permits integrations to inspect and adjust violation levels, inspect or change module state, and register external modules.
+Some extension points necessarily expose implementation-sensitive behaviour; callers must treat them as version-coupled and validate their integration against the target plugin release.
+
+Packet processing and some module work can occur away from the Bukkit primary thread.
+Treat Bukkit APIs and mutable player state according to their thread-safety guarantees.
+
+## Configuration and Operations
+
+The distributed [`config.yml`](src/main/resources/config.yml) is the canonical reference for module names, settings, defaults, and threshold semantics.
+Preserve its hierarchy and module identifiers when changing code: identifiers feed configuration lookups, bypass permissions, violation handling, and integrations.
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://github.com/Photon-GitHub/AACAdditionPro/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Contributions are welcome when they are well-reasoned and exhaustively tested to the extent the change permits.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening an issue or pull request.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. I will not distribute compiled binaries as they are exclusive to the Spigot plugin page. Please compile your plugin version yourself.
-
-## Authors
-
-* **Photon** - *Initial work* - [Photon-GitHub](https://github.com/Photon-GitHub)
-* **Fabian Faßbender** - *Help with various parts of the code* - [geNAZt](https://github.com/geNAZt)
-* **Janmm14** - *Help with little problems* - [Janmm14](https://github.com/Janmm14)
-
-See also the list of [contributors](https://github.com/Photon-GitHub/AACAdditionPro/contributors) who participated in this project.
+Release versions follow [Semantic Versioning](https://semver.org/).
 
 ## License
 
-This project is licensed under the GPL 3 License - see the [LICENSE](https://github.com/Photon-GitHub/AACAdditionPro/blob/master/LICENSE) file for details
+This project is licensed under the [GNU General Public License v3.0](LICENSE).
 
-## Acknowledgments
+## Credits
 
-* Thanks to konsolas for providing the base Anticheat.
+- Photon — initial work
+- Fabian Faßbender ([geNAZt](https://github.com/geNAZt)) — contributions across the project
+- Janmm14 — assistance with individual issues
+- konsolas — foundational anti-cheat work
 
+See the [contributors](https://github.com/Photon-GitHub/AACAdditionPro/contributors) for the complete contribution history.

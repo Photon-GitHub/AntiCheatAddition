@@ -2,7 +2,7 @@ package de.photon.anticheataddition.modules.sentinel.mods;
 
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.sentinel.SentinelModule;
-import de.photon.anticheataddition.util.pluginmessage.ByteBufUtil;
+import de.photon.anticheataddition.util.pluginmessage.ACAByteBufUtil;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import de.photon.anticheataddition.util.pluginmessage.labymod.LabyProtocolUtil;
 import io.netty.buffer.Unpooled;
@@ -30,7 +30,7 @@ public final class LabyModSentinel extends SentinelModule implements Listener, P
         final var byteBuf = Unpooled.wrappedBuffer(message);
         final String key;
         try {
-            key = ByteBufUtil.readString(byteBuf);
+            key = ACAByteBufUtil.readString(byteBuf);
         } catch (RuntimeException ignored) {
             // Plugin-message payloads are attacker controlled. Ignore malformed data after releasing the buffer.
             return;

@@ -4,7 +4,7 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPluginMessage;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.photon.anticheataddition.util.pluginmessage.ByteBufUtil;
+import de.photon.anticheataddition.util.pluginmessage.ACAByteBufUtil;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -79,13 +79,13 @@ public class LabyProtocolUtil
 
         try {
             // Writing the message-key to the buffer
-            ByteBufUtil.writeString(byteBuf, messageKey);
+            ACAByteBufUtil.writeString(byteBuf, messageKey);
 
             // Writing the contents to the buffer
-            ByteBufUtil.writeString(byteBuf, messageContents);
+            ACAByteBufUtil.writeString(byteBuf, messageContents);
 
             // Copying the buffer's bytes to the byte array
-            return ByteBufUtil.toArray(byteBuf);
+            return ACAByteBufUtil.toArray(byteBuf);
         } finally {
             byteBuf.release();
         }

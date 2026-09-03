@@ -39,7 +39,7 @@ public final class PacketAnalysisExtremeYaw extends ViolationModule {
                 .onReceiving((event, user) -> {
                     final PacketEventUtils.Rotation rotation = PacketEventUtils.getRotationFromEvent(event);
 
-                    if (rotation.yaw() > THRESHOLD || rotation.yaw() < -THRESHOLD) {
+                    if (!Float.isFinite(rotation.yaw()) || rotation.yaw() > THRESHOLD || rotation.yaw() < -THRESHOLD) {
                         getManagement().flag(Flag.of(user).setAddedVl(50).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent extreme yaw value."));
                     }
                 }).build();

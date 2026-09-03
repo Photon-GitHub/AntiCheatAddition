@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.modules.checks.packetfrequency;
 
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
@@ -54,6 +55,7 @@ public final class PacketFrequency extends ViolationModule
                         PacketAdapterBuilder
                                 .of(this, PacketType.Play.Client.PLAYER_FLYING, PacketType.Play.Client.PLAYER_POSITION, PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION, PacketType.Play.Client.PLAYER_ROTATION)
                                 .priority(PacketListenerPriority.LOW)
+                                .onReceivingRaw(this::resetIfBypassed)
                                 .onReceiving((event, user) -> updateBalance(user, TimeKey.PACKET_FREQUENCY, user.getData().counter.packetFrequencyBalance, "position"))
                                 .build());
 
@@ -63,6 +65,7 @@ public final class PacketFrequency extends ViolationModule
                     PacketAdapterBuilder
                             .of(this, PacketType.Play.Client.CLIENT_TICK_END)
                             .priority(PacketListenerPriority.LOW)
+                            .onReceivingRaw(this::resetIfBypassed)
                             .onReceiving((event, user) -> {
                                 if (updateBalance(user, TimeKey.PACKET_FREQUENCY_END_TICK, user.getData().counter.packetFrequencyEndTickBalance, "end tick")) compareBalances(user);
                             })
@@ -70,6 +73,25 @@ public final class PacketFrequency extends ViolationModule
         }
 
         return builder.build();
+    }
+
+    /**
+     * Bypassed users are filtered out by {@link PacketAdapterBuilder}, so their timestamps would otherwise become
+     * stale. Reset the complete measurement state while the bypass is active so that removing the bypass starts a
+     * fresh measurement window instead of treating the bypass duration as delayed packets.
+     */
+    private void resetIfBypassed(PacketReceiveEvent event)
+    {
+        final User user = User.getUser(event);
+        if (user != null && User.isUserInvalid(user, this)) resetState(user);
+    }
+
+    static void resetState(User user)
+    {
+        user.getTimeMap().at(TimeKey.PACKET_FREQUENCY).setToZero();
+        user.getTimeMap().at(TimeKey.PACKET_FREQUENCY_END_TICK).setToZero();
+        user.getData().counter.packetFrequencyBalance.setToZero();
+        user.getData().counter.packetFrequencyEndTickBalance.setToZero();
     }
 
     /**
@@ -122,7 +144,7 @@ public final class PacketFrequency extends ViolationModule
     protected ViolationManagement createViolationManagement()
     {
         return ViolationLevelManagement.builder(this)
-                                       .emptyThresholdManagement()
+                                       .loadThresholdsToManagement()
                                        .withDecay(200, 1)
                                        .build();
     }

@@ -2,8 +2,10 @@ package de.photon.anticheataddition.modules.checks.packetfrequency;
 
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
+import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.Timestamp;
 import de.photon.anticheataddition.user.data.ViolationCounter;
@@ -18,12 +20,18 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Tracks the packet-time balance of each player to detect clients that send movement packets too quickly.
+ * <p>
+ * It tracks both the position or flying packets and the end tick packets in separate balances, as modern Minecraft versions
+ * allow the client to send no position packet in a tick.
+ * <p>
+ * Furthermore, it compares the two balances to ensure that the two packet balances are synchronous to catch partial timer cheats.
  */
 public final class PacketFrequency extends ViolationModule
 {
     public static final PacketFrequency INSTANCE = new PacketFrequency();
 
     private static final long EXPECTED_PACKET_TIME_NANOS = TimeUnit.MILLISECONDS.toNanos(50L);
+    private static final long MAXIMUM_BALANCE_DIFFERENCE_NANOS = TimeUnit.SECONDS.toNanos(1L);
     private static final Polynomial VL_POLYNOMIAL = new Polynomial(1e-7, 1);
 
     private final long minimumBalanceNanos;
@@ -40,33 +48,74 @@ public final class PacketFrequency extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
+        final ModuleLoader.Builder builder = ModuleLoader
+                .builder(this)
+                .addPacketListeners(
+                        PacketAdapterBuilder
+                                .of(this, PacketType.Play.Client.PLAYER_FLYING, PacketType.Play.Client.PLAYER_POSITION, PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION, PacketType.Play.Client.PLAYER_ROTATION)
+                                .priority(PacketListenerPriority.LOW)
+                                .onReceiving((event, user) -> updateBalance(user, TimeKey.PACKET_FREQUENCY, user.getData().counter.packetFrequencyBalance, "position"))
+                                .build());
 
-        return ModuleLoader.of(this, PacketAdapterBuilder
-                .of(this, PacketType.Play.Client.PLAYER_FLYING, PacketType.Play.Client.PLAYER_POSITION, PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION, PacketType.Play.Client.PLAYER_ROTATION)
-                .priority(PacketListenerPriority.LOW)
-                .onReceiving((event, user) -> {
-                    final Timestamp timestamp = user.getTimeMap().at(TimeKey.PACKET_FREQUENCY);
-                    if (timestamp.getTime() == 0L) {
-                        timestamp.update();
-                        return;
-                    }
+        // The end tick packet first appeared in Minecraft 1.21.2 -> 1.21.5 as the latest support release.
+        if (ServerVersion.MC121_5.activeIsLaterOrEqual()) {
+            builder.addPacketListeners(
+                    PacketAdapterBuilder
+                            .of(this, PacketType.Play.Client.CLIENT_TICK_END)
+                            .priority(PacketListenerPriority.LOW)
+                            .onReceiving((event, user) -> {
+                                if (updateBalance(user, TimeKey.PACKET_FREQUENCY_END_TICK, user.getData().counter.packetFrequencyEndTickBalance, "end tick")) compareBalances(user);
+                            })
+                            .build());
+        }
 
-                    final long passedNanos = timestamp.passedNanos();
-                    timestamp.update();
+        return builder.build();
+    }
 
-                    final ViolationCounter balance = user.getData().counter.packetFrequencyBalance;
-                    final long currentBalance = balance.addWithMinimumAndGet(EXPECTED_PACKET_TIME_NANOS - passedNanos, minimumBalanceNanos);
+    /**
+     * Updates and validates the time balance for one packet stream.
+     *
+     * @return whether the balance was updated, rather than initialized
+     */
+    private boolean updateBalance(User user, TimeKey timeKey, ViolationCounter balance, String balanceName)
+    {
+        final Timestamp timestamp = user.getTimeMap().at(timeKey);
+        if (timestamp.getTime() == 0L) {
+            timestamp.update();
+            return false;
+        }
 
-                    Log.finest(() -> "PacketFrequency-Debug | Player: " + user.getPlayer().getName() + " | balance: " + currentBalance + "ns");
+        final long passedNanos = timestamp.passedNanos();
+        timestamp.update();
 
-                    if (balance.greaterOrEqualToThreshold()) {
-                        getManagement().flag(Flag.of(user)
-                                                 .setAddedVl(VL_POLYNOMIAL.apply(currentBalance).intValue())
-                                                 .setDebug(() -> "PacketFrequency-Debug | Player: " + user.getPlayer().getName() + " reached a packet balance of " + TimeUnit.NANOSECONDS.toMillis(currentBalance) + "ms."));
-                    }
+        final long currentBalance = balance.addWithMinimumAndGet(EXPECTED_PACKET_TIME_NANOS - passedNanos, minimumBalanceNanos);
 
-                })
-                .build());
+        Log.finest(() -> "PacketFrequency-Debug | Player: " + user.getPlayer().getName() + " | " + balanceName + " balance: " + currentBalance + "ns");
+
+        if (balance.greaterOrEqualToThreshold()) {
+            getManagement().flag(Flag.of(user)
+                                     .setAddedVl(VL_POLYNOMIAL.apply(currentBalance).intValue())
+                                     .setDebug(() -> "PacketFrequency-Debug | Player: " + user.getPlayer().getName() + " reached a " + balanceName + " packet balance of " + TimeUnit.NANOSECONDS.toMillis(currentBalance) + "ms."));
+        }
+        return true;
+    }
+
+    /**
+     * A client can send at most one position packet per tick, so its position balance must not lead its tick-end balance.
+     */
+    private void compareBalances(User user)
+    {
+        final long positionBalance = user.getData().counter.packetFrequencyBalance.getCounter();
+        final long endTickBalance = user.getData().counter.packetFrequencyEndTickBalance.getCounter();
+        final long positionEndTickBalance = positionBalance - endTickBalance;
+
+        Log.finest(() -> "PacketFrequency-Debug | Player: " + user.getPlayer().getName() + " | position/end tick balance: " + positionEndTickBalance + "ns");
+
+        if (positionEndTickBalance >= MAXIMUM_BALANCE_DIFFERENCE_NANOS) {
+            getManagement().flag(Flag.of(user)
+                                     .setAddedVl(VL_POLYNOMIAL.apply(positionEndTickBalance).intValue())
+                                     .setDebug(() -> "PacketFrequency-Debug | Player: " + user.getPlayer().getName() + " exceeded the end tick balance by " + TimeUnit.NANOSECONDS.toMillis(positionEndTickBalance) + "ms."));
+        }
     }
 
     @Override

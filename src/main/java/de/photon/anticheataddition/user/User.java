@@ -87,10 +87,8 @@ public final class User implements Permissible
 
         if (InternalPermission.DEBUG.hasPermission(player)) DEBUG_USERS.add(this);
 
-        // Add targeting data to make it non-empty.
-        this.targetingData.addRotation(player.getLocation().getYaw(),
-                                       player.getLocation().getPitch(),
-                                       System.nanoTime());
+        // Seed targeting with 0 position as the player location is still null at this point in time.
+        this.targetingData.addMovement(0, 0, 0, 0, 0, true, true, System.nanoTime());
 
         // Join log for debugging purposes.
         Log.finer(() -> "User %s created | General bypass permissions: %s | Debug permissions: %s".formatted(player.getName(), InternalPermission.BYPASS.hasPermission(player), InternalPermission.DEBUG.hasPermission(player)));
@@ -324,16 +322,6 @@ public final class User implements Permissible
     {
         return this.timeMap.at(TimeKey.WORLD_CHANGE).recentlyUpdated(milliseconds);
     }
-
-    /**
-     * Creates an {@link Entry} of this {@link User} and their location.
-     * This is a convenience method for RTree operations.
-     */
-    public Entry<Player, Point> rTreeEntry()
-    {
-        return rTreeEntryFromPlayer(this.player);
-    }
-
 
     /**
      * Gets the debug state (determines whether an {@link User} gets debug messages).

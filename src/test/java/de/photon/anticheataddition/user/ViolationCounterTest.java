@@ -59,7 +59,7 @@ class ViolationCounterTest
         final long threshold = 4;
         final var counter = new ViolationCounter(threshold);
         for (int i = 0; i < threshold - 1; i++) assertFalse(counter.incrementCompareThreshold());
-        assertEquals(counter.getCounter(), threshold - 1);
+        assertEquals(threshold - 1, counter.getCounter());
         assertTrue(counter.incrementCompareThreshold());
     }
 
@@ -105,5 +105,15 @@ class ViolationCounterTest
         counter.increment();
         counter.setToZero();
         assertEquals(0, counter.getCounter());
+    }
+
+    @Test
+    void testLongMinimumClampedBalance()
+    {
+        final var counter = new ViolationCounter(1_000_000_000L);
+
+        assertEquals(-10_000L, counter.addWithMinimumAndGet(-20_000L, -10_000L));
+        assertEquals(-9_500L, counter.addWithMinimumAndGet(500L, -10_000L));
+        assertEquals(10_000L, counter.addAndGet(19_500L));
     }
 }

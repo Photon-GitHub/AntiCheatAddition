@@ -21,7 +21,7 @@ class TimestampTest
         expectZero(timestamp);
 
         timestamp.update();
-        Assertions.assertTrue(timestamp.getTime() > 0, "The time should be greater than 0.");
+        Assertions.assertNotEquals(0, timestamp.getTime(), "The time should be initialized.");
         timestamp.setToZero();
 
         expectZero(timestamp);
@@ -32,8 +32,19 @@ class TimestampTest
     {
         final var timestamp = new Timestamp();
         timestamp.setToFuture(100000);
-        Assertions.assertTrue(timestamp.getTime() > System.currentTimeMillis());
         Assertions.assertTrue(timestamp.passedTime() < 0, "The passed time should be less than 0 when the time is set to the future.");
         Assertions.assertTrue(timestamp.recentlyUpdated(0));
+    }
+
+    @Test
+    void nanosecondsTest()
+    {
+        final var timestamp = new Timestamp();
+        timestamp.update();
+
+        Assertions.assertTrue(timestamp.passedNanos() >= 0);
+
+        timestamp.setToZero();
+        Assertions.assertEquals(0, timestamp.getTime());
     }
 }

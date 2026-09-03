@@ -364,6 +364,19 @@ PacketAnalysis:
     160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected by PacketAnalysis"
     200: "kick {player} Suspicious packets"
 
+# PacketFrequency keeps a packet-time balance to detect Timer cheats.
+# Movement packets are expected once every 50 ms. Delayed packets make the balance negative, so later bursts do not
+# immediately look suspicious. The balance cannot fall below -minimum_balance.
+PacketFrequency:
+  enabled: true
+  # The negative balance floor in milliseconds. A larger value tolerates longer lag spikes and deliberate slowdowns.
+  minimum_balance: 10000
+  # Commands to execute at specific violation levels.
+  thresholds:
+    110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected of using a Timer."
+    160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected of using a Timer."
+    200: "kick {player} Timer"
+
 # Scaffold detects cheats that place blocks below the player to rapidly construct bridges.
 # The always active Average core part adds 20 to 130 VLs.
 Scaffold:

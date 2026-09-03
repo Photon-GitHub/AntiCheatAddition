@@ -70,6 +70,8 @@ public final class Data
         public final ViolationCounter packetAnalysisAimStepFails = new ViolationCounter(8);
         public final ViolationCounter packetAnalysisPerfectRotationYawFails = new ViolationCounter(5);
         public final ViolationCounter packetAnalysisPerfectRotationPitchFails = new ViolationCounter(5);
+        // 1 second in nanos.
+        public final ViolationCounter packetFrequencyBalance = new ViolationCounter(1_000_000L);
 
         public final ViolationCounter scaffoldAngleFails = new ViolationCounter(4);
         public final ViolationCounter scaffoldJumpingFails = new ViolationCounter(8);

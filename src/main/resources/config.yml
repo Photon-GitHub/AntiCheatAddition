@@ -365,12 +365,12 @@ PacketAnalysis:
     200: "kick {player} Suspicious packets"
 
 # PacketFrequency keeps a packet-time balance to detect Timer cheats.
-# Movement packets are expected once every 50 ms. Delayed packets make the balance negative, so later bursts do not
-# immediately look suspicious. The balance cannot fall below -minimum_balance.
 PacketFrequency:
   enabled: true
-  # The negative balance floor in milliseconds. A larger value tolerates longer lag spikes and deliberate slowdowns.
-  minimum_balance: 10000
+  # This is the maximum duration of lagspikes PacketFrequency should allow for.
+  # Note that this also allows bypassing the check for this time by deliberately slowing down the client beforehand
+  # (in milliseconds).
+  minimum_balance: 8000
   # Commands to execute at specific violation levels.
   thresholds:
     110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected of using a Timer."

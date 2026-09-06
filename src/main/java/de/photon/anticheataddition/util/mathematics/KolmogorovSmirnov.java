@@ -74,7 +74,6 @@ public final class KolmogorovSmirnov
          * Decision helper for threshold-style use.
          *
          * @param alpha significance level in (0, 1), e.g. 0.05 for 95% confidence
-         *
          * @return {@code true} iff {@code pValue >= alpha}
          */
         public boolean significanceTest(double alpha)
@@ -158,7 +157,9 @@ public final class KolmogorovSmirnov
         return new KsResult(d, p);
     }
 
-    /** Two-sided D = sup|F_n(x) - x| for sorted values in [0, 1]. */
+    /**
+     * Two-sided D = sup|F_n(x) - x| for sorted values in [0, 1].
+     */
     private static double ksStatistic(double[] x)
     {
         final int n = x.length;

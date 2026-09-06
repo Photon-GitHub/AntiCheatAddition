@@ -184,13 +184,15 @@ public final class MathUtil
                                                   final double secondYaw,
                                                   final double secondPitch)
     {
-        if (signedYawDelta(firstYaw, secondYaw) == 0D && firstPitch == secondPitch) return 0D;
+        final double yawDelta = signedYawDelta(firstYaw, secondYaw);
+        if (yawDelta == 0D && firstPitch == secondPitch) return 0D;
+
         final double firstPitchRadians = Math.toRadians(firstPitch);
         final double secondPitchRadians = Math.toRadians(secondPitch);
 
         final double firstCosPitch = Math.cos(firstPitchRadians);
         final double secondCosPitch = Math.cos(secondPitchRadians);
-        final double dot = Math.clamp(firstCosPitch * secondCosPitch * Math.cos(Math.toRadians(signedYawDelta(secondYaw, firstYaw))) + Math.sin(firstPitchRadians) * Math.sin(secondPitchRadians), -1D, 1D);
+        final double dot = Math.clamp(firstCosPitch * secondCosPitch * Math.cos(Math.toRadians(yawDelta)) + Math.sin(firstPitchRadians) * Math.sin(secondPitchRadians), -1D, 1D);
         return Math.toDegrees(Math.acos(dot));
     }
 

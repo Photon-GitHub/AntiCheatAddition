@@ -64,7 +64,9 @@ public final class DataUtil {
     public static double average(int... data)
     {
         Preconditions.checkArgument(data.length > 0, "Cannot compute average of zero elements.");
-        return sum(data) / (double) data.length;
+        long sum = 0L;
+        for (int datum : data) sum += datum;
+        return sum / (double) data.length;
     }
 
     /**
@@ -77,7 +79,9 @@ public final class DataUtil {
     public static double average(long... data)
     {
         Preconditions.checkArgument(data.length > 0, "Cannot compute average of zero elements.");
-        return sum(data) / (double) data.length;
+        double sum = 0D;
+        for (long datum : data) sum += datum;
+        return sum / data.length;
     }
 
     /**

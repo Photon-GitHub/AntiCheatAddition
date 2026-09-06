@@ -5,7 +5,8 @@ import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 @UtilityClass
-public final class MathUtil {
+public final class MathUtil
+{
     /**
      * Simple method to calculate the absolute offset of two numbers.
      *
@@ -143,7 +144,9 @@ public final class MathUtil {
         );
     }
 
-    /** Canonical yaw in [-180, 180), or NaN for non-finite input. Reduces before adding to avoid precision loss. */
+    /**
+     * Canonical yaw in [-180, 180), or NaN for non-finite input. Reduces before adding to avoid precision loss.
+     */
     public static double normalizeYaw(final double yaw)
     {
         if (!Double.isFinite(yaw)) return Double.NaN;
@@ -153,7 +156,9 @@ public final class MathUtil {
         return normalized == -0D ? 0D : normalized;
     }
 
-    /** Shortest signed yaw delta in [-180, 180], reducing each input before subtraction to avoid overflow. */
+    /**
+     * Shortest signed yaw delta in [-180, 180], reducing each input before subtraction to avoid overflow.
+     */
     public static double signedYawDelta(final double currentYaw, final double previousYaw)
     {
         final double normalizedCurrent = normalizeYaw(currentYaw);
@@ -171,7 +176,9 @@ public final class MathUtil {
         return (float) getAngleBetweenRotations((double) firstYaw, firstPitch, secondYaw, secondPitch);
     }
 
-    /** Great-circle angular distance in degrees, with yaw normalized before trigonometry. */
+    /**
+     * Great-circle angular distance in degrees, with yaw normalized before trigonometry.
+     */
     public static double getAngleBetweenRotations(final double firstYaw,
                                                   final double firstPitch,
                                                   final double secondYaw,

@@ -14,8 +14,7 @@ import java.util.stream.IntStream;
 
 class DetectionManagementTest
 {
-    // Do not remove this unused variable, it is needed for initialization of mocking.
-    private static final ViolationModule dummyVlModule = Dummy.mockViolationModule("Sentinel.LabyMod");
+    private static ViolationModule dummyVlModule;
 
     private static DetectionManagement getDetectionManagement()
     {
@@ -30,6 +29,7 @@ class DetectionManagementTest
     static void setup()
     {
         Dummy.mockAntiCheatAddition();
+        dummyVlModule = Dummy.mockViolationModule("Sentinel.LabyMod");
     }
 
     @Test

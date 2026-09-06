@@ -1,8 +1,12 @@
 package de.photon.anticheataddition.modules.checks.targeting;
 
 import de.photon.anticheataddition.util.mathematics.KolmogorovSmirnov;
-
+import de.photon.anticheataddition.util.mathematics.MathUtil;
 import java.util.Arrays;
+
+import static de.photon.anticheataddition.modules.checks.targeting.TargetingDiscontinuityCorrection.removeDiscontinuities;
+import static de.photon.anticheataddition.util.mathematics.DataUtil.*;
+import static de.photon.anticheataddition.util.mathematics.TimeSeriesUtil.*;
 
 /**
  * Pure statistical analysis shared by the Targeting submodules.
@@ -35,7 +39,6 @@ public final class TargetingAnalysis
 
     private static final double YAW_MINIMUM_DISCONTINUITY = 25D;
     private static final double PITCH_MINIMUM_DISCONTINUITY = 15D;
-    private static final double DISCONTINUITY_MAD_MULTIPLIER = 10D;
 
     private static final double UNIFORM_MIN_P_VALUE = 0.1D;
     private static final double UNIFORM_MAX_D_STATISTIC = 0.22D;
@@ -126,32 +129,19 @@ public final class TargetingAnalysis
     }
 
     /**
-     * Calculates the shortest signed yaw delta in the range [-180, 180].
-     */
-    public static double signedYawDelta(final double currentYaw, final double previousYaw)
-    {
-        final double normalizedCurrent = normalizeYaw(currentYaw);
-        final double normalizedPrevious = normalizeYaw(previousYaw);
-        if (!Double.isFinite(normalizedCurrent) || !Double.isFinite(normalizedPrevious)) return Double.NaN;
-
-        double delta = normalizedCurrent - normalizedPrevious;
-        if (delta > 180D) delta -= 360D;
-        else if (delta < -180D) delta += 360D;
-        return delta;
-    }
-
-    /**
      * Canonicalizes any finite yaw without subtracting the potentially very large raw input values.
      *
      * @return a yaw in [-180, 180), or NaN for a non-finite input
      */
     public static double normalizeYaw(final double yaw)
     {
-        if (!Double.isFinite(yaw)) return Double.NaN;
-        double normalized = yaw % 360D;
-        if (normalized >= 180D) normalized -= 360D;
-        else if (normalized < -180D) normalized += 360D;
-        return normalized == -0D ? 0D : normalized;
+        return MathUtil.normalizeYaw(yaw);
+    }
+
+    /** Calculates the shortest signed yaw delta in degrees. */
+    public static double signedYawDelta(final double currentYaw, final double previousYaw)
+    {
+        return MathUtil.signedYawDelta(currentYaw, previousYaw);
     }
 
     private static AxisResult combineAxis(final AxisResult full,
@@ -409,153 +399,15 @@ public final class TargetingAnalysis
         return SyntheticPattern.NONE;
     }
 
-    /**
-     * Removes isolated level shifts before detrending. The original rotations remain available to interaction checks;
-     * this correction only prevents a deliberately inserted jump from poisoning all stochastic windows.
-     */
-    private static double[] removeDiscontinuities(final double[] values,
-                                                  final double minimumDiscontinuity,
-                                                  final boolean[] trustedBreakBefore)
-    {
-        if (values.length != trustedBreakBefore.length) {
-            throw new IllegalArgumentException("values and trustedBreakBefore must have the same length");
-        }
-        if (values.length < 4) return Arrays.copyOf(values, values.length);
-
-        final double[] deltas = new double[values.length - 1];
-        final double[] ordinaryAbsoluteDeltas = new double[deltas.length];
-        int ordinaryAbsoluteCount = 0;
-        for (int i = 0; i < deltas.length; i++) {
-            deltas[i] = values[i + 1] - values[i];
-            if (!trustedBreakBefore[i + 1]) ordinaryAbsoluteDeltas[ordinaryAbsoluteCount++] = Math.abs(deltas[i]);
-        }
-
-        final double medianAbsoluteDelta = ordinaryAbsoluteCount == 0
-                                           ? 0D
-                                           : median(Arrays.copyOf(ordinaryAbsoluteDeltas, ordinaryAbsoluteCount));
-        final double[] absoluteDeviations = new double[ordinaryAbsoluteCount];
-        for (int i = 0; i < ordinaryAbsoluteCount; i++) {
-            absoluteDeviations[i] = Math.abs(ordinaryAbsoluteDeltas[i] - medianAbsoluteDelta);
-        }
-        final double medianAbsoluteDeviation = ordinaryAbsoluteCount == 0 ? 0D : median(absoluteDeviations);
-        final double discontinuityThreshold = Math.max(minimumDiscontinuity,
-                                                       medianAbsoluteDelta +
-                                                       DISCONTINUITY_MAD_MULTIPLIER * medianAbsoluteDeviation);
-
-        final double[] ordinaryDeltas = new double[deltas.length];
-        int ordinaryDeltaCount = 0;
-        for (int i = 0; i < deltas.length; i++) {
-            if (!trustedBreakBefore[i + 1] && Math.abs(deltas[i]) <= discontinuityThreshold) {
-                ordinaryDeltas[ordinaryDeltaCount++] = deltas[i];
-            }
-        }
-        final double expectedDelta = ordinaryDeltaCount == 0
-                                     ? 0D
-                                     : median(Arrays.copyOf(ordinaryDeltas, ordinaryDeltaCount));
-
-        final double[] corrected = new double[values.length];
-        corrected[0] = values[0];
-        double accumulatedCorrection = 0D;
-        for (int i = 1; i < values.length; i++) {
-            final double delta = values[i] - values[i - 1];
-            if (trustedBreakBefore[i] || Math.abs(delta) > discontinuityThreshold) {
-                final double localExpectedDelta = localExpectedDelta(deltas,
-                                                                     trustedBreakBefore,
-                                                                     i - 1,
-                                                                     discontinuityThreshold,
-                                                                     expectedDelta);
-                accumulatedCorrection += delta - localExpectedDelta;
-            }
-            corrected[i] = values[i] - accumulatedCorrection;
-        }
-        return corrected;
-    }
-
-    private static double localExpectedDelta(final double[] deltas,
-                                             final boolean[] trustedBreakBefore,
-                                             final int discontinuityIndex,
-                                             final double discontinuityThreshold,
-                                             final double fallback)
-    {
-        final double[] nearby = new double[8];
-        int count = 0;
-        for (int distance = 1; distance <= 4; distance++) {
-            final int before = discontinuityIndex - distance;
-            if (before >= 0 &&
-                !trustedBreakBefore[before + 1] &&
-                Math.abs(deltas[before]) <= discontinuityThreshold) nearby[count++] = deltas[before];
-            final int after = discontinuityIndex + distance;
-            if (after < deltas.length &&
-                !trustedBreakBefore[after + 1] &&
-                Math.abs(deltas[after]) <= discontinuityThreshold) nearby[count++] = deltas[after];
-        }
-        return count == 0 ? fallback : median(Arrays.copyOf(nearby, count));
-    }
-
-    private static double median(final double[] values)
-    {
-        final double[] sorted = Arrays.copyOf(values, values.length);
-        Arrays.sort(sorted);
-        final int middle = sorted.length / 2;
-        return (sorted.length & 1) == 1 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) * 0.5D;
-    }
-
-    /**
-     * Fits {@code a + bx + cx²} for equally spaced x values in [-1, 1] and returns the residuals.
-     * Symmetry keeps the normal equations small enough to solve without matrix allocation.
-     */
-    private static double[] detrendQuadratic(final double[] values)
-    {
-        final int length = values.length;
-        double sumY = 0D;
-        double sumXY = 0D;
-        double sumX2Y = 0D;
-        double sumX2 = 0D;
-        double sumX4 = 0D;
-
-        for (int i = 0; i < length; i++) {
-            final double x = normalizedIndex(i, length);
-            final double xSquared = x * x;
-            sumY += values[i];
-            sumXY += x * values[i];
-            sumX2Y += xSquared * values[i];
-            sumX2 += xSquared;
-            sumX4 += xSquared * xSquared;
-        }
-
-        final double determinant = length * sumX4 - sumX2 * sumX2;
-        final double a = (sumY * sumX4 - sumX2 * sumX2Y) / determinant;
-        final double b = sumXY / sumX2;
-        final double c = (length * sumX2Y - sumX2 * sumY) / determinant;
-
-        final double[] residuals = new double[length];
-        for (int i = 0; i < length; i++) {
-            final double x = normalizedIndex(i, length);
-            residuals[i] = values[i] - (a + b * x + c * x * x);
-        }
-        return residuals;
-    }
-
+    /** Starts from a canonical yaw so large raw angles cannot swallow subsequent deltas. */
     private static double[] unwrapYaw(final double[] yaw)
     {
-        final double[] result = Arrays.copyOf(yaw, yaw.length);
+        final double[] result = new double[yaw.length];
+        result[0] = normalizeYaw(yaw[0]);
         for (int i = 1; i < result.length; i++) {
             result[i] = result[i - 1] + signedYawDelta(yaw[i], yaw[i - 1]);
         }
         return result;
-    }
-
-    private static double normalizedIndex(final int index, final int length)
-    {
-        return 2D * index / (length - 1D) - 1D;
-    }
-
-    private static void center(final double[] values)
-    {
-        double mean = 0D;
-        for (double value : values) mean += value;
-        mean /= values.length;
-        for (int i = 0; i < values.length; i++) values[i] -= mean;
     }
 
     private static double[] normalizeResiduals(final double[] residuals, final double standardDeviation)
@@ -571,91 +423,6 @@ public final class TargetingAnalysis
         return result.pattern() == Pattern.PRECISE
                ? new double[residuals.length]
                : normalizeResiduals(residuals, result.standardDeviation());
-    }
-
-    private static double meanSquare(final double[] values, final int fromInclusive, final int toExclusive)
-    {
-        double sum = 0D;
-        for (int i = fromInclusive; i < toExclusive; i++) sum += values[i] * values[i];
-        return sum / (toExclusive - fromInclusive);
-    }
-
-    private static double maximumAbsolute(final double[] values)
-    {
-        double maximum = 0D;
-        for (double value : values) maximum = Math.max(maximum, Math.abs(value));
-        return maximum;
-    }
-
-    private static double range(final double[] values)
-    {
-        double minimum = values[0];
-        double maximum = values[0];
-        for (int i = 1; i < values.length; i++) {
-            minimum = Math.min(minimum, values[i]);
-            maximum = Math.max(maximum, values[i]);
-        }
-        return maximum - minimum;
-    }
-
-    private static double signChangeRatio(final double[] values)
-    {
-        int signChanges = 0;
-        int comparablePairs = 0;
-        for (int i = 1; i < values.length; i++) {
-            if (values[i - 1] == 0D || values[i] == 0D) continue;
-            comparablePairs++;
-            if (values[i - 1] * values[i] < 0D) signChanges++;
-        }
-        return comparablePairs == 0 ? 0D : signChanges / (double) comparablePairs;
-    }
-
-    private static double permutationEntropy(final double[] values)
-    {
-        final int[] counts = new int[6];
-        for (int i = 0; i < values.length - 2; i++) counts[ordinalPattern(values[i], values[i + 1], values[i + 2])]++;
-
-        final int total = values.length - 2;
-        double entropy = 0D;
-        for (int count : counts) {
-            if (count == 0) continue;
-            final double probability = count / (double) total;
-            entropy -= probability * Math.log(probability);
-        }
-        return entropy / Math.log(6D);
-    }
-
-    private static int ordinalPattern(final double first, final double second, final double third)
-    {
-        if (first <= second) {
-            if (second <= third) return 0;
-            return first <= third ? 1 : 2;
-        }
-        if (first <= third) return 3;
-        return second <= third ? 4 : 5;
-    }
-
-    private static double runsZScore(final double[] values)
-    {
-        int positive = 0;
-        int negative = 0;
-        int runs = 0;
-        int previousSign = 0;
-        for (double value : values) {
-            final int sign = value > 0D ? 1 : value < 0D ? -1 : 0;
-            if (sign == 0) continue;
-            if (sign > 0) positive++;
-            else negative++;
-            if (sign != previousSign) runs++;
-            previousSign = sign;
-        }
-
-        final int total = positive + negative;
-        if (positive == 0 || negative == 0 || total < 4) return Double.POSITIVE_INFINITY;
-        final double expected = 1D + 2D * positive * negative / total;
-        final double variance = 2D * positive * negative * (2D * positive * negative - total) /
-                                ((double) total * total * (total - 1D));
-        return variance <= 0D ? 0D : (runs - expected) / Math.sqrt(variance);
     }
 
     private static double distinctLevelRatio(final double[] normalizedResiduals)
@@ -706,38 +473,6 @@ public final class TargetingAnalysis
             squaredError += difference * difference;
         }
         return Math.sqrt(squaredError / length);
-    }
-
-    /**
-     * Pearson correlation. For autocorrelation, {@code lag} offsets the second sequence.
-     */
-    private static double correlation(final double[] first, final double[] second, final int lag)
-    {
-        final int length = Math.min(first.length, second.length) - lag;
-        if (length <= 1) return 1D;
-
-        double firstMean = 0D;
-        double secondMean = 0D;
-        for (int i = 0; i < length; i++) {
-            firstMean += first[i];
-            secondMean += second[i + lag];
-        }
-        firstMean /= length;
-        secondMean /= length;
-
-        double covariance = 0D;
-        double firstVariance = 0D;
-        double secondVariance = 0D;
-        for (int i = 0; i < length; i++) {
-            final double centeredFirst = first[i] - firstMean;
-            final double centeredSecond = second[i + lag] - secondMean;
-            covariance += centeredFirst * centeredSecond;
-            firstVariance += centeredFirst * centeredFirst;
-            secondVariance += centeredSecond * centeredSecond;
-        }
-
-        final double denominator = Math.sqrt(firstVariance * secondVariance);
-        return denominator == 0D ? 1D : covariance / denominator;
     }
 
     private static void validateFinite(final double[] values)

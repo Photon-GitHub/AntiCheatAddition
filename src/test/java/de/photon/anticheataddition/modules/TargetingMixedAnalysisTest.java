@@ -10,8 +10,8 @@ public final class TargetingMixedAnalysisTest
     @Test
     public void detectsRepeatedCrossWindowModeSwitching()
     {
-        final int noise = TargetingMixedAnalysis.modeMask(true, false, false, false, false);
-        final int pattern = TargetingMixedAnalysis.modeMask(false, false, true, false, false);
+        final int noise = TargetingMixedAnalysis.modeMask(true, false, false, false);
+        final int pattern = TargetingMixedAnalysis.modeMask(false, false, true, false);
         final TargetingMixedAnalysis.Result result = TargetingMixedAnalysis.analyze(
                 new int[]{noise, pattern, noise, pattern, noise});
 
@@ -24,7 +24,7 @@ public final class TargetingMixedAnalysisTest
     @Test
     public void ignoresRepeatedUseOfOneSuspiciousMode()
     {
-        final int noise = TargetingMixedAnalysis.modeMask(true, false, false, false, false);
+        final int noise = TargetingMixedAnalysis.modeMask(true, false, false, false);
         final TargetingMixedAnalysis.Result result = TargetingMixedAnalysis.analyze(
                 new int[]{noise, noise, noise, noise, noise, noise, noise});
 
@@ -35,8 +35,8 @@ public final class TargetingMixedAnalysisTest
     @Test
     public void ignoresSparseIsolatedClassifications()
     {
-        final int noise = TargetingMixedAnalysis.modeMask(true, false, false, false, false);
-        final int pattern = TargetingMixedAnalysis.modeMask(false, false, true, false, false);
+        final int noise = TargetingMixedAnalysis.modeMask(true, false, false, false);
+        final int pattern = TargetingMixedAnalysis.modeMask(false, false, true, false);
         final TargetingMixedAnalysis.Result result = TargetingMixedAnalysis.analyze(
                 new int[]{noise, 0, 0, 0, pattern, 0, 0, noise, 0, 0, 0, 0});
 
@@ -47,8 +47,8 @@ public final class TargetingMixedAnalysisTest
     @Test
     public void naturalWindowsDoNotEraseModeTransitions()
     {
-        final int noise = TargetingMixedAnalysis.modeMask(true, false, false, false, false);
-        final int pattern = TargetingMixedAnalysis.modeMask(false, false, true, false, false);
+        final int noise = TargetingMixedAnalysis.modeMask(true, false, false, false);
+        final int pattern = TargetingMixedAnalysis.modeMask(false, false, true, false);
         final TargetingMixedAnalysis.Result result = TargetingMixedAnalysis.analyze(
                 new int[]{noise, 0, pattern, 0, noise, 0, pattern, 0, noise});
 

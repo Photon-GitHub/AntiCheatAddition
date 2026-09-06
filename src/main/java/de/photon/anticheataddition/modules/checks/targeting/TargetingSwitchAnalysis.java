@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.modules.checks.targeting;
 
-import java.util.Arrays;
+import static de.photon.anticheataddition.util.mathematics.DataUtil.median;
+import static de.photon.anticheataddition.util.mathematics.TimeSeriesUtil.meanSquare;
 
 /**
  * Detects deliberate switching between clean and randomized targeting sections.
@@ -47,9 +48,7 @@ public final class TargetingSwitchAnalysis
         for (int segment = 0; segment < segmentCount; segment++) {
             final int from = segment * fingerprint.length / segmentCount;
             final int to = (segment + 1) * fingerprint.length / segmentCount;
-            double squareSum = 0D;
-            for (int i = from; i < to; i++) squareSum += fingerprint[i] * fingerprint[i];
-            segmentRms[segment] = Math.sqrt(squareSum / (to - from));
+            segmentRms[segment] = Math.sqrt(meanSquare(fingerprint, from, to));
         }
 
         double minimum = segmentRms[0];
@@ -70,9 +69,7 @@ public final class TargetingSwitchAnalysis
             }
         }
 
-        final double[] sorted = Arrays.copyOf(segmentRms, segmentRms.length);
-        Arrays.sort(sorted);
-        final double median = (sorted[(sorted.length - 1) / 2] + sorted[sorted.length / 2]) * 0.5D;
+        final double median = median(segmentRms);
         final double varianceContrast = maximum / Math.max(0.05D, minimum);
         final boolean switching = varianceContrast >= MINIMUM_VARIANCE_CONTRAST &&
                                   activeSegments >= MINIMUM_ACTIVE_SEGMENTS &&

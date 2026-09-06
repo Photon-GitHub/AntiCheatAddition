@@ -36,52 +36,6 @@ public final class TargetingDataTest
     }
 
     @Test
-    public void invalidRotationsDoNotExpirePendingSnapBack()
-    {
-        final TargetingData data = new TargetingData();
-        data.addRotation(10D, 5D, TICK_NANOS);
-        data.addRotation(30D, 5D, 2L * TICK_NANOS);
-        data.markInteraction(TargetingContext.COMBAT, 2L * TICK_NANOS);
-
-        for (int i = 0; i < 20; i++) {
-            assertTrue(data.addRotation(Double.NaN, 5D, (3L + i) * TICK_NANOS).accepted());
-        }
-        assertNotNull(data.addRotation(10D, 5D, 30L * TICK_NANOS).snapBackSample());
-    }
-
-    @Test
-    public void detectsDirectSnapBackSplitAcrossManyPackets()
-    {
-        final TargetingData data = new TargetingData();
-        data.addRotation(10D, 5D, TICK_NANOS);
-        data.addRotation(30D, 5D, 2L * TICK_NANOS);
-        data.markInteraction(TargetingContext.COMBAT, 2L * TICK_NANOS);
-
-        TargetingData.SnapBackSample sample = null;
-        for (int i = 1; i <= 12; i++) {
-            final TargetingData.RotationUpdate update = data.addRotation(30D - 20D * i / 12D,
-                                                                         5D,
-                                                                         (2L + i) * TICK_NANOS);
-            if (update.snapBackSample() != null) sample = update.snapBackSample();
-        }
-        assertNotNull(sample);
-        assertTrue(sample.followingPackets() >= 10);
-    }
-
-    @Test
-    public void ignoresIndirectWanderingReturn()
-    {
-        final TargetingData data = new TargetingData();
-        data.addRotation(10D, 5D, TICK_NANOS);
-        data.addRotation(30D, 5D, 2L * TICK_NANOS);
-        data.markInteraction(TargetingContext.COMBAT, 2L * TICK_NANOS);
-
-        data.addRotation(60D, 5D, 3L * TICK_NANOS);
-        data.addRotation(-20D, 5D, 4L * TICK_NANOS);
-        assertNull(data.addRotation(10D, 5D, 5L * TICK_NANOS).snapBackSample());
-    }
-
-    @Test
     public void includesSequenceRangeInSnapshot()
     {
         final TargetingData.Snapshot snapshot = populatedData().takeSnapshot().orElseThrow();
@@ -140,21 +94,6 @@ public final class TargetingDataTest
     }
 
     @Test
-    public void trustedRotationCancelsPendingSnapBackWithoutClearingHistory()
-    {
-        final TargetingData data = new TargetingData();
-        data.addRotation(10D, 5D, TICK_NANOS);
-        data.addRotation(30D, 5D, 2L * TICK_NANOS);
-        data.markInteraction(TargetingContext.COMBAT, 2L * TICK_NANOS);
-
-        assertNull(data.addTrustedRotation(10D, 5D, 3L * TICK_NANOS).snapBackSample());
-        assertTrue(data.hasPendingTrustedBoundary());
-        assertNull(data.addRotation(30D, 5D, 4L * TICK_NANOS).snapBackSample());
-        assertFalse(data.hasPendingTrustedBoundary());
-        assertEquals(3, data.size());
-    }
-
-    @Test
     public void repeatedTrustedRotationsDoNotCreateStatisticalSamples()
     {
         final TargetingData data = populatedData();
@@ -202,18 +141,6 @@ public final class TargetingDataTest
     }
 
     @Test
-    public void malformedSingleAxisRetainsOnlyThatAxesLastValue()
-    {
-        final TargetingData data = new TargetingData();
-        data.addRotation(20D, 5D, TICK_NANOS);
-        data.addRotation(Double.NaN, 7D, 2L * TICK_NANOS);
-        data.markInteraction(TargetingContext.COMBAT, 2L * TICK_NANOS).ifPresent(snapshot -> {
-            assertEquals(20D, snapshot.yaw()[1]);
-            assertEquals(7D, snapshot.pitch()[1]);
-        });
-    }
-
-    @Test
     public void clearPreservesMonotonicSequence()
     {
         final TargetingData data = populatedData();
@@ -223,109 +150,6 @@ public final class TargetingDataTest
         final TargetingData.Snapshot snapshot = data.takeSnapshot().orElseThrow();
         assertEquals(49L, snapshot.firstSequence());
         assertEquals(80L, snapshot.lastSequence());
-    }
-
-    @Test
-    public void canonicalizesVeryLargeFiniteYaw()
-    {
-        final TargetingData data = new TargetingData();
-        data.addRotation(Double.MAX_VALUE, 0D, TICK_NANOS);
-        data.addRotation(-Double.MAX_VALUE, 0D, 2L * TICK_NANOS);
-
-        final TargetingData.InteractionSnapshot snapshot = data.markInteraction(TargetingContext.COMBAT,
-                                                                                2L * TICK_NANOS).orElseThrow();
-        for (double yaw : snapshot.yaw()) assertTrue(Double.isFinite(yaw));
-    }
-
-    @Test
-    public void detectsOneAxisSnapBack()
-    {
-        final TargetingData data = new TargetingData();
-        data.addRotation(10D, 5D, TICK_NANOS);
-        data.addRotation(11D, 5.1D, 2L * TICK_NANOS);
-        data.markInteraction(TargetingContext.COMBAT, 2L * TICK_NANOS + 10_000_000L);
-
-        final TargetingData.RotationUpdate update = data.addRotation(10.05D, 5.2D, 3L * TICK_NANOS);
-        assertNotNull(update.snapBackSample());
-        assertEquals(1, update.snapBackSample().suspiciousAxes());
-    }
-
-    @Test
-    public void detectsBothAxisSnapBack()
-    {
-        final TargetingData data = new TargetingData();
-        data.addRotation(10D, 5D, TICK_NANOS);
-        data.addRotation(11D, 6D, 2L * TICK_NANOS);
-        data.markInteraction(TargetingContext.SCAFFOLD, 2L * TICK_NANOS + 10_000_000L);
-
-        final TargetingData.RotationUpdate update = data.addRotation(10.04D, 5.03D, 3L * TICK_NANOS);
-        assertNotNull(update.snapBackSample());
-        assertEquals(2, update.snapBackSample().suspiciousAxes());
-    }
-
-    @Test
-    public void detectsSnapBackAfterIntermediatePacket()
-    {
-        final TargetingData data = new TargetingData();
-        data.addRotation(10D, 5D, TICK_NANOS);
-        data.addRotation(30D, 5D, 2L * TICK_NANOS);
-        data.markInteraction(TargetingContext.COMBAT, 2L * TICK_NANOS);
-
-        assertNull(data.addRotation(29.5D, 5D, 3L * TICK_NANOS).snapBackSample());
-        final TargetingData.RotationUpdate update = data.addRotation(10.1D, 5D, 4L * TICK_NANOS);
-        assertNotNull(update.snapBackSample());
-        assertEquals(2, update.snapBackSample().followingPackets());
-    }
-
-    @Test
-    public void repeatedAttacksDoNotOverwritePendingSnapBack()
-    {
-        final TargetingData data = new TargetingData();
-        data.addRotation(10D, 5D, TICK_NANOS);
-        data.addRotation(30D, 5D, 2L * TICK_NANOS);
-        data.markInteraction(TargetingContext.COMBAT, 2L * TICK_NANOS);
-        data.addRotation(30.1D, 5D, 3L * TICK_NANOS);
-        data.markInteraction(TargetingContext.COMBAT, 3L * TICK_NANOS);
-
-        final TargetingData.RotationUpdate update = data.addRotation(10.1D, 5D, 4L * TICK_NANOS);
-        assertNotNull(update.snapBackSample());
-    }
-
-    @Test
-    public void delayedReceiveTimeDoesNotCreateAnExemption()
-    {
-        final TargetingData data = new TargetingData();
-        data.addRotation(10D, 5D, TICK_NANOS);
-        data.addRotation(30D, 5D, 2L * TICK_NANOS);
-        data.markInteraction(TargetingContext.COMBAT, 2L * TICK_NANOS);
-
-        final TargetingData.RotationUpdate update = data.addRotation(10D, 5D, 2_000_000_000L);
-        assertNotNull(update.snapBackSample());
-    }
-
-    @Test
-    public void detectsSnapBackWhichDeliberatelyOvershootsTheStartingAngle()
-    {
-        final TargetingData data = new TargetingData();
-        data.addRotation(10D, 5D, TICK_NANOS);
-        data.addRotation(12D, 5D, 2L * TICK_NANOS);
-        data.markInteraction(TargetingContext.COMBAT, 2L * TICK_NANOS);
-
-        final TargetingData.RotationUpdate update = data.addRotation(9D, 5D, 3L * TICK_NANOS);
-        assertNotNull(update.snapBackSample());
-        assertEquals(1, update.snapBackSample().suspiciousAxes());
-    }
-
-    @Test
-    public void ignoresOrdinaryContinuedMovement()
-    {
-        final TargetingData data = new TargetingData();
-        data.addRotation(10D, 5D, TICK_NANOS);
-        data.addRotation(11D, 5.5D, 2L * TICK_NANOS);
-        data.markInteraction(TargetingContext.COMBAT, 2L * TICK_NANOS + 10_000_000L);
-
-        final TargetingData.RotationUpdate update = data.addRotation(12D, 6D, 3L * TICK_NANOS);
-        assertNull(update.snapBackSample());
     }
 
     @Test
@@ -375,7 +199,55 @@ public final class TargetingDataTest
     }
 
     @Test
-    public void repeatedDamageWithoutMovementCannotDuplicateAnAcquisition()
+    public void storesInitialPositionAndRotationTogether()
+    {
+        final TargetingData data = new TargetingData();
+        data.addMovement(123.5D, 70D, -44.25D, 270D, -15D, true, true, TICK_NANOS);
+        for (int i = 1; i < 8; i++) {
+            data.addMovement(123.5D + i,
+                             70D,
+                             -44.25D,
+                             270D,
+                             -15D,
+                             true,
+                             true,
+                             (i + 1L) * TICK_NANOS);
+        }
+        final TargetingData.AcquisitionSnapshot snapshot = data.takeAcquisitionSnapshot(2L * TICK_NANOS).orElseThrow();
+
+        assertEquals(123.5D, snapshot.x()[0]);
+        assertEquals(70D, snapshot.y()[0]);
+        assertEquals(-44.25D, snapshot.z()[0]);
+        assertEquals(-90D, snapshot.yaw()[0]);
+        assertEquals(-15D, snapshot.pitch()[0]);
+    }
+
+    @Test
+    public void suppressesAcquisitionDuringTrustedBoundaryWindow()
+    {
+        final TargetingData data = new TargetingData();
+        for (int i = 0; i < 12; i++) {
+            data.addMovement(i, 64D, i, 20D, 5D, true, true, (i + 1L) * TICK_NANOS);
+        }
+        data.addTrustedMovement(100D, 70D, 100D, 0D, 0D, 1_000_000_000L);
+
+        assertTrue(data.isTargetingSuppressed(1_499_999_999L));
+        assertFalse(data.takeAcquisitionSnapshot(1_499_999_999L).isPresent());
+        assertFalse(data.isTargetingSuppressed(1_500_000_000L));
+    }
+
+    @Test
+    public void resumesAfterBoundaryWithoutExposingPreBoundaryInteractionSamples()
+    {
+        final TargetingData data = populatedData();
+        data.addTrustedMovement(100D, 70D, 100D, 0D, 0D, 1_000_000_000L);
+        data.addMovement(101D, 70D, 100D, 1D, 0D, true, true, 1_100_000_000L);
+
+        assertTrue(data.addMovement(101D, 70D, 100D, 1D, 0D, true, true, 1_700_000_000L).accepted());
+    }
+
+    @Test
+    public void repeatedDamageRequiresAnIndependentAcquisitionWindow()
     {
         final TargetingData data = new TargetingData();
         for (int i = 0; i < 12; i++) {
@@ -385,7 +257,14 @@ public final class TargetingDataTest
         assertTrue(data.takeAcquisitionSnapshot().isPresent());
         assertFalse(data.takeAcquisitionSnapshot().isPresent());
         data.addUnchangedRotation(20L * TICK_NANOS);
-        assertTrue(data.takeAcquisitionSnapshot().isPresent());
+        assertFalse(data.takeAcquisitionSnapshot().isPresent());
+        for (int i = 0; i < 6; i++) data.addUnchangedRotation((21L + i) * TICK_NANOS);
+        assertFalse(data.takeAcquisitionSnapshot().isPresent());
+        data.addUnchangedRotation(27L * TICK_NANOS);
+        final var next = data.takeAcquisitionSnapshot().orElseThrow();
+        assertEquals(8, next.sequence().length);
+        assertEquals(13L, next.sequence()[0]);
+        assertEquals(20L, next.sequence()[7]);
     }
 
     @Test

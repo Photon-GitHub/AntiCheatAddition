@@ -1,8 +1,9 @@
 package de.photon.anticheataddition.user.data.subdata;
 
 import de.photon.anticheataddition.modules.checks.targeting.TargetingAcquisitionAnalysis;
-
 import java.util.Arrays;
+
+import static de.photon.anticheataddition.util.mathematics.DataUtil.*;
 
 /**
  * Per-user history of independent target-acquisition profiles.
@@ -114,14 +115,14 @@ public final class TargetingAcquisitionData {
         }
 
         final double candidateRatio = candidateCount / (double) comparableCount;
-        final double meanSlowdown = mean(slowdown);
-        final double slowdownStandardDeviation = standardDeviation(slowdown);
+        final double meanSlowdown = average(slowdown);
+        final double slowdownStandardDeviation = sampleStandardDeviation(slowdown);
         final double activationVariation = coefficientOfVariation(activation);
         final double meanProfileCorrelation = correlationSum / comparableCount;
         final double profileRootMeanSquareError = Math.sqrt(squaredErrorSum /
                                                             (comparableCount * TargetingAcquisitionAnalysis.PROFILE_BIN_COUNT));
-        final double meanApproachEfficiency = mean(approachEfficiency);
-        final double meanTowardRatio = mean(towardRatio);
+        final double meanApproachEfficiency = average(approachEfficiency);
+        final double meanTowardRatio = average(towardRatio);
 
         int independentSignals = 0;
         if (candidateCount >= MINIMUM_CANDIDATE_PROFILES && candidateRatio >= 0.72D) independentSignals++;
@@ -186,52 +187,6 @@ public final class TargetingAcquisitionData {
         }
         for (int bin = 0; bin < result.length; bin++) result[bin] /= profiles.length;
         return result;
-    }
-
-    private static double mean(final double[] values)
-    {
-        if (values.length == 0) return Double.NaN;
-        double sum = 0D;
-        for (double value : values) sum += value;
-        return sum / values.length;
-    }
-
-    private static double standardDeviation(final double[] values)
-    {
-        if (values.length < 2) return Double.POSITIVE_INFINITY;
-        final double mean = mean(values);
-        double squareSum = 0D;
-        for (double value : values) {
-            final double difference = value - mean;
-            squareSum += difference * difference;
-        }
-        return Math.sqrt(squareSum / (values.length - 1D));
-    }
-
-    private static double coefficientOfVariation(final double[] values)
-    {
-        if (values.length < 2) return Double.NaN;
-        final double mean = mean(values);
-        if (!Double.isFinite(mean) || Math.abs(mean) <= 1E-9D) return Double.NaN;
-        return standardDeviation(values) / Math.abs(mean);
-    }
-
-    private static double correlation(final double[] first, final double[] second)
-    {
-        final double firstMean = mean(first);
-        final double secondMean = mean(second);
-        double covariance = 0D;
-        double firstSquareSum = 0D;
-        double secondSquareSum = 0D;
-        for (int i = 0; i < first.length; i++) {
-            final double firstDifference = first[i] - firstMean;
-            final double secondDifference = second[i] - secondMean;
-            covariance += firstDifference * secondDifference;
-            firstSquareSum += firstDifference * firstDifference;
-            secondSquareSum += secondDifference * secondDifference;
-        }
-        final double denominator = Math.sqrt(firstSquareSum * secondSquareSum);
-        return denominator <= 1E-12D ? 0D : covariance / denominator;
     }
 
     /**

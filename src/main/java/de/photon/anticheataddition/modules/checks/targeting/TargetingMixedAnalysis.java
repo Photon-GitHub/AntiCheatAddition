@@ -26,15 +26,13 @@ public final class TargetingMixedAnalysis
     public static int modeMask(final boolean noise,
                                final boolean precision,
                                final boolean pattern,
-                               final boolean switching,
-                               final boolean discontinuity)
+                               final boolean switching)
     {
         int mask = 0;
         if (noise) mask |= Mode.NOISE.bit();
         if (precision) mask |= Mode.PRECISION.bit();
         if (pattern) mask |= Mode.PATTERN.bit();
         if (switching) mask |= Mode.SWITCHING.bit();
-        if (discontinuity) mask |= Mode.DISCONTINUITY.bit();
         return mask;
     }
 
@@ -77,8 +75,7 @@ public final class TargetingMixedAnalysis
         NOISE(1),
         PRECISION(1 << 1),
         PATTERN(1 << 2),
-        SWITCHING(1 << 3),
-        DISCONTINUITY(1 << 4);
+        SWITCHING(1 << 3);
 
         private final int bit;
 

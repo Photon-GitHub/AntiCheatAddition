@@ -341,6 +341,11 @@ PacketAnalysis:
     # Adds 30 VL.
     Animation:
       enabled: true
+    # Digging checks block/face consistency for START and FINISH actions.
+    # CANCEL actions reset the tracked state because clients can cancel stale targets while retargeting.
+    # It does not enforce block-breaking timing or physics.
+    Digging:
+      enabled: true
     # EqualRotation scans for repeated rotation packets.
     # This catches some Scaffold, Tower, Killaura and Aimbot cheats.
     # Adds 5 VL.
@@ -354,9 +359,36 @@ PacketAnalysis:
     # Adds 150 VL.
     IllegalPitch:
       enabled: true
+    # Malformed cancels malformed packets before other packet checks process them.
+    # Adds 150 VL.
+    Malformed:
+      enabled: true
+    # PacketFlood tolerates short movement bursts but detects sustained movement packet flooding.
+    # The bucket refills at sustained_packets_per_second and can hold burst_capacity packets.
+    # A violation is only raised after sustained_violation_duration_ms of continued depletion.
+    # Adds 5 VL per sustained overflow window.
+    PacketFlood:
+      enabled: true
+      sustained_packets_per_second: 40
+      burst_capacity: 200
+      sustained_violation_duration_ms: 3000
     # PerfectRotation checks for very precise rotations that some cheats exhibit.
     # Adds 4 to 5 VL.
     PerfectRotation:
+      enabled: true
+    # Sequence checks negative and replayed sequences on START/FINISH digging actions.
+    # Vanilla CANCEL actions use sequence 0 and are intentionally excluded.
+    # Not available on Minecraft versions below 1.19.
+    # Adds 10 to 150 VL.
+    Sequence:
+      enabled: true
+    # Stab validates that piercing packets are only sent when the player has a piercing weapon.
+    # Adds 50 VL when a STAB packet has no piercing weapon in the main hand.
+    Stab:
+      enabled: true
+    # UseItem checks RELEASE_USE_ITEM transitions against known USE_ITEM state.
+    # Adds 10 VL for repeated impossible releases.
+    UseItem:
       enabled: true
   # Commands to execute at specific violation levels.
   thresholds:
@@ -470,10 +502,6 @@ Targeting:
     # Adds 15 to 25 VLs.
     Acquisition:
       enabled: true
-    # Detects repeated oscillating head movements.
-    # Adds 10 to 20 VL.
-    Discontinuity:
-      enabled: true
     # Detects repeated alternation between different suspicious aiming strategies.
     # Adds 8 VL.
     Mixed:
@@ -494,14 +522,15 @@ Targeting:
     # Adds 14 to 28 VL.
     Replay:
       enabled: true
-    # Detects suspicious reversals immediately before an interaction.
-    # Adds 10 to 20 VL.
-    Reversal:
+    # Detects repeated aim-dependent USE_ITEM rotations which differ from accepted movement rotation.
+    # This check is not available on Minecraft versions below 1.21.5
+    # Adds 15 VL.
+    SilentRotation:
       enabled: true
-    # Detects snap-back aiming after an interaction.
-    # Adds 12 to 24 VL.
-    SnapBack:
-      enabled: true
+      mismatch_degrees: 2.0
+      comparison_window_ms: 250
+      required_mismatches: 8
+      eligible_samples: 12
     # Detects repeated switching between different aiming behaviors.
     # Adds 6 to 12 VL.
     Switching:

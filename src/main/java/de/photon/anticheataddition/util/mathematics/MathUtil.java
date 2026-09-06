@@ -110,8 +110,7 @@ public final class MathUtil {
      */
     public static double yawDistance(double yaw1, double yaw2)
     {
-        double diff = yaw1 - yaw2;
-        return Math.abs(normalizeYaw(diff));
+        return Math.abs(signedYawDelta(yaw1, yaw2));
     }
 
     /**
@@ -123,19 +122,8 @@ public final class MathUtil {
      */
     public static double yawAdd(double yaw1, double yaw2)
     {
-        double sum = yaw1 + yaw2;
+        double sum = normalizeYaw(yaw1) + normalizeYaw(yaw2);
         return normalizeYaw(sum);
-    }
-
-    /**
-     * Normalizes the yaw to the range [-180, 180].
-     *
-     * @param yaw the yaw angle in degrees
-     * @return the normalized yaw angle in degrees
-     */
-    public static double normalizeYaw(double yaw)
-    {
-        return ((yaw + 180) % 360 + 360) % 360 - 180;
     }
 
     /**
@@ -144,7 +132,7 @@ public final class MathUtil {
     @SuppressWarnings("RedundantCast")
     public static Vector getDirection(final float yaw, final float pitch)
     {
-        final double yawRadians = Math.toRadians((double) yaw);
+        final double yawRadians = Math.toRadians(normalizeYaw(yaw));
         final double pitchRadians = Math.toRadians((double) pitch);
         final double pitchCosine = Math.cos(pitchRadians);
 
@@ -155,25 +143,48 @@ public final class MathUtil {
         );
     }
 
-    /**
-     * Calculates the angle between two rotations.
-     *
-     * @return The angle between the two rotations in degrees.
-     */
+    /** Canonical yaw in [-180, 180), or NaN for non-finite input. Reduces before adding to avoid precision loss. */
+    public static double normalizeYaw(final double yaw)
+    {
+        if (!Double.isFinite(yaw)) return Double.NaN;
+        double normalized = yaw % 360D;
+        if (normalized >= 180D) normalized -= 360D;
+        else if (normalized < -180D) normalized += 360D;
+        return normalized == -0D ? 0D : normalized;
+    }
+
+    /** Shortest signed yaw delta in [-180, 180], reducing each input before subtraction to avoid overflow. */
+    public static double signedYawDelta(final double currentYaw, final double previousYaw)
+    {
+        final double normalizedCurrent = normalizeYaw(currentYaw);
+        final double normalizedPrevious = normalizeYaw(previousYaw);
+        if (!Double.isFinite(normalizedCurrent) || !Double.isFinite(normalizedPrevious)) return Double.NaN;
+
+        double delta = normalizedCurrent - normalizedPrevious;
+        if (delta > 180D) delta -= 360D;
+        else if (delta < -180D) delta += 360D;
+        return delta;
+    }
+
     public static float getAngleBetweenRotations(final float firstYaw, final float firstPitch, final float secondYaw, final float secondPitch)
     {
-        if (firstYaw == secondYaw && firstPitch == secondPitch) return 0F;
+        return (float) getAngleBetweenRotations((double) firstYaw, firstPitch, secondYaw, secondPitch);
+    }
 
-        final double deltaYawCos = Math.cos(Math.toRadians(firstYaw - secondYaw));
-
+    /** Great-circle angular distance in degrees, with yaw normalized before trigonometry. */
+    public static double getAngleBetweenRotations(final double firstYaw,
+                                                  final double firstPitch,
+                                                  final double secondYaw,
+                                                  final double secondPitch)
+    {
+        if (signedYawDelta(firstYaw, secondYaw) == 0D && firstPitch == secondPitch) return 0D;
         final double firstPitchRadians = Math.toRadians(firstPitch);
         final double secondPitchRadians = Math.toRadians(secondPitch);
-        final double dot = Math.sin(firstPitchRadians) * Math.sin(secondPitchRadians) +
-                           Math.cos(firstPitchRadians) * Math.cos(secondPitchRadians) * deltaYawCos;
 
-        if (dot >= 1.0) return 0F;
-        if (dot <= -1.0) return 180F;
-
-        return (float) Math.toDegrees(Math.acos(dot));
+        final double firstCosPitch = Math.cos(firstPitchRadians);
+        final double secondCosPitch = Math.cos(secondPitchRadians);
+        final double dot = Math.clamp(firstCosPitch * secondCosPitch * Math.cos(Math.toRadians(signedYawDelta(secondYaw, firstYaw))) + Math.sin(firstPitchRadians) * Math.sin(secondPitchRadians), -1D, 1D);
+        return Math.toDegrees(Math.acos(dot));
     }
+
 }

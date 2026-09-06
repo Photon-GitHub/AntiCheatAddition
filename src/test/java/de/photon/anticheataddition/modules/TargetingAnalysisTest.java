@@ -12,6 +12,27 @@ public final class TargetingAnalysisTest
     private static final int SAMPLE_COUNT = 48;
 
     @Test
+    public void hugeInitialYawHasTheSameAnalysisAsItsCanonicalAngle()
+    {
+        final RotationSample sample = randomizedSample(1L, NoiseType.UNIFORM, true, false);
+        sample.yaw()[0] = TargetingAnalysis.normalizeYaw(Double.MAX_VALUE);
+        final var expected = TargetingAnalysis.analyze(sample.yaw(), sample.pitch());
+        sample.yaw()[0] = Double.MAX_VALUE;
+        final var actual = TargetingAnalysis.analyze(sample.yaw(), sample.pitch());
+
+        assertEquals(expected.yaw().pattern(), actual.yaw().pattern());
+        assertEquals(expected.yaw().rotationRange(), actual.yaw().rotationRange(), 1E-9D);
+        assertArrayEquals(expected.yawFingerprint(), actual.yawFingerprint(), 1E-9D);
+    }
+
+    @Test
+    public void constantAxesDoNotReportPerfectCrossCorrelation()
+    {
+        final var result = TargetingAnalysis.analyze(new double[SAMPLE_COUNT], new double[SAMPLE_COUNT]);
+        assertEquals(0D, result.crossCorrelation());
+    }
+
+    @Test
     public void detectsUniformNoiseOnOnlyYaw()
     {
         final RotationSample sample = randomizedSample(1L, NoiseType.UNIFORM, true, false);

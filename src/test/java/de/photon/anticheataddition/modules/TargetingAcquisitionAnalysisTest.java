@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -13,6 +14,45 @@ public final class TargetingAcquisitionAnalysisTest
 {
     private static final TargetingAcquisitionAnalysis.TargetBox TARGET_BOX =
             new TargetingAcquisitionAnalysis.TargetBox(-0.45D, -0.15D, 5.55D, 0.45D, 2D, 6.45D);
+
+    @Test
+    public void boxGeometryHandlesHitsInsideOriginsAndTargetsBehindThePlayer()
+    {
+        final var box = new TargetingAcquisitionAnalysis.TargetBox(-1D, 0D, 5D, 1D, 2D, 6D);
+        assertEquals(0D, TargetingAcquisitionAnalysis.angularErrorToBox(0D, 1D, 0D, 0D, 0D, box), 1E-6D);
+        assertEquals(0D, TargetingAcquisitionAnalysis.angularErrorToBox(0D, 1D, 5.5D, 90D, 0D, box), 1E-6D);
+        assertTrue(TargetingAcquisitionAnalysis.angularErrorToBox(0D, 1D, 0D, 180D, 0D, box) > 160D);
+        final var translated = new TargetingAcquisitionAnalysis.TargetBox(99D, 70D, -25D, 101D, 72D, -24D);
+        assertEquals(TargetingAcquisitionAnalysis.angularErrorToBox(0D, 1D, 0D, -15D, -4D, box),
+                     TargetingAcquisitionAnalysis.angularErrorToBox(100D, 71D, -30D, 345D, -4D, translated), 1E-9D);
+    }
+
+    @Test
+    public void rejectsSlowdownsEntirelyInsideTheTargetBox()
+    {
+        final var wideBox = new TargetingAcquisitionAnalysis.TargetBox(-5D, -0.15D, 5.55D, 5D, 2D, 6.45D);
+        final var result = TargetingAcquisitionAnalysis.analyze(assistSnapshot(1L, 18, 20D, 6D), wideBox, 1.62D);
+        assertFalse(result.valid());
+        assertEquals(TargetingAcquisitionAnalysis.InvalidReason.NO_RELIABLE_APPROACH, result.invalidReason());
+    }
+
+    @Test
+    public void measuresNearMissesBetweenTheFormerBoxGridPoints()
+    {
+        final var box = new TargetingAcquisitionAnalysis.TargetBox(-1D, 0D, 5D, 1D, 2D, 6D);
+        final double yaw = -Math.toDegrees(Math.atan2(1.02D, 5D));
+        final double pitch = -Math.toDegrees(Math.atan2(0.37D, Math.hypot(1.02D, 5D)));
+        final double error = TargetingAcquisitionAnalysis.angularErrorToBox(0D, 1D, 0D, yaw, pitch, box);
+        assertTrue(error > 0D);
+        assertTrue(error < 0.25D, "A near miss along an edge must not be measured against a distant grid point");
+    }
+
+    @Test
+    public void boxGeometryRejectsNonFiniteLookDirections()
+    {
+        assertTrue(Double.isNaN(TargetingAcquisitionAnalysis.angularErrorToBox(0D, 1D, 0D,
+                                                                               Double.NaN, 0D, TARGET_BOX)));
+    }
 
     @Test
     public void extractsFixedBoundarySlowdown()

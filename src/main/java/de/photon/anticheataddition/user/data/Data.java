@@ -2,6 +2,9 @@ package de.photon.anticheataddition.user.data;
 
 import de.photon.anticheataddition.modules.checks.autopotion.AutoPotion;
 import de.photon.anticheataddition.modules.checks.autotool.AutoTool;
+import de.photon.anticheataddition.user.data.subdata.PacketFloodData;
+import de.photon.anticheataddition.user.data.subdata.PlayerActionData;
+import de.photon.anticheataddition.user.data.subdata.TargetingSilentRotationData;
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -71,7 +74,8 @@ public final class Data
         public final ViolationCounter packetAnalysisPerfectRotationYawFails = new ViolationCounter(5);
         public final ViolationCounter packetAnalysisPerfectRotationPitchFails = new ViolationCounter(5);
         // 1 second in nanos.
-        public final ViolationCounter packetFrequencyBalance = new ViolationCounter(1_000_000L);
+        public final ViolationCounter packetFrequencyBalance = new ViolationCounter(1_000_000_000L);
+        public final ViolationCounter packetFrequencyEndTickBalance = new ViolationCounter(1_000_000_000L);
 
         public final ViolationCounter scaffoldAngleFails = new ViolationCounter(4);
         public final ViolationCounter scaffoldJumpingFails = new ViolationCounter(8);
@@ -86,14 +90,11 @@ public final class Data
         public final ViolationCounter scaffoldSprintingFails = new ViolationCounter(5);
 
         public final ViolationCounter targetingAcquisitionFails = new ViolationCounter(6);
-        public final ViolationCounter targetingDiscontinuityFails = new ViolationCounter(12);
         public final ViolationCounter targetingMixedFails = new ViolationCounter(4);
         public final ViolationCounter targetingNoiseFails = new ViolationCounter(12);
         public final ViolationCounter targetingPatternFails = new ViolationCounter(8);
         public final ViolationCounter targetingPrecisionFails = new ViolationCounter(12);
         public final ViolationCounter targetingReplayFails = new ViolationCounter(3);
-        public final ViolationCounter targetingReversalFails = new ViolationCounter(12);
-        public final ViolationCounter targetingSnapBackFails = new ViolationCounter(5);
         public final ViolationCounter targetingSwitchingFails = new ViolationCounter(12);
     }
 
@@ -108,6 +109,10 @@ public final class Data
 
         // This contains all the locations currently in the check queue so that opening a chest twice does not cause a double vl.
         public final Set<Location> dupingSecretCacheCurrentlyCheckedLocations = ConcurrentHashMap.newKeySet();
+
+        public final PacketFloodData packetFloodData = new PacketFloodData();
+        public final PlayerActionData playerActionData = new PlayerActionData();
+        public final TargetingSilentRotationData targetingSilentRotationData = new TargetingSilentRotationData();
 
         public ItemStack lastConsumedItemStack = null;
         public volatile Material lastMaterialClicked = Material.BEDROCK;

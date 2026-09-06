@@ -172,9 +172,24 @@ public final class LookPacketData
 
             final var rotation = PacketEventUtils.getRotationFromEvent(event);
 
+            // Preserve the raw invalid values in the shared state so packet-validity checks observe exactly what the
+            // client sent, but do not feed NaN/Infinity into the derived angle history. The next finite packet repairs
+            // the baseline without allowing the malformed sample to contaminate later statistics.
+            if (!Float.isFinite(rotation.yaw()) || !Float.isFinite(rotation.pitch())) {
+                user.getData().floating.lastPacketYaw = rotation.yaw();
+                user.getData().floating.lastPacketPitch = rotation.pitch();
+                return;
+            }
+
             /* ----------- delta calculation ----------- */
             final float lastYaw = user.getData().floating.lastPacketYaw;
             final float lastPitch = user.getData().floating.lastPacketPitch;
+
+            if (!Float.isFinite(lastYaw) || !Float.isFinite(lastPitch)) {
+                user.getData().floating.lastPacketYaw = rotation.yaw();
+                user.getData().floating.lastPacketPitch = rotation.pitch();
+                return;
+            }
 
             final float deltaYaw = (float) MathUtil.yawDistance(rotation.yaw(), lastYaw);
             final float deltaPitch = (float) MathUtil.absDiff(rotation.pitch(), lastPitch);

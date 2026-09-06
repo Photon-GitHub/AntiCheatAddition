@@ -15,6 +15,7 @@ import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.util.violationlevels.ViolationAggregation;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
+import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,9 +23,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Parent module for interaction-aware targeting checks.
@@ -57,10 +60,8 @@ public final class Targeting extends ViolationModule implements Listener
               TargetingSwitching.INSTANCE,
               TargetingMixed.INSTANCE,
               TargetingReplay.INSTANCE,
-              TargetingSnapBack.INSTANCE,
-              TargetingReversal.INSTANCE,
-              TargetingDiscontinuity.INSTANCE,
-              TargetingAcquisition.INSTANCE);
+              TargetingAcquisition.INSTANCE,
+              TargetingSilentRotation.INSTANCE);
     }
 
     /**
@@ -93,18 +94,32 @@ public final class Targeting extends ViolationModule implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onTeleport(final PlayerTeleportEvent event)
     {
-        final var user = User.getUser(event.getPlayer());
-        if (user == null) return;
+        markTrustedBoundary(event.getPlayer(), event.getTo());
+    }
 
-        final var destination = event.getTo();
-        if (destination != null) {
-            user.getTargetingData().addTrustedMovement(destination.getX(),
-                                                       destination.getY(),
-                                                       destination.getZ(),
-                                                       destination.getYaw(),
-                                                       destination.getPitch(),
-                                                       System.nanoTime());
-        }
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onRespawn(final PlayerRespawnEvent event)
+    {
+        markTrustedBoundary(event.getPlayer(), event.getRespawnLocation());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onWorldChange(final PlayerChangedWorldEvent event)
+    {
+        markTrustedBoundary(event.getPlayer(), event.getPlayer().getLocation());
+    }
+
+    private void markTrustedBoundary(final Player player, final Location destination)
+    {
+        final User user = User.getUser(player);
+        if (user == null || destination == null) return;
+
+        user.getTargetingData().addTrustedMovement(destination.getX(),
+                                                   destination.getY(),
+                                                   destination.getZ(),
+                                                   destination.getYaw(),
+                                                   destination.getPitch(),
+                                                   System.nanoTime());
     }
 
     /**
@@ -140,7 +155,10 @@ public final class Targeting extends ViolationModule implements Listener
         if (horizontalSpeedSquared > MAXIMUM_TARGET_HORIZONTAL_SPEED_SQUARED ||
             Math.abs(targetVelocity.getY()) > MAXIMUM_TARGET_VERTICAL_SPEED) return;
 
-        user.getTargetingData().takeAcquisitionSnapshot().ifPresent(snapshot -> {
+        final long currentTimestamp = System.nanoTime();
+        if (user.getData().object.packetFloodData.isThrottled(currentTimestamp)) return;
+
+        user.getTargetingData().takeAcquisitionSnapshot(currentTimestamp).ifPresent(snapshot -> {
             final double motionExpansion = Math.min(0.18D, Math.sqrt(horizontalSpeedSquared) * 1.5D);
             final double horizontalExpansion = BASE_HORIZONTAL_TARGET_EXPANSION + motionExpansion;
             final double verticalExpansion = BASE_VERTICAL_TARGET_EXPANSION +
@@ -195,11 +213,6 @@ public final class Targeting extends ViolationModule implements Listener
                                 currentTimestamp);
 
                         if (!update.accepted()) return;
-                        if (update.snapBackSample() != null &&
-                            TargetingSnapBack.INSTANCE.isEnabled() &&
-                            !User.isUserInvalid(user, TargetingSnapBack.INSTANCE)) {
-                            TargetingSnapBack.INSTANCE.analyze(user, update.snapBackSample());
-                        }
                         return;
                     }
 
@@ -223,14 +236,10 @@ public final class Targeting extends ViolationModule implements Listener
     {
         // The server has changed the camera context, but no client movement packet has acknowledged that orientation
         // yet. Keep all accumulated evidence, then resume on the first real post-teleport sample.
-        if (user.getTargetingData().hasPendingTrustedBoundary()) return;
-
         final long currentTimestamp = System.nanoTime();
-        user.getTargetingData().markInteraction(context, currentTimestamp).ifPresent(interactionSnapshot -> {
-            if (TargetingReversal.INSTANCE.isEnabled() && !User.isUserInvalid(user, TargetingReversal.INSTANCE)) {
-                TargetingReversal.INSTANCE.analyze(user, TargetingReversalAnalysis.analyze(interactionSnapshot));
-            }
-        });
+        if (user.getTargetingData().hasPendingTrustedBoundary() ||
+            user.getTargetingData().isTargetingSuppressed(currentTimestamp) ||
+            user.getData().object.packetFloodData.isThrottled(currentTimestamp)) return;
 
         user.getTargetingData().takeSnapshot().ifPresent(snapshot -> {
             final double[] yaw = snapshot.yaw();
@@ -247,17 +256,9 @@ public final class Targeting extends ViolationModule implements Listener
                                           !User.isUserInvalid(user, TargetingPattern.INSTANCE);
             final boolean switchingActive = TargetingSwitching.INSTANCE.isEnabled() &&
                                             !User.isUserInvalid(user, TargetingSwitching.INSTANCE);
-            final boolean discontinuityActive = TargetingDiscontinuity.INSTANCE.isEnabled() &&
-                                                !User.isUserInvalid(user, TargetingDiscontinuity.INSTANCE);
-
             final TargetingSwitchAnalysis.Result switchResult = switchingActive
                                                                 ? TargetingSwitchAnalysis.analyze(result)
                                                                 : null;
-            final TargetingDiscontinuityAnalysis.Result discontinuityResult = discontinuityActive
-                                                                              ? TargetingDiscontinuityAnalysis.analyze(yaw,
-                                                                                                                       pitch,
-                                                                                                                       snapshot.trustedBreakBefore())
-                                                                              : null;
 
             if (noiseActive) TargetingNoise.INSTANCE.analyze(user, context, result);
             if (precisionActive) TargetingPrecision.INSTANCE.analyze(user, context, result);
@@ -273,17 +274,12 @@ public final class Targeting extends ViolationModule implements Listener
                 TargetingReplay.INSTANCE.analyze(user, context, replayResult);
             }
 
-            if (discontinuityActive) {
-                TargetingDiscontinuity.INSTANCE.analyze(user, context, discontinuityResult);
-            }
-
             if (TargetingMixed.INSTANCE.isEnabled() && !User.isUserInvalid(user, TargetingMixed.INSTANCE)) {
                 final int modeMask = TargetingMixedAnalysis.modeMask(
                         noiseActive && result.randomizedAxisCount() > 0,
                         precisionActive && TargetingPrecision.isSuspicious(result),
                         patternActive && result.syntheticAxisCount() > 0,
-                        switchingActive && switchResult.switchingAxisCount() > 0,
-                        discontinuityActive && discontinuityResult.suspiciousAxisCount() > 0);
+                        switchingActive && switchResult.switchingAxisCount() > 0);
                 final int[] modeHistory = user.getTargetingData().addMixedModeObservation(context, modeMask);
                 TargetingMixed.INSTANCE.analyze(user, context, TargetingMixedAnalysis.analyze(modeHistory));
             }
@@ -303,15 +299,9 @@ public final class Targeting extends ViolationModule implements Listener
     {
         return new ViolationAggregation(this,
                                         ThresholdManagement.loadThresholds(this),
-                                        Set.of(TargetingNoise.INSTANCE.getManagement(),
-                                               TargetingPrecision.INSTANCE.getManagement(),
-                                               TargetingPattern.INSTANCE.getManagement(),
-                                               TargetingSwitching.INSTANCE.getManagement(),
-                                               TargetingMixed.INSTANCE.getManagement(),
-                                               TargetingReplay.INSTANCE.getManagement(),
-                                               TargetingSnapBack.INSTANCE.getManagement(),
-                                               TargetingReversal.INSTANCE.getManagement(),
-                                               TargetingDiscontinuity.INSTANCE.getManagement(),
-                                               TargetingAcquisition.INSTANCE.getManagement()));
+                                        getChildren().stream()
+                                                     .map(ViolationModule.class::cast)
+                                                     .map(ViolationModule::getManagement)
+                                                     .collect(Collectors.toUnmodifiableSet()));
     }
 }

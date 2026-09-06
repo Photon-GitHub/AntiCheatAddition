@@ -239,4 +239,73 @@ public final class DataUtil {
                      .mapToDouble(Double::doubleValue)
                      .toArray();
     }
+
+    /** Median of a copy; returns NaN for an empty sample and leaves the input unchanged. */
+    public static double median(final double[] values)
+    {
+        if (values.length == 0) return Double.NaN;
+        final double[] sorted = Arrays.copyOf(values, values.length);
+        Arrays.sort(sorted);
+        final int middle = sorted.length / 2;
+        return (sorted.length & 1) == 0 ? (sorted[middle - 1] + sorted[middle]) * 0.5D : sorted[middle];
+    }
+
+    /** Sample standard deviation divided by the absolute mean; NaN for insufficient or near-zero-mean data. */
+    public static double coefficientOfVariation(final double[] values)
+    {
+        if (values.length < 2) return Double.NaN;
+        final double mean = average(values);
+        if (!Double.isFinite(mean) || Math.abs(mean) <= 1E-9D) return Double.NaN;
+        return sampleStandardDeviation(values) / Math.abs(mean);
+    }
+
+    /** Sample standard deviation (n - 1 normalization), or NaN for fewer than two samples. */
+    public static double sampleStandardDeviation(final double[] values)
+    {
+        if (values.length < 2) return Double.NaN;
+        return Math.sqrt(variance(average(values), values) / (values.length - 1D));
+    }
+
+    /** Pearson correlation; returns zero when fewer than two pairs or a constant series provide no evidence. */
+    public static double correlation(final double[] first, final double[] second)
+    {
+        return correlation(first, second, 0);
+    }
+
+    /**
+     * Pearson correlation of first[i] and second[i + lag] over the overlapping samples.
+     * Arrays must have equal lengths and lag must be nonnegative. Insufficient or effectively constant samples
+     * (product of centered L2 norms at most 1E-12) return zero rather than inventing correlation evidence.
+     */
+    public static double correlation(final double[] first, final double[] second, final int lag)
+    {
+        if (first.length != second.length) throw new IllegalArgumentException("series must have equal lengths");
+        if (lag < 0) throw new IllegalArgumentException("lag must not be negative");
+        final int length = first.length - lag;
+        if (length <= 1) return 0D;
+
+        double firstMean = 0D;
+        double secondMean = 0D;
+        for (int i = 0; i < length; i++) {
+            firstMean += first[i];
+            secondMean += second[i + lag];
+        }
+        firstMean /= length;
+        secondMean /= length;
+
+        double covariance = 0D;
+        double firstVariance = 0D;
+        double secondVariance = 0D;
+        for (int i = 0; i < length; i++) {
+            final double centeredFirst = first[i] - firstMean;
+            final double centeredSecond = second[i + lag] - secondMean;
+            covariance += centeredFirst * centeredSecond;
+            firstVariance += centeredFirst * centeredFirst;
+            secondVariance += centeredSecond * centeredSecond;
+        }
+
+        final double denominator = Math.sqrt(firstVariance * secondVariance);
+        return denominator <= 1E-12D ? 0D : Math.clamp(covariance / denominator, -1D, 1D);
+    }
+
 }

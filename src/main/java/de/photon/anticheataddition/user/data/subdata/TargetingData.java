@@ -19,22 +19,17 @@ import java.util.Optional;
  * order and sequence numbers are the source of truth for analysis, so delaying packets cannot reset or exempt a
  * player.</p>
  */
-public final class TargetingData {
+public final class TargetingData
+{
     private static final int BUFFER_CAPACITY = 96;
     private static final int ANALYSIS_SAMPLE_COUNT = 48;
-    private static final int INTERACTION_SAMPLE_COUNT = 16;
     private static final int ACQUISITION_SAMPLE_COUNT = 24;
     private static final int MINIMUM_ACQUISITION_SAMPLE_COUNT = 8;
     private static final int MINIMUM_NEW_SAMPLES = 8;
+    private static final long TRUSTED_BOUNDARY_SUPPRESSION_NANOS = 500_000_000L;
 
     private static final double MINIMUM_VALID_PITCH = -90D;
     private static final double MAXIMUM_VALID_PITCH = 90D;
-
-    private static final double MINIMUM_YAW_SNAP = 0.45D;
-    private static final double MINIMUM_PITCH_SNAP = 0.35D;
-    private static final double MINIMUM_RETURN_RATIO = 0.8D;
-    private static final double MINIMUM_RETURN_CANCELLATION = 0.75D;
-    private static final double MINIMUM_RETURN_PATH_EFFICIENCY = 0.65D;
 
     private final double[] x = new double[BUFFER_CAPACITY];
     private final double[] y = new double[BUFFER_CAPACITY];
@@ -44,8 +39,7 @@ public final class TargetingData {
     private final long[] timestamp = new long[BUFFER_CAPACITY];
     private final long[] sampleSequence = new long[BUFFER_CAPACITY];
     private final boolean[] trustedBreakBefore = new boolean[BUFFER_CAPACITY];
-    private final int[][] mixedModeHistory =
-            new int[TargetingContext.values().length][TargetingMixedAnalysis.HISTORY_LENGTH];
+    private final int[][] mixedModeHistory = new int[TargetingContext.values().length][TargetingMixedAnalysis.HISTORY_LENGTH];
     private final int[] mixedModeWriteIndex = new int[TargetingContext.values().length];
     private final int[] mixedModeSize = new int[TargetingContext.values().length];
 
@@ -53,7 +47,6 @@ public final class TargetingData {
     private int size;
     private long sequence;
     private long lastAnalyzedSequence;
-    private long lastInteractionSequence;
     private long lastAcquisitionSequence;
     private double lastX;
     private double lastY;
@@ -63,19 +56,7 @@ public final class TargetingData {
     private boolean hasLastPosition;
     private boolean hasLastRotation;
     private boolean trustedBoundaryPending;
-
-    private boolean pendingInteraction;
-    private TargetingContext pendingContext;
-    private double pendingBeforeYaw;
-    private double pendingBeforePitch;
-    private double pendingInteractionYaw;
-    private double pendingInteractionPitch;
-    private double pendingLastYaw;
-    private double pendingLastPitch;
-    private double pendingYawPathLength;
-    private double pendingPitchPathLength;
-    private long pendingInteractionTimestamp;
-    private int pendingFollowingPackets;
+    private long targetingSuppressedUntil;
 
     /**
      * Adds a movement packet while retaining omitted position or rotation components from the previous packet.
@@ -83,48 +64,28 @@ public final class TargetingData {
      * <p>Malformed finite-state components do not stall Targeting collection. Once a legal value is known, an invalid
      * component retains the last legal value while ACA's dedicated packet-validity checks inspect the original packet.</p>
      *
-     * @return whether the sample was accepted and, when available, a completed snap-back sample
+     * @return whether the sample was accepted
      */
-    public synchronized RotationUpdate addMovement(final double currentX,
-                                                   final double currentY,
-                                                   final double currentZ,
-                                                   final double currentYaw,
-                                                   final double currentPitch,
-                                                   final boolean positionChanged,
-                                                   final boolean rotationChanged,
-                                                   final long currentTimestamp)
+    public synchronized RotationUpdate addMovement(final double currentX, final double currentY, final double currentZ, final double currentYaw, final double currentPitch, final boolean positionChanged, final boolean rotationChanged, final long currentTimestamp)
     {
-        if (!hasLastPosition && !positionChanged) return new RotationUpdate(false, null);
-        if (!hasLastRotation && !rotationChanged) return new RotationUpdate(false, null);
+        if (!hasLastPosition && !positionChanged) return new RotationUpdate(false);
+        if (!hasLastRotation && !rotationChanged) return new RotationUpdate(false);
 
         final boolean validX = Double.isFinite(currentX);
         final boolean validY = Double.isFinite(currentY);
         final boolean validZ = Double.isFinite(currentZ);
         final boolean validYaw = Double.isFinite(currentYaw);
-        final boolean validPitch = Double.isFinite(currentPitch) &&
-                                   currentPitch >= MINIMUM_VALID_PITCH &&
-                                   currentPitch <= MAXIMUM_VALID_PITCH;
+        final boolean validPitch = Double.isFinite(currentPitch) && currentPitch >= MINIMUM_VALID_PITCH && currentPitch <= MAXIMUM_VALID_PITCH;
 
-        if (positionChanged && (!validX || !validY || !validZ) && !hasLastPosition) {
-            return new RotationUpdate(false, null);
-        }
-        if (rotationChanged && (!validYaw || !validPitch) && !hasLastRotation) {
-            return new RotationUpdate(false, null);
-        }
+        if (positionChanged && (!validX || !validY || !validZ) && !hasLastPosition) return new RotationUpdate(false);
+        if (rotationChanged && (!validYaw || !validPitch) && !hasLastRotation) return new RotationUpdate(false);
 
         final double acceptedX = positionChanged && validX ? currentX : lastX;
         final double acceptedY = positionChanged && validY ? currentY : lastY;
         final double acceptedZ = positionChanged && validZ ? currentZ : lastZ;
-        final double acceptedYaw = rotationChanged && validYaw
-                                   ? TargetingAnalysis.normalizeYaw(currentYaw)
-                                   : lastYaw;
+        final double acceptedYaw = rotationChanged && validYaw ? TargetingAnalysis.normalizeYaw(currentYaw) : lastYaw;
         final double acceptedPitch = rotationChanged && validPitch ? currentPitch : lastPitch;
-        return addAcceptedMovement(acceptedX,
-                                   acceptedY,
-                                   acceptedZ,
-                                   acceptedYaw,
-                                   acceptedPitch,
-                                   currentTimestamp);
+        return addAcceptedMovement(acceptedX, acceptedY, acceptedZ, acceptedYaw, acceptedPitch, currentTimestamp);
     }
 
     /**
@@ -134,18 +95,9 @@ public final class TargetingData {
      * {@link #addMovement(double, double, double, double, double, boolean, boolean, long)} so Acquisition receives the
      * packet-order position history as well.</p>
      */
-    public synchronized RotationUpdate addRotation(final double currentYaw,
-                                                   final double currentPitch,
-                                                   final long currentTimestamp)
+    public synchronized RotationUpdate addRotation(final double currentYaw, final double currentPitch, final long currentTimestamp)
     {
-        return addMovement(hasLastPosition ? lastX : 0D,
-                           hasLastPosition ? lastY : 0D,
-                           hasLastPosition ? lastZ : 0D,
-                           currentYaw,
-                           currentPitch,
-                           !hasLastPosition,
-                           true,
-                           currentTimestamp);
+        return addMovement(hasLastPosition ? lastX : 0D, hasLastPosition ? lastY : 0D, hasLastPosition ? lastZ : 0D, currentYaw, currentPitch, !hasLastPosition, true, currentTimestamp);
     }
 
     /**
@@ -153,14 +105,7 @@ public final class TargetingData {
      */
     public synchronized RotationUpdate addUnchangedRotation(final long currentTimestamp)
     {
-        return addMovement(lastX,
-                           lastY,
-                           lastZ,
-                           lastYaw,
-                           lastPitch,
-                           false,
-                           false,
-                           currentTimestamp);
+        return addMovement(lastX, lastY, lastZ, lastYaw, lastPitch, false, false, currentTimestamp);
     }
 
 
@@ -170,22 +115,11 @@ public final class TargetingData {
      * <p>The next real movement packet receives a trusted boundary. Earlier samples, replay fingerprints, and violation
      * evidence remain intact, while the server-generated teleport transition is excluded from path analyses.</p>
      */
-    public synchronized RotationUpdate addTrustedMovement(final double currentX,
-                                                          final double currentY,
-                                                          final double currentZ,
-                                                          final double currentYaw,
-                                                          final double currentPitch,
-                                                          final long currentTimestamp)
+    public synchronized RotationUpdate addTrustedMovement(final double currentX, final double currentY, final double currentZ, final double currentYaw, final double currentPitch, final long currentTimestamp)
     {
-        if (!Double.isFinite(currentX) ||
-            !Double.isFinite(currentY) ||
-            !Double.isFinite(currentZ) ||
-            !Double.isFinite(currentYaw) ||
-            !Double.isFinite(currentPitch) ||
-            currentPitch < MINIMUM_VALID_PITCH ||
-            currentPitch > MAXIMUM_VALID_PITCH) return new RotationUpdate(false, null);
+        if (!Double.isFinite(currentX) || !Double.isFinite(currentY) || !Double.isFinite(currentZ) || !Double.isFinite(currentYaw) || !Double.isFinite(currentPitch) || currentPitch < MINIMUM_VALID_PITCH || currentPitch > MAXIMUM_VALID_PITCH)
+            return new RotationUpdate(false);
 
-        clearPendingInteraction();
         lastX = currentX;
         lastY = currentY;
         lastZ = currentZ;
@@ -194,76 +128,40 @@ public final class TargetingData {
         hasLastPosition = true;
         hasLastRotation = true;
         trustedBoundaryPending = size > 0;
-        return new RotationUpdate(true, null);
+        targetingSuppressedUntil = Math.max(targetingSuppressedUntil, currentTimestamp + TRUSTED_BOUNDARY_SUPPRESSION_NANOS);
+        return new RotationUpdate(true);
     }
 
     /**
      * Updates only the server-authoritative rotation. Prefer {@link #addTrustedMovement(double, double, double, double,
      * double, long)} for teleports so the packet-order position history stays aligned as well.
      */
-    public synchronized RotationUpdate addTrustedRotation(final double currentYaw,
-                                                          final double currentPitch,
-                                                          final long currentTimestamp)
+    public synchronized RotationUpdate addTrustedRotation(final double currentYaw, final double currentPitch, final long currentTimestamp)
     {
-        if (!hasLastPosition) return new RotationUpdate(false, null);
+        if (!hasLastPosition) return new RotationUpdate(false);
         return addTrustedMovement(lastX, lastY, lastZ, currentYaw, currentPitch, currentTimestamp);
-    }
-
-
-    /**
-     * Marks an attack or scaffold placement and returns the recent interaction-centered rotation history.
-     *
-     * <p>Repeated interactions without a new movement packet do not create duplicate reversal samples. A still-useful
-     * pending snap-back cycle is not overwritten by attack spam. Once the intervening path has become too indirect to
-     * represent an interaction-only restoration, the new interaction becomes the reference instead.</p>
-     */
-    public synchronized Optional<InteractionSnapshot> markInteraction(final TargetingContext context,
-                                                                      final long currentTimestamp)
-    {
-        if (context == null) throw new NullPointerException("context must not be null");
-        if (size < 2 || sequence == lastInteractionSequence) return Optional.empty();
-        lastInteractionSequence = sequence;
-
-        if (!pendingInteraction || pendingPathIsTooIndirect()) prepareSnapBack(context, currentTimestamp);
-
-        final int sampleCount = Math.min(size, INTERACTION_SAMPLE_COUNT);
-        final int firstLogicalIndex = size - sampleCount;
-        final double[] yawSnapshot = new double[sampleCount];
-        final double[] pitchSnapshot = new double[sampleCount];
-        final long[] timestampSnapshot = new long[sampleCount];
-        final long[] sequenceSnapshot = new long[sampleCount];
-        final boolean[] trustedBreakSnapshot = new boolean[sampleCount];
-        for (int i = 0; i < sampleCount; i++) {
-            final int physicalIndex = physicalIndex(firstLogicalIndex + i);
-            yawSnapshot[i] = yaw[physicalIndex];
-            pitchSnapshot[i] = pitch[physicalIndex];
-            timestampSnapshot[i] = timestamp[physicalIndex];
-            sequenceSnapshot[i] = sampleSequence[physicalIndex];
-            trustedBreakSnapshot[i] = trustedBreakBefore[physicalIndex];
-        }
-
-        return Optional.of(new InteractionSnapshot(context,
-                                                   yawSnapshot,
-                                                   pitchSnapshot,
-                                                   timestampSnapshot,
-                                                   sequenceSnapshot,
-                                                   trustedBreakSnapshot,
-                                                   currentTimestamp));
     }
 
     /**
      * Returns the most recent packet-order movement history for target-relative successful-hit analysis.
      *
-     * <p>Only samples after the latest trusted boundary are returned. Repeated damage events without a new movement
-     * packet cannot manufacture duplicate acquisitions.</p>
+     * <p>Only samples after the latest trusted boundary and previous acquisition snapshot are returned. At least eight
+     * fresh samples are required, so repeated damage cannot count overlapping approaches as independent evidence.</p>
      */
     public synchronized Optional<AcquisitionSnapshot> takeAcquisitionSnapshot()
     {
-        if (trustedBoundaryPending ||
-            size < MINIMUM_ACQUISITION_SAMPLE_COUNT ||
-            sequence == lastAcquisitionSequence ||
-            !hasLastPosition ||
-            !hasLastRotation) return Optional.empty();
+        return takeAcquisitionSnapshot(System.nanoTime());
+    }
+
+    /**
+     * Takes an acquisition snapshot using a caller-supplied monotonic timestamp.
+     *
+     * <p>The overload keeps lifecycle suppression deterministic for packet/event code and tests while the no-argument
+     * method remains convenient for callers which do not already have a timestamp.</p>
+     */
+    public synchronized Optional<AcquisitionSnapshot> takeAcquisitionSnapshot(final long currentTimestamp)
+    {
+        if (trustedBoundaryPending || currentTimestamp < targetingSuppressedUntil || size < MINIMUM_ACQUISITION_SAMPLE_COUNT || sequence == lastAcquisitionSequence || !hasLastPosition || !hasLastRotation) return Optional.empty();
 
         int segmentStart = 0;
         for (int logicalIndex = size - 1; logicalIndex >= 0; logicalIndex--) {
@@ -276,7 +174,11 @@ public final class TargetingData {
 
         final int segmentSize = size - segmentStart;
         if (segmentSize < MINIMUM_ACQUISITION_SAMPLE_COUNT) return Optional.empty();
-        final int sampleCount = Math.min(segmentSize, ACQUISITION_SAMPLE_COUNT);
+        // Profiles are evidence across independent acquisitions. Reusing all but one packet from the previous hit
+        // would count the same slowdown repeatedly, even when the only new packet repeats the final rotation.
+        final int sampleCount = (int) Math.min(Math.min(segmentSize, ACQUISITION_SAMPLE_COUNT),
+                                               sequence - lastAcquisitionSequence);
+        if (sampleCount < MINIMUM_ACQUISITION_SAMPLE_COUNT) return Optional.empty();
         final int firstLogicalIndex = size - sampleCount;
         final double[] xSnapshot = new double[sampleCount];
         final double[] ySnapshot = new double[sampleCount];
@@ -295,12 +197,7 @@ public final class TargetingData {
         }
 
         lastAcquisitionSequence = sequence;
-        return Optional.of(new AcquisitionSnapshot(xSnapshot,
-                                                   ySnapshot,
-                                                   zSnapshot,
-                                                   yawSnapshot,
-                                                   pitchSnapshot,
-                                                   sequenceSnapshot));
+        return Optional.of(new AcquisitionSnapshot(xSnapshot, ySnapshot, zSnapshot, yawSnapshot, pitchSnapshot, sequenceSnapshot));
     }
 
     /**
@@ -311,8 +208,7 @@ public final class TargetingData {
      */
     public synchronized Optional<Snapshot> takeSnapshot()
     {
-        if (size < TargetingAnalysis.MINIMUM_SAMPLE_COUNT ||
-            sequence - lastAnalyzedSequence < MINIMUM_NEW_SAMPLES) return Optional.empty();
+        if (size < TargetingAnalysis.MINIMUM_SAMPLE_COUNT || sequence - lastAnalyzedSequence < MINIMUM_NEW_SAMPLES) return Optional.empty();
 
         final int sampleCount = Math.min(size, ANALYSIS_SAMPLE_COUNT);
         final int firstLogicalIndex = size - sampleCount;
@@ -329,11 +225,7 @@ public final class TargetingData {
         final int firstPhysicalIndex = physicalIndex(firstLogicalIndex);
         final int lastPhysicalIndex = physicalIndex(size - 1);
         lastAnalyzedSequence = sequence;
-        return Optional.of(new Snapshot(yawSnapshot,
-                                        pitchSnapshot,
-                                        trustedBreakSnapshot,
-                                        sampleSequence[firstPhysicalIndex],
-                                        sampleSequence[lastPhysicalIndex]));
+        return Optional.of(new Snapshot(yawSnapshot, pitchSnapshot, trustedBreakSnapshot, sampleSequence[firstPhysicalIndex], sampleSequence[lastPhysicalIndex]));
     }
 
     /**
@@ -369,7 +261,6 @@ public final class TargetingData {
         writeIndex = 0;
         size = 0;
         lastAnalyzedSequence = sequence;
-        lastInteractionSequence = sequence;
         lastAcquisitionSequence = sequence;
         lastX = 0D;
         lastY = 0D;
@@ -379,8 +270,8 @@ public final class TargetingData {
         hasLastPosition = false;
         hasLastRotation = false;
         trustedBoundaryPending = false;
+        targetingSuppressedUntil = 0L;
         Arrays.fill(trustedBreakBefore, false);
-        clearPendingInteraction();
     }
 
     /**
@@ -394,6 +285,32 @@ public final class TargetingData {
     }
 
     /**
+     * Returns whether targeting analysis is temporarily suppressed after a server-controlled context change.
+     */
+    public synchronized boolean isTargetingSuppressed(final long currentTimestamp)
+    {
+        return currentTimestamp < targetingSuppressedUntil;
+    }
+
+    /**
+     * Finds the accepted movement rotation closest to the supplied timestamp.
+     */
+    public synchronized Optional<RotationSample> nearestRotation(final long currentTimestamp, final long maximumDifferenceNanos)
+    {
+        RotationSample nearest = null;
+        long nearestDifference = Long.MAX_VALUE;
+        for (int logicalIndex = size - 1; logicalIndex >= 0; logicalIndex--) {
+            final int physicalIndex = physicalIndex(logicalIndex);
+            final long difference = Math.abs(timestamp[physicalIndex] - currentTimestamp);
+            if (difference < nearestDifference) {
+                nearestDifference = difference;
+                nearest = new RotationSample(yaw[physicalIndex], pitch[physicalIndex], timestamp[physicalIndex]);
+            }
+        }
+        return nearest == null || nearestDifference > maximumDifferenceNanos ? Optional.empty() : Optional.of(nearest);
+    }
+
+    /**
      * @return the current number of retained movement-packet rotation samples
      */
     public synchronized int size()
@@ -401,18 +318,10 @@ public final class TargetingData {
         return size;
     }
 
-    private RotationUpdate addAcceptedMovement(final double currentX,
-                                               final double currentY,
-                                               final double currentZ,
-                                               final double currentYaw,
-                                               final double currentPitch,
-                                               final long currentTimestamp)
+    private RotationUpdate addAcceptedMovement(final double currentX, final double currentY, final double currentZ, final double currentYaw, final double currentPitch, final long currentTimestamp)
     {
         final boolean trustedBoundary = trustedBoundaryPending && size > 0;
         trustedBoundaryPending = false;
-        final SnapBackSample snapBackSample = trustedBoundary
-                                              ? null
-                                              : completeSnapBack(currentYaw, currentPitch, currentTimestamp);
 
         sequence++;
         x[writeIndex] = currentX;
@@ -422,7 +331,7 @@ public final class TargetingData {
         pitch[writeIndex] = currentPitch;
         timestamp[writeIndex] = currentTimestamp;
         sampleSequence[writeIndex] = sequence;
-        trustedBreakBefore[writeIndex] = trustedBoundary && size > 0;
+        trustedBreakBefore[writeIndex] = trustedBoundary;
         writeIndex = (writeIndex + 1) % BUFFER_CAPACITY;
         if (size < BUFFER_CAPACITY) size++;
 
@@ -433,120 +342,7 @@ public final class TargetingData {
         lastPitch = currentPitch;
         hasLastPosition = true;
         hasLastRotation = true;
-        return new RotationUpdate(true, snapBackSample);
-    }
-
-    private void prepareSnapBack(final TargetingContext context, final long currentTimestamp)
-    {
-        final int interactionIndex = physicalIndex(size - 1);
-        int bestBeforeIndex = physicalIndex(size - 2);
-        double bestDistanceScore = -1D;
-        final int maximumLookback = Math.min(INTERACTION_SAMPLE_COUNT - 1, size - 1);
-
-        for (int lookback = 1; lookback <= maximumLookback; lookback++) {
-            final int crossedSampleIndex = physicalIndex(size - lookback);
-            if (trustedBreakBefore[crossedSampleIndex]) break;
-
-            final int candidateIndex = physicalIndex(size - 1 - lookback);
-            final double yawDistance = Math.abs(TargetingAnalysis.signedYawDelta(yaw[interactionIndex], yaw[candidateIndex]));
-            final double pitchDistance = Math.abs(pitch[interactionIndex] - pitch[candidateIndex]);
-            final double distanceScore = yawDistance / MINIMUM_YAW_SNAP + pitchDistance / MINIMUM_PITCH_SNAP;
-            if (distanceScore > bestDistanceScore) {
-                bestDistanceScore = distanceScore;
-                bestBeforeIndex = candidateIndex;
-            }
-        }
-
-        pendingContext = context;
-        pendingBeforeYaw = yaw[bestBeforeIndex];
-        pendingBeforePitch = pitch[bestBeforeIndex];
-        pendingInteractionYaw = yaw[interactionIndex];
-        pendingInteractionPitch = pitch[interactionIndex];
-        pendingLastYaw = pendingInteractionYaw;
-        pendingLastPitch = pendingInteractionPitch;
-        pendingYawPathLength = 0D;
-        pendingPitchPathLength = 0D;
-        pendingInteractionTimestamp = currentTimestamp;
-        pendingFollowingPackets = 0;
-        pendingInteraction = true;
-    }
-
-    private SnapBackSample completeSnapBack(final double currentYaw,
-                                            final double currentPitch,
-                                            final long currentTimestamp)
-    {
-        if (!pendingInteraction) return null;
-        pendingFollowingPackets++;
-
-        pendingYawPathLength += Math.abs(TargetingAnalysis.signedYawDelta(currentYaw, pendingLastYaw));
-        pendingPitchPathLength += Math.abs(currentPitch - pendingLastPitch);
-        pendingLastYaw = currentYaw;
-        pendingLastPitch = currentPitch;
-
-        final double yawSnap = TargetingAnalysis.signedYawDelta(pendingInteractionYaw, pendingBeforeYaw);
-        final double pitchSnap = pendingInteractionPitch - pendingBeforePitch;
-        final double yawReturn = TargetingAnalysis.signedYawDelta(currentYaw, pendingInteractionYaw);
-        final double pitchReturn = currentPitch - pendingInteractionPitch;
-        final double yawReturnError = Math.abs(TargetingAnalysis.signedYawDelta(currentYaw, pendingBeforeYaw));
-        final double pitchReturnError = Math.abs(currentPitch - pendingBeforePitch);
-
-        final boolean suspiciousYaw = isSnapBackAxis(yawSnap,
-                                                     yawReturn,
-                                                     yawReturnError,
-                                                     pendingYawPathLength,
-                                                     MINIMUM_YAW_SNAP);
-        final boolean suspiciousPitch = isSnapBackAxis(pitchSnap,
-                                                       pitchReturn,
-                                                       pitchReturnError,
-                                                       pendingPitchPathLength,
-                                                       MINIMUM_PITCH_SNAP);
-        final int suspiciousAxes = (suspiciousYaw ? 1 : 0) + (suspiciousPitch ? 1 : 0);
-        if (suspiciousAxes == 0) return null;
-
-        final SnapBackSample sample = new SnapBackSample(pendingContext,
-                                                         suspiciousAxes,
-                                                         yawSnap,
-                                                         pitchSnap,
-                                                         yawReturn,
-                                                         pitchReturn,
-                                                         yawReturnError,
-                                                         pitchReturnError,
-                                                         Math.max(0L, currentTimestamp - pendingInteractionTimestamp),
-                                                         pendingFollowingPackets);
-        clearPendingInteraction();
-        return sample;
-    }
-
-    private boolean pendingPathIsTooIndirect()
-    {
-        final double yawSnap = Math.abs(TargetingAnalysis.signedYawDelta(pendingInteractionYaw, pendingBeforeYaw));
-        final double pitchSnap = Math.abs(pendingInteractionPitch - pendingBeforePitch);
-        final boolean yawIndirect = yawSnap >= MINIMUM_YAW_SNAP && pendingYawPathLength > yawSnap / MINIMUM_RETURN_PATH_EFFICIENCY;
-        final boolean pitchIndirect = pitchSnap >= MINIMUM_PITCH_SNAP && pendingPitchPathLength > pitchSnap / MINIMUM_RETURN_PATH_EFFICIENCY;
-        return (yawIndirect && pitchIndirect) ||
-               (yawIndirect && pitchSnap < MINIMUM_PITCH_SNAP) ||
-               (pitchIndirect && yawSnap < MINIMUM_YAW_SNAP);
-    }
-
-    private static boolean isSnapBackAxis(final double snap,
-                                          final double returned,
-                                          final double returnError,
-                                          final double pathLength,
-                                          final double minimumSnap)
-    {
-        final double absoluteSnap = Math.abs(snap);
-        if (absoluteSnap < minimumSnap || snap * returned >= 0D) return false;
-
-        final double absoluteReturn = Math.abs(returned);
-        final double totalOpposingMovement = absoluteSnap + absoluteReturn;
-        final double cancellation = totalOpposingMovement == 0D
-                                    ? 0D
-                                    : 1D - returnError / totalOpposingMovement;
-        final double pathEfficiency = pathLength == 0D ? 0D : absoluteReturn / pathLength;
-        final double returnRatio = absoluteReturn / absoluteSnap;
-        return returnRatio >= MINIMUM_RETURN_RATIO &&
-               cancellation >= MINIMUM_RETURN_CANCELLATION &&
-               pathEfficiency >= MINIMUM_RETURN_PATH_EFFICIENCY;
+        return new RotationUpdate(true);
     }
 
     private int physicalIndex(final int logicalIndex)
@@ -555,43 +351,23 @@ public final class TargetingData {
         return (oldestIndex + logicalIndex) % BUFFER_CAPACITY;
     }
 
-    private void clearPendingInteraction()
-    {
-        pendingInteraction = false;
-        pendingContext = null;
-        pendingBeforeYaw = 0D;
-        pendingBeforePitch = 0D;
-        pendingInteractionYaw = 0D;
-        pendingInteractionPitch = 0D;
-        pendingLastYaw = 0D;
-        pendingLastPitch = 0D;
-        pendingYawPathLength = 0D;
-        pendingPitchPathLength = 0D;
-        pendingInteractionTimestamp = 0L;
-        pendingFollowingPackets = 0;
-    }
-
     /**
      * Result of adding one movement-packet rotation sample.
      */
-    public record RotationUpdate(boolean accepted, SnapBackSample snapBackSample) {
-    }
+    public record RotationUpdate(boolean accepted)
+    {}
+
+    /**
+     * One accepted movement rotation and its monotonic packet timestamp.
+     */
+    public record RotationSample(double yaw, double pitch, long timestamp)
+    {}
 
     /**
      * Immutable packet-ordered snapshot used by the shared statistical analysis.
      */
-    public record Snapshot(double[] yaw,
-                           double[] pitch,
-                           boolean[] trustedBreakBefore,
-                           long firstSequence,
-                           long lastSequence) {
-        public Snapshot(final double[] yaw,
-                        final double[] pitch,
-                        final long firstSequence,
-                        final long lastSequence)
-        {
-            this(yaw, pitch, new boolean[yaw.length], firstSequence, lastSequence);
-        }
+    public record Snapshot(double[] yaw, double[] pitch, boolean[] trustedBreakBefore, long firstSequence, long lastSequence)
+    {
 
         public Snapshot
         {
@@ -623,86 +399,10 @@ public final class TargetingData {
     }
 
     /**
-     * Immutable recent rotation history ending at an attack or scaffold placement.
-     */
-    public record InteractionSnapshot(TargetingContext context,
-                                      double[] yaw,
-                                      double[] pitch,
-                                      long[] timestamp,
-                                      long[] sequence,
-                                      boolean[] trustedBreakBefore,
-                                      long interactionTimestamp) {
-        public InteractionSnapshot(final TargetingContext context,
-                                   final double[] yaw,
-                                   final double[] pitch,
-                                   final long[] timestamp,
-                                   final long[] sequence,
-                                   final long interactionTimestamp)
-        {
-            this(context,
-                 yaw,
-                 pitch,
-                 timestamp,
-                 sequence,
-                 new boolean[yaw.length],
-                 interactionTimestamp);
-        }
-
-        public InteractionSnapshot
-        {
-            yaw = Arrays.copyOf(yaw, yaw.length);
-            pitch = Arrays.copyOf(pitch, pitch.length);
-            timestamp = Arrays.copyOf(timestamp, timestamp.length);
-            sequence = Arrays.copyOf(sequence, sequence.length);
-            trustedBreakBefore = Arrays.copyOf(trustedBreakBefore, trustedBreakBefore.length);
-            if (yaw.length != pitch.length ||
-                yaw.length != timestamp.length ||
-                yaw.length != sequence.length ||
-                yaw.length != trustedBreakBefore.length) {
-                throw new IllegalArgumentException("interaction snapshot arrays must have the same length");
-            }
-        }
-
-        @Override
-        public double[] yaw()
-        {
-            return Arrays.copyOf(yaw, yaw.length);
-        }
-
-        @Override
-        public double[] pitch()
-        {
-            return Arrays.copyOf(pitch, pitch.length);
-        }
-
-        @Override
-        public long[] timestamp()
-        {
-            return Arrays.copyOf(timestamp, timestamp.length);
-        }
-
-        @Override
-        public long[] sequence()
-        {
-            return Arrays.copyOf(sequence, sequence.length);
-        }
-
-        @Override
-        public boolean[] trustedBreakBefore()
-        {
-            return Arrays.copyOf(trustedBreakBefore, trustedBreakBefore.length);
-        }
-    }
-
-    /**
      * Immutable packet-order position and rotation history for one successful-hit acquisition.
      */
-    public record AcquisitionSnapshot(double[] x,
-                                      double[] y,
-                                      double[] z,
-                                      double[] yaw,
-                                      double[] pitch,
-                                      long[] sequence) {
+    public record AcquisitionSnapshot(double[] x, double[] y, double[] z, double[] yaw, double[] pitch, long[] sequence)
+    {
         public AcquisitionSnapshot
         {
             x = Arrays.copyOf(x, x.length);
@@ -711,11 +411,7 @@ public final class TargetingData {
             yaw = Arrays.copyOf(yaw, yaw.length);
             pitch = Arrays.copyOf(pitch, pitch.length);
             sequence = Arrays.copyOf(sequence, sequence.length);
-            if (x.length != y.length ||
-                x.length != z.length ||
-                x.length != yaw.length ||
-                x.length != pitch.length ||
-                x.length != sequence.length) {
+            if (x.length != y.length || x.length != z.length || x.length != yaw.length || x.length != pitch.length || x.length != sequence.length) {
                 throw new IllegalArgumentException("acquisition snapshot arrays must have the same length");
             }
         }
@@ -757,18 +453,4 @@ public final class TargetingData {
         }
     }
 
-    /**
-     * Metrics for a completed interaction rotation which returned to its pre-interaction angle.
-     */
-    public record SnapBackSample(TargetingContext context,
-                                 int suspiciousAxes,
-                                 double yawSnap,
-                                 double pitchSnap,
-                                 double yawReturn,
-                                 double pitchReturn,
-                                 double yawReturnError,
-                                 double pitchReturnError,
-                                 long delayNanos,
-                                 int followingPackets) {
-    }
 }

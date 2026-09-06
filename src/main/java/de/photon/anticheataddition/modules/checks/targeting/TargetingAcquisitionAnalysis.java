@@ -1,8 +1,12 @@
 package de.photon.anticheataddition.modules.checks.targeting;
 
+import de.photon.anticheataddition.modules.checks.targeting.TargetingGeometry.TargetPoint;
 import de.photon.anticheataddition.user.data.subdata.TargetingData;
-
+import de.photon.anticheataddition.util.mathematics.MathUtil;
 import java.util.Arrays;
+
+import static de.photon.anticheataddition.modules.checks.targeting.TargetingGeometry.*;
+import static de.photon.anticheataddition.util.mathematics.DataUtil.*;
 
 /**
  * Target-relative analysis for gradual aim-assist slowdowns.
@@ -30,7 +34,6 @@ public final class TargetingAcquisitionAnalysis
     private static final double MINIMUM_ACTIVATION_DROP = 0.20D;
     private static final double MINIMUM_ACTIVATION_ERROR = 0.75D;
     private static final double MAXIMUM_ACTIVATION_ERROR = 8D;
-    private static final double RAY_EPSILON = 1E-9D;
 
     private TargetingAcquisitionAnalysis()
     {
@@ -64,13 +67,14 @@ public final class TargetingAcquisitionAnalysis
             if (!allFinite(x[i], y[i], z[i], yaw[i], pitch[i])) return Result.invalid(InvalidReason.INVALID_INPUT);
         }
 
-        final TargetPoint targetPoint = targetPointForFinalLook(x[length - 1],
-                                                                y[length - 1] + eyeHeight,
-                                                                z[length - 1],
-                                                                yaw[length - 1],
-                                                                pitch[length - 1],
-                                                                targetBox);
-        if (targetPoint == null) return Result.invalid(InvalidReason.FINAL_DIRECTION_TOO_FAR);
+        final TargetPoint targetPoint = closestPointForLook(x[length - 1], y[length - 1] + eyeHeight,
+                                                            z[length - 1], yaw[length - 1], pitch[length - 1],
+                                                            targetBox);
+        if (targetPoint == null || angularErrorToPoint(x[length - 1], y[length - 1] + eyeHeight,
+                                                       z[length - 1], yaw[length - 1], pitch[length - 1],
+                                                       targetPoint) > MAXIMUM_FINAL_ERROR) {
+            return Result.invalid(InvalidReason.FINAL_DIRECTION_TOO_FAR);
+        }
 
         final double[] error = new double[length];
         for (int i = 0; i < length; i++) {
@@ -86,6 +90,10 @@ public final class TargetingAcquisitionAnalysis
         for (int start = 0; start <= length - MINIMUM_SAMPLE_COUNT; start++) {
             final double initialError = error[start];
             if (initialError < MINIMUM_INITIAL_ERROR || initialError > MAXIMUM_INITIAL_ERROR) continue;
+
+            // Movement within the target hitbox is tracking, not a new acquisition.
+            if (angularErrorToBox(x[start], y[start] + eyeHeight, z[start], yaw[start], pitch[start], targetBox)
+                < MINIMUM_INITIAL_ERROR) continue;
 
             final Candidate candidate = evaluateCandidate(start, yaw, pitch, error, targetBox, x, y, z);
             if (candidate == null) continue;
@@ -114,41 +122,13 @@ public final class TargetingAcquisitionAnalysis
         final double totalProgress = initialError - finalError;
         if (totalProgress < MINIMUM_TOTAL_PROGRESS) return null;
 
-        final double[] speed = new double[intervalCount];
-        final double[] precedingError = new double[intervalCount];
-        final double[] gain = new double[intervalCount];
-        final double[] errorRatio = new double[intervalCount];
-        int movingCount = 0;
-        int towardCount = 0;
-        int gainCount = 0;
-        double absoluteErrorTravel = 0D;
-
-        for (int interval = 0; interval < intervalCount; interval++) {
-            final int previous = start + interval;
-            final int current = previous + 1;
-            final double currentSpeed = angularRotationDistance(yaw[previous],
-                                                                pitch[previous],
-                                                                yaw[current],
-                                                                pitch[current]);
-            final double progress = error[previous] - error[current];
-            speed[interval] = currentSpeed;
-            precedingError[interval] = error[previous];
-            errorRatio[interval] = Math.clamp(error[previous] / initialError, 0D, 1D);
-            absoluteErrorTravel += Math.abs(progress);
-
-            if (currentSpeed >= MINIMUM_ROTATION_SPEED) {
-                movingCount++;
-                if (progress > Math.max(0.01D, currentSpeed * 0.08D)) towardCount++;
-            }
-            if (progress > 0.01D && error[previous] > MAXIMUM_FINAL_ERROR) {
-                gain[gainCount++] = progress / error[previous];
-            }
-        }
-
-        if (movingCount < MINIMUM_SAMPLE_COUNT - 2) return null;
-        final double towardRatio = towardCount / (double) movingCount;
-        final double approachEfficiency = absoluteErrorTravel == 0D ? 0D : totalProgress / absoluteErrorTravel;
-        if (towardRatio < MINIMUM_TOWARD_RATIO || approachEfficiency < MINIMUM_APPROACH_EFFICIENCY) return null;
+        final Approach approach = measureApproach(start, yaw, pitch, error);
+        if (approach == null) return null;
+        final double[] speed = approach.speed();
+        final double[] precedingError = approach.precedingError();
+        final double[] errorRatio = approach.errorRatio();
+        final double towardRatio = approach.towardRatio();
+        final double approachEfficiency = approach.efficiency();
 
         final double[] farSpeed = selectSpeeds(speed, errorRatio, MINIMUM_FAR_RATIO, 1D);
         final double[] nearSpeed = selectSpeeds(speed, errorRatio, 0D, MAXIMUM_NEAR_RATIO);
@@ -168,8 +148,8 @@ public final class TargetingAcquisitionAnalysis
         fillMissingBins(normalizedProfile);
 
         final Activation activation = findActivation(speed, precedingError);
-        final double[] usedGain = Arrays.copyOf(gain, gainCount);
-        final double meanGain = mean(usedGain);
+        final double[] usedGain = approach.gain();
+        final double meanGain = usedGain.length == 0 ? Double.NaN : average(usedGain);
         final double gainVariation = coefficientOfVariation(usedGain);
         final double speedErrorCorrelation = correlation(speed, precedingError);
         final int nonIncreasingTransitions = nonIncreasingTransitions(normalizedProfile);
@@ -209,199 +189,62 @@ public final class TargetingAcquisitionAnalysis
         return new Candidate(profile, quality);
     }
 
-    private static TargetPoint targetPointForFinalLook(final double eyeX,
-                                                       final double eyeY,
-                                                       final double eyeZ,
-                                                       final double yaw,
-                                                       final double pitch,
-                                                       final TargetBox targetBox)
+    /** Measures motion and rejects approaches without enough sustained progress before any slowdown scoring. */
+    private static Approach measureApproach(final int start, final double[] yaw, final double[] pitch,
+                                            final double[] error)
     {
-        final Direction direction = direction(yaw, pitch);
-        final double intersectionDistance = rayIntersectionDistance(eyeX,
-                                                                    eyeY,
-                                                                    eyeZ,
-                                                                    direction.x(),
-                                                                    direction.y(),
-                                                                    direction.z(),
-                                                                    targetBox);
-        if (Double.isFinite(intersectionDistance)) {
-            return new TargetPoint(eyeX + direction.x() * intersectionDistance,
-                                   eyeY + direction.y() * intersectionDistance,
-                                   eyeZ + direction.z() * intersectionDistance);
-        }
+        final int intervalCount = error.length - 1 - start;
+        final double initialError = error[start];
+        final double totalProgress = initialError - error[error.length - 1];
+        final double[] speed = new double[intervalCount];
+        final double[] precedingError = new double[intervalCount];
+        final double[] gain = new double[intervalCount];
+        final double[] errorRatio = new double[intervalCount];
+        int movingCount = 0;
+        int towardCount = 0;
+        int gainCount = 0;
+        double absoluteErrorTravel = 0D;
 
-        double minimumAngle = 180D;
-        TargetPoint closest = null;
-        for (int xIndex = 0; xIndex < 3; xIndex++) {
-            final double pointX = targetBox.coordinateX(xIndex);
-            for (int yIndex = 0; yIndex < 3; yIndex++) {
-                final double pointY = targetBox.coordinateY(yIndex);
-                for (int zIndex = 0; zIndex < 3; zIndex++) {
-                    final double pointZ = targetBox.coordinateZ(zIndex);
-                    final TargetPoint candidate = new TargetPoint(pointX, pointY, pointZ);
-                    final double angle = angularErrorToPoint(eyeX, eyeY, eyeZ, yaw, pitch, candidate);
-                    if (angle < minimumAngle) {
-                        minimumAngle = angle;
-                        closest = candidate;
-                    }
-                }
+        for (int interval = 0; interval < intervalCount; interval++) {
+            final int previous = start + interval;
+            final int current = previous + 1;
+            final double currentSpeed = MathUtil.getAngleBetweenRotations(yaw[previous], pitch[previous],
+                                                                          yaw[current], pitch[current]);
+            final double progress = error[previous] - error[current];
+            speed[interval] = currentSpeed;
+            precedingError[interval] = error[previous];
+            errorRatio[interval] = Math.clamp(error[previous] / initialError, 0D, 1D);
+            absoluteErrorTravel += Math.abs(progress);
+
+            if (currentSpeed >= MINIMUM_ROTATION_SPEED) {
+                movingCount++;
+                if (progress > Math.max(0.01D, currentSpeed * 0.08D)) towardCount++;
+            }
+            if (progress > 0.01D && error[previous] > MAXIMUM_FINAL_ERROR) {
+                gain[gainCount++] = progress / error[previous];
             }
         }
-        return minimumAngle <= MAXIMUM_FINAL_ERROR ? closest : null;
+
+        if (movingCount < MINIMUM_SAMPLE_COUNT - 2) return null;
+        final double towardRatio = towardCount / (double) movingCount;
+        final double approachEfficiency = absoluteErrorTravel == 0D ? 0D : totalProgress / absoluteErrorTravel;
+        if (towardRatio < MINIMUM_TOWARD_RATIO || approachEfficiency < MINIMUM_APPROACH_EFFICIENCY) return null;
+
+        return new Approach(speed, precedingError, errorRatio, Arrays.copyOf(gain, gainCount),
+                            towardRatio, approachEfficiency);
     }
 
-    private static double angularErrorToPoint(final double eyeX,
-                                              final double eyeY,
-                                              final double eyeZ,
-                                              final double yaw,
-                                              final double pitch,
-                                              final TargetPoint targetPoint)
-    {
-        final Direction direction = direction(yaw, pitch);
-        final double offsetX = targetPoint.x() - eyeX;
-        final double offsetY = targetPoint.y() - eyeY;
-        final double offsetZ = targetPoint.z() - eyeZ;
-        final double length = Math.sqrt(offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ);
-        if (length <= RAY_EPSILON) return 0D;
-        final double dot = Math.clamp((direction.x() * offsetX +
-                                       direction.y() * offsetY +
-                                       direction.z() * offsetZ) / length,
-                                      -1D,
-                                      1D);
-        return Math.toDegrees(Math.acos(dot));
-    }
-
-    private static Direction direction(final double yaw, final double pitch)
-    {
-        final double yawRadians = Math.toRadians(yaw);
-        final double pitchRadians = Math.toRadians(pitch);
-        final double cosPitch = Math.cos(pitchRadians);
-        return new Direction(-cosPitch * Math.sin(yawRadians),
-                             -Math.sin(pitchRadians),
-                             cosPitch * Math.cos(yawRadians));
-    }
+    private record Approach(double[] speed, double[] precedingError, double[] errorRatio, double[] gain,
+                            double towardRatio, double efficiency) {}
 
     /**
      * Returns the smallest angular error between the supplied look ray and a conservative axis-aligned target box.
      */
-    public static double angularErrorToBox(final double eyeX,
-                                           final double eyeY,
-                                           final double eyeZ,
-                                           final double yaw,
-                                           final double pitch,
-                                           final TargetBox targetBox)
+    public static double angularErrorToBox(final double eyeX, final double eyeY, final double eyeZ,
+                                           final double yaw, final double pitch, final TargetBox targetBox)
     {
-        final Direction direction = direction(yaw, pitch);
-        final double directionX = direction.x();
-        final double directionY = direction.y();
-        final double directionZ = direction.z();
-
-        if (rayIntersectsBox(eyeX,
-                             eyeY,
-                             eyeZ,
-                             directionX,
-                             directionY,
-                             directionZ,
-                             targetBox)) return 0D;
-
-        double minimumAngle = 180D;
-        for (int xIndex = 0; xIndex < 3; xIndex++) {
-            final double pointX = targetBox.coordinateX(xIndex);
-            for (int yIndex = 0; yIndex < 3; yIndex++) {
-                final double pointY = targetBox.coordinateY(yIndex);
-                for (int zIndex = 0; zIndex < 3; zIndex++) {
-                    final double pointZ = targetBox.coordinateZ(zIndex);
-                    final double offsetX = pointX - eyeX;
-                    final double offsetY = pointY - eyeY;
-                    final double offsetZ = pointZ - eyeZ;
-                    final double length = Math.sqrt(offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ);
-                    if (length <= RAY_EPSILON) return 0D;
-
-                    final double dot = Math.clamp((directionX * offsetX +
-                                                   directionY * offsetY +
-                                                   directionZ * offsetZ) / length,
-                                                  -1D,
-                                                  1D);
-                    minimumAngle = Math.min(minimumAngle, Math.toDegrees(Math.acos(dot)));
-                }
-            }
-        }
-        return minimumAngle;
-    }
-
-    private static boolean rayIntersectsBox(final double originX,
-                                            final double originY,
-                                            final double originZ,
-                                            final double directionX,
-                                            final double directionY,
-                                            final double directionZ,
-                                            final TargetBox box)
-    {
-        return Double.isFinite(rayIntersectionDistance(originX,
-                                                       originY,
-                                                       originZ,
-                                                       directionX,
-                                                       directionY,
-                                                       directionZ,
-                                                       box));
-    }
-
-    private static double rayIntersectionDistance(final double originX,
-                                                  final double originY,
-                                                  final double originZ,
-                                                  final double directionX,
-                                                  final double directionY,
-                                                  final double directionZ,
-                                                  final TargetBox box)
-    {
-        double minimumT = 0D;
-        double maximumT = Double.POSITIVE_INFINITY;
-
-        final double[] origin = {originX, originY, originZ};
-        final double[] direction = {directionX, directionY, directionZ};
-        final double[] minimum = {box.minimumX(), box.minimumY(), box.minimumZ()};
-        final double[] maximum = {box.maximumX(), box.maximumY(), box.maximumZ()};
-
-        for (int axis = 0; axis < 3; axis++) {
-            if (Math.abs(direction[axis]) <= RAY_EPSILON) {
-                if (origin[axis] < minimum[axis] || origin[axis] > maximum[axis]) {
-                    return Double.POSITIVE_INFINITY;
-                }
-                continue;
-            }
-
-            double first = (minimum[axis] - origin[axis]) / direction[axis];
-            double second = (maximum[axis] - origin[axis]) / direction[axis];
-            if (first > second) {
-                final double temporary = first;
-                first = second;
-                second = temporary;
-            }
-            minimumT = Math.max(minimumT, first);
-            maximumT = Math.min(maximumT, second);
-            if (maximumT < minimumT) return Double.POSITIVE_INFINITY;
-        }
-        return maximumT >= 0D ? minimumT : Double.POSITIVE_INFINITY;
-    }
-
-
-    private static double angularRotationDistance(final double firstYaw,
-                                                  final double firstPitch,
-                                                  final double secondYaw,
-                                                  final double secondPitch)
-    {
-        final double firstYawRadians = Math.toRadians(firstYaw);
-        final double firstPitchRadians = Math.toRadians(firstPitch);
-        final double secondYawRadians = Math.toRadians(secondYaw);
-        final double secondPitchRadians = Math.toRadians(secondPitch);
-
-        final double firstCosPitch = Math.cos(firstPitchRadians);
-        final double secondCosPitch = Math.cos(secondPitchRadians);
-        final double dot = Math.clamp(firstCosPitch * secondCosPitch * Math.cos(secondYawRadians - firstYawRadians) +
-                                      Math.sin(firstPitchRadians) * Math.sin(secondPitchRadians),
-                                      -1D,
-                                      1D);
-        return Math.toDegrees(Math.acos(dot));
+        if (targetBox == null || !allFinite(eyeX, eyeY, eyeZ, yaw, pitch)) return Double.NaN;
+        return TargetingGeometry.angularErrorToBox(eyeX, eyeY, eyeZ, yaw, pitch, targetBox);
     }
 
     private static double[] selectSpeeds(final double[] speed,
@@ -493,66 +336,6 @@ public final class TargetingAcquisitionAnalysis
         return count;
     }
 
-    private static double distanceToBoxCenter(final double x,
-                                              final double y,
-                                              final double z,
-                                              final TargetBox targetBox)
-    {
-        final double deltaX = targetBox.centerX() - x;
-        final double deltaY = targetBox.centerY() - y;
-        final double deltaZ = targetBox.centerZ() - z;
-        return Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
-    }
-
-    private static double median(final double[] values)
-    {
-        if (values.length == 0) return Double.NaN;
-        final double[] sorted = Arrays.copyOf(values, values.length);
-        Arrays.sort(sorted);
-        final int middle = sorted.length / 2;
-        return (sorted.length & 1) == 0 ? (sorted[middle - 1] + sorted[middle]) * 0.5D : sorted[middle];
-    }
-
-    private static double mean(final double[] values)
-    {
-        if (values.length == 0) return Double.NaN;
-        double sum = 0D;
-        for (double value : values) sum += value;
-        return sum / values.length;
-    }
-
-    private static double coefficientOfVariation(final double[] values)
-    {
-        if (values.length < 2) return Double.NaN;
-        final double mean = mean(values);
-        if (!Double.isFinite(mean) || Math.abs(mean) <= 1E-9D) return Double.NaN;
-        double squareSum = 0D;
-        for (double value : values) {
-            final double difference = value - mean;
-            squareSum += difference * difference;
-        }
-        return Math.sqrt(squareSum / (values.length - 1D)) / Math.abs(mean);
-    }
-
-    private static double correlation(final double[] first, final double[] second)
-    {
-        if (first.length != second.length || first.length < 2) return 0D;
-        final double firstMean = mean(first);
-        final double secondMean = mean(second);
-        double covariance = 0D;
-        double firstSquareSum = 0D;
-        double secondSquareSum = 0D;
-        for (int i = 0; i < first.length; i++) {
-            final double firstDifference = first[i] - firstMean;
-            final double secondDifference = second[i] - secondMean;
-            covariance += firstDifference * secondDifference;
-            firstSquareSum += firstDifference * firstDifference;
-            secondSquareSum += secondDifference * secondDifference;
-        }
-        final double denominator = Math.sqrt(firstSquareSum * secondSquareSum);
-        return denominator <= 1E-12D ? 0D : covariance / denominator;
-    }
-
     private static boolean allFinite(final double... values)
     {
         for (double value : values) {
@@ -594,30 +377,6 @@ public final class TargetingAcquisitionAnalysis
             return (minimumZ + maximumZ) * 0.5D;
         }
 
-        private double coordinateX(final int index)
-        {
-            return coordinate(minimumX, maximumX, index);
-        }
-
-        private double coordinateY(final int index)
-        {
-            return coordinate(minimumY, maximumY, index);
-        }
-
-        private double coordinateZ(final int index)
-        {
-            return coordinate(minimumZ, maximumZ, index);
-        }
-
-        private static double coordinate(final double minimum, final double maximum, final int index)
-        {
-            return switch (index) {
-                case 0 -> minimum;
-                case 1 -> (minimum + maximum) * 0.5D;
-                case 2 -> maximum;
-                default -> throw new IllegalArgumentException("index must be between 0 and 2");
-            };
-        }
     }
 
     /**
@@ -674,14 +433,6 @@ public final class TargetingAcquisitionAnalysis
         NOT_ENOUGH_SAMPLES,
         FINAL_DIRECTION_TOO_FAR,
         NO_RELIABLE_APPROACH
-    }
-
-    private record TargetPoint(double x, double y, double z)
-    {
-    }
-
-    private record Direction(double x, double y, double z)
-    {
     }
 
     private record Candidate(Profile profile, double quality)

@@ -72,7 +72,7 @@ public final class ModuleManager {
 
                 Inventory.INSTANCE,
 
-                ViolationModule.parentOf("PacketAnalysis", PacketAnalysisAimStep.INSTANCE, PacketAnalysisAnimation.INSTANCE, PacketAnalysisEqualRotation.INSTANCE, PacketAnalysisExtremeYaw.INSTANCE, PacketAnalysisIllegalPitch.INSTANCE, PacketAnalysisPerfectRotation.INSTANCE),
+                ViolationModule.parentOf("PacketAnalysis", PacketAnalysisAimStep.INSTANCE, PacketAnalysisAnimation.INSTANCE, PacketAnalysisEqualRotation.INSTANCE, PacketAnalysisExtremeYaw.INSTANCE, PacketAnalysisIllegalPitch.INSTANCE, PacketAnalysisMalformed.INSTANCE, PacketAnalysisPerfectRotation.INSTANCE, PacketAnalysisPacketFlood.INSTANCE, PacketAnalysisDigging.INSTANCE, PacketAnalysisSequence.INSTANCE, PacketAnalysisStab.INSTANCE, PacketAnalysisUseItem.INSTANCE),
                 PacketFrequency.INSTANCE,
 
                 Scaffold.INSTANCE,

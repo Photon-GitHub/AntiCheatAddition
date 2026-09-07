@@ -67,8 +67,11 @@ permissions:
       anticheataddition.bypass.packetanalysis.parts.aimstep: true
       anticheataddition.bypass.packetanalysis.parts.animation: true
       anticheataddition.bypass.packetanalysis.parts.digging: true
+      anticheataddition.bypass.packetanalysis.parts.droppingpayload: true
       anticheataddition.bypass.packetanalysis.parts.equalrotation: true
       anticheataddition.bypass.packetanalysis.parts.extremeyaw: true
+      anticheataddition.bypass.packetanalysis.parts.heldslot: true
+      anticheataddition.bypass.packetanalysis.parts.horsejump: true
       anticheataddition.bypass.packetanalysis.parts.illegalpitch: true
       anticheataddition.bypass.packetanalysis.parts.malformed: true
       anticheataddition.bypass.packetanalysis.parts.packetflood: true
@@ -99,6 +102,7 @@ permissions:
       anticheataddition.bypass.targeting.parts.mixed: true
       anticheataddition.bypass.targeting.parts.replay: true
       anticheataddition.bypass.targeting.parts.silentrotation: true
+      anticheataddition.bypass.targeting.parts.rotationstep: true
       anticheataddition.bypass.teaming: true
       anticheataddition.bypass.tower: true
 

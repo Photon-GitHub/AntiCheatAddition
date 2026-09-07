@@ -346,6 +346,10 @@ PacketAnalysis:
     # It does not enforce block-breaking timing or physics.
     Digging:
       enabled: true
+    # DiggingPayload checks zero position and face on drop, release-use and offhand-swap actions.
+    # Adds 20 VL; does not cancel packets.
+    DroppingPayload:
+      enabled: true
     # EqualRotation scans for repeated rotation packets.
     # This catches some Scaffold, Tower, Killaura and Aimbot cheats.
     # Adds 5 VL.
@@ -354,6 +358,14 @@ PacketAnalysis:
     # ExtremeYaw detects very large yaw deltas that even with extreme mouse sensitivity are impossible to achieve.
     # Adds 50 VL.
     ExtremeYaw:
+      enabled: true
+    # HeldSlot checks that a selected hotbar slot is actually in the hotbar.
+    # Adds 50 VL.
+    HeldSlot:
+      enabled: true
+    # Checks if the client sends out of range horse jump parameters.
+    # Adds 50 VL.
+    HorseJump:
       enabled: true
     # IllegalPitch detects illegal pitches that a vanilla client cannot send.
     # Adds 150 VL.
@@ -521,6 +533,10 @@ Targeting:
     # Detects replayed aiming traces.
     # Adds 14 to 28 VL.
     Replay:
+      enabled: true
+    # Learns the mouse sensitivity of the player and checks for any suspicious changes.
+    # Adds 15 VL.
+    RotationStep:
       enabled: true
     # Detects repeated aim-dependent USE_ITEM rotations which differ from accepted movement rotation.
     # This check is not available on Minecraft versions below 1.21.5

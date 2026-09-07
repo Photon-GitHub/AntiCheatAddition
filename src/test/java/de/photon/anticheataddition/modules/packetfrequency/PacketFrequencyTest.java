@@ -1,6 +1,7 @@
-package de.photon.anticheataddition.modules.checks.packetfrequency;
+package de.photon.anticheataddition.modules.packetfrequency;
 
 import de.photon.anticheataddition.Dummy;
+import de.photon.anticheataddition.modules.checks.packetfrequency.PacketFrequency;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;

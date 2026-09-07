@@ -45,6 +45,7 @@ public final class DataUpdaterEvents implements Listener
         user.getData().object.packetFloodData.reset();
         user.getData().object.playerActionData.reset();
         user.getData().object.targetingSilentRotationData.reset();
+        user.getData().object.targetingRotationStepData.suppress(System.nanoTime());
     }
 
     public static void userUpdate(UUID uuid, TimeKey... update)

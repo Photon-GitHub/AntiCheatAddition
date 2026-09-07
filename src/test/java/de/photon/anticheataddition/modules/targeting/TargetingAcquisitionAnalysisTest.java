@@ -1,4 +1,4 @@
-package de.photon.anticheataddition.modules;
+package de.photon.anticheataddition.modules.targeting;
 
 import de.photon.anticheataddition.modules.checks.targeting.TargetingAcquisitionAnalysis;
 import de.photon.anticheataddition.user.data.subdata.TargetingData;

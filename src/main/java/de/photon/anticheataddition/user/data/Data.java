@@ -5,6 +5,7 @@ import de.photon.anticheataddition.modules.checks.autotool.AutoTool;
 import de.photon.anticheataddition.user.data.subdata.PacketFloodData;
 import de.photon.anticheataddition.user.data.subdata.PlayerActionData;
 import de.photon.anticheataddition.user.data.subdata.TargetingSilentRotationData;
+import de.photon.anticheataddition.user.data.subdata.TargetingRotationStepData;
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -113,6 +114,7 @@ public final class Data
         public final PacketFloodData packetFloodData = new PacketFloodData();
         public final PlayerActionData playerActionData = new PlayerActionData();
         public final TargetingSilentRotationData targetingSilentRotationData = new TargetingSilentRotationData();
+        public final TargetingRotationStepData targetingRotationStepData = new TargetingRotationStepData();
 
         public ItemStack lastConsumedItemStack = null;
         public volatile Material lastMaterialClicked = Material.BEDROCK;

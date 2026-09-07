@@ -86,7 +86,7 @@ public final class PacketFrequency extends ViolationModule
         if (user != null && User.isUserInvalid(user, this)) resetState(user);
     }
 
-    static void resetState(User user)
+    public static void resetState(User user)
     {
         user.getTimeMap().at(TimeKey.PACKET_FREQUENCY).setToZero();
         user.getTimeMap().at(TimeKey.PACKET_FREQUENCY_END_TICK).setToZero();

@@ -61,7 +61,8 @@ public final class Targeting extends ViolationModule implements Listener
               TargetingMixed.INSTANCE,
               TargetingReplay.INSTANCE,
               TargetingAcquisition.INSTANCE,
-              TargetingSilentRotation.INSTANCE);
+              TargetingSilentRotation.INSTANCE,
+              TargetingRotationStep.INSTANCE);
     }
 
     /**

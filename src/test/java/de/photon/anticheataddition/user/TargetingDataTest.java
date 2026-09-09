@@ -8,6 +8,38 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public final class TargetingDataTest
 {
+    @Test
+    public void initializesFromSeparatePositionAndRotationPacketsInEitherOrder()
+    {
+        for (boolean positionFirst : new boolean[]{true, false}) {
+            final TargetingData data = new TargetingData();
+            assertFalse(data.addMovement(12D, 64D, -8D, 270D, 15D,
+                                         positionFirst, !positionFirst, TICK_NANOS).accepted());
+            assertEquals(0, data.size());
+            assertTrue(data.addMovement(12D, 64D, -8D, 270D, 15D,
+                                        !positionFirst, positionFirst, 2L * TICK_NANOS).accepted());
+            for (int i = 0; i < 7; i++) data.addUnchangedRotation((i + 3L) * TICK_NANOS);
+            final var snapshot = data.takeAcquisitionSnapshot(10L * TICK_NANOS).orElseThrow();
+            assertEquals(8, snapshot.x().length);
+            assertEquals(12D, snapshot.x()[0]);
+            assertEquals(64D, snapshot.y()[0]);
+            assertEquals(-8D, snapshot.z()[0]);
+            assertEquals(-90D, snapshot.yaw()[0]);
+            assertEquals(15D, snapshot.pitch()[0]);
+        }
+    }
+
+    @Test
+    public void malformedInitialComponentsCannotSupplyMissingState()
+    {
+        final TargetingData data = new TargetingData();
+        assertFalse(data.addMovement(1D, 64D, 2D, Double.NaN, 0D, true, true, TICK_NANOS).accepted());
+        assertFalse(data.addUnchangedRotation(2L * TICK_NANOS).accepted());
+        assertEquals(0, data.size());
+        assertTrue(data.addMovement(0D, 0D, 0D, 30D, 10D, false, true, 3L * TICK_NANOS).accepted());
+        assertEquals(30D, data.nearestRotation(3L * TICK_NANOS, 0L).orElseThrow().yaw());
+    }
+
     private static final long TICK_NANOS = 50_000_000L;
 
     @Test

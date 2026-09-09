@@ -68,24 +68,27 @@ public final class TargetingData
      */
     public synchronized RotationUpdate addMovement(final double currentX, final double currentY, final double currentZ, final double currentYaw, final double currentPitch, final boolean positionChanged, final boolean rotationChanged, final long currentTimestamp)
     {
-        if (!hasLastPosition && !positionChanged) return new RotationUpdate(false);
-        if (!hasLastRotation && !rotationChanged) return new RotationUpdate(false);
-
         final boolean validX = Double.isFinite(currentX);
         final boolean validY = Double.isFinite(currentY);
         final boolean validZ = Double.isFinite(currentZ);
         final boolean validYaw = Double.isFinite(currentYaw);
         final boolean validPitch = Double.isFinite(currentPitch) && currentPitch >= MINIMUM_VALID_PITCH && currentPitch <= MAXIMUM_VALID_PITCH;
 
-        if (positionChanged && (!validX || !validY || !validZ) && !hasLastPosition) return new RotationUpdate(false);
-        if (rotationChanged && (!validYaw || !validPitch) && !hasLastRotation) return new RotationUpdate(false);
-
-        final double acceptedX = positionChanged && validX ? currentX : lastX;
-        final double acceptedY = positionChanged && validY ? currentY : lastY;
-        final double acceptedZ = positionChanged && validZ ? currentZ : lastZ;
-        final double acceptedYaw = rotationChanged && validYaw ? TargetingAnalysis.normalizeYaw(currentYaw) : lastYaw;
-        final double acceptedPitch = rotationChanged && validPitch ? currentPitch : lastPitch;
-        return addAcceptedMovement(acceptedX, acceptedY, acceptedZ, acceptedYaw, acceptedPitch, currentTimestamp);
+        // Position and look may arrive in separate packet variants. Retain each complete component group
+        // during initialization, but do not invent a statistical sample until both groups are known.
+        if (positionChanged && (hasLastPosition || validX && validY && validZ)) {
+            if (validX) lastX = currentX;
+            if (validY) lastY = currentY;
+            if (validZ) lastZ = currentZ;
+            hasLastPosition = true;
+        }
+        if (rotationChanged && (hasLastRotation || validYaw && validPitch)) {
+            if (validYaw) lastYaw = TargetingAnalysis.normalizeYaw(currentYaw);
+            if (validPitch) lastPitch = currentPitch;
+            hasLastRotation = true;
+        }
+        if (!hasLastPosition || !hasLastRotation) return new RotationUpdate(false);
+        return addAcceptedMovement(lastX, lastY, lastZ, lastYaw, lastPitch, currentTimestamp);
     }
 
     /**

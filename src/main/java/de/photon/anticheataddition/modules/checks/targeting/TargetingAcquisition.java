@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.modules.checks.targeting;
 
+import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.subdata.TargetingAcquisitionData;
@@ -76,6 +77,12 @@ public final class TargetingAcquisition extends ViolationModule
                              profile.finalError(),
                              profile.activationError(),
                              profile.targetDistance());
+    }
+
+    @Override
+    public ModuleLoader createModuleLoader()
+    {
+        return ModuleLoader.builder(this).addListeners(new TargetingAcquisitionListener()).build();
     }
 
     @Override

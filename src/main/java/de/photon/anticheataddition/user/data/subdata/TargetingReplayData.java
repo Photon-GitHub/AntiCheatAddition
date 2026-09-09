@@ -53,11 +53,11 @@ public final class TargetingReplayData {
             if (entry.lastSequence() >= firstSequence) continue;
             if (yawEligible && entry.yawEligible()) {
                 final Similarity similarity = bestSimilarity(yawFingerprint, entry.yawFingerprint());
-                if (similarity.correlation() > bestYaw.correlation()) bestYaw = similarity;
+                if (similarity.betterThan(bestYaw)) bestYaw = similarity;
             }
             if (pitchEligible && entry.pitchEligible()) {
                 final Similarity similarity = bestSimilarity(pitchFingerprint, entry.pitchFingerprint());
-                if (similarity.correlation() > bestPitch.correlation()) bestPitch = similarity;
+                if (similarity.betterThan(bestPitch)) bestPitch = similarity;
             }
         }
 
@@ -68,10 +68,8 @@ public final class TargetingReplayData {
                                   pitchFingerprint));
         while (entries.size() > MAX_HISTORY_SIZE) entries.removeFirst();
 
-        final boolean replayedYaw = bestYaw.correlation() >= MINIMUM_REPLAY_CORRELATION &&
-                                    bestYaw.error() <= MAXIMUM_REPLAY_ERROR;
-        final boolean replayedPitch = bestPitch.correlation() >= MINIMUM_REPLAY_CORRELATION &&
-                                      bestPitch.error() <= MAXIMUM_REPLAY_ERROR;
+        final boolean replayedYaw = bestYaw.matches();
+        final boolean replayedPitch = bestPitch.matches();
         return new ReplayResult((replayedYaw ? 1 : 0) + (replayedPitch ? 1 : 0),
                                 bestYaw.correlation(),
                                 bestYaw.error(),
@@ -137,8 +135,7 @@ public final class TargetingReplayData {
         for (boolean reversed : new boolean[]{false, true}) {
             for (int shift = -MAX_SHIFT; shift <= MAX_SHIFT; shift++) {
                 final Similarity similarity = similarity(first, second, shift, reversed);
-                if (similarity.correlation() > best.correlation() ||
-                    (similarity.correlation() == best.correlation() && similarity.error() < best.error())) {
+                if (similarity.betterThan(best)) {
                     best = similarity;
                 }
             }
@@ -215,6 +212,19 @@ public final class TargetingReplayData {
     }
 
     private record Similarity(double correlation, double error, boolean reversed) {
+        private boolean matches()
+        {
+            return correlation >= MINIMUM_REPLAY_CORRELATION && error <= MAXIMUM_REPLAY_ERROR;
+        }
+
+        private boolean betterThan(final Similarity other)
+        {
+            // A candidate failing either requirement cannot hide one that satisfies both. Apply the
+            // same ordering within shifted/reversed comparisons and across historical entries.
+            if (matches() != other.matches()) return matches();
+            return correlation > other.correlation || correlation == other.correlation && error < other.error;
+        }
+
         private static Similarity none()
         {
             return new Similarity(0D, Double.POSITIVE_INFINITY, false);

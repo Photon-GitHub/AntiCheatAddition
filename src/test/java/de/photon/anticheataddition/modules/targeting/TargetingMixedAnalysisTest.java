@@ -8,6 +8,17 @@ import static org.junit.jupiter.api.Assertions.*;
 public final class TargetingMixedAnalysisTest
 {
     @Test
+    public void cleanObservationDoesNotAddEvidenceFromOldModeSwitches()
+    {
+        final int noise = TargetingMixedAnalysis.modeMask(true, false, false, false);
+        final int pattern = TargetingMixedAnalysis.modeMask(false, false, true, false);
+        final var result = TargetingMixedAnalysis.analyze(new int[]{noise, pattern, noise, pattern, noise, 0});
+        assertFalse(result.suspicious());
+        assertEquals(5, result.suspiciousObservations());
+        assertEquals(4, result.transitions());
+    }
+
+    @Test
     public void detectsRepeatedCrossWindowModeSwitching()
     {
         final int noise = TargetingMixedAnalysis.modeMask(true, false, false, false);

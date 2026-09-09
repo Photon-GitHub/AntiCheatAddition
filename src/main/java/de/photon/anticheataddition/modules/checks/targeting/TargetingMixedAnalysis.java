@@ -57,7 +57,10 @@ public final class TargetingMixedAnalysis
         }
 
         final int distinctModes = Integer.bitCount(observedModes);
-        final boolean suspicious = suspiciousObservations >= MINIMUM_SUSPICIOUS_OBSERVATIONS &&
+        // History supplies context, not fresh evidence. A clean observation still remains in the history
+        // so it cannot reset mode transitions, but must not keep incrementing the violation buffer.
+        final boolean suspicious = history[history.length - 1] != 0 &&
+                                   suspiciousObservations >= MINIMUM_SUSPICIOUS_OBSERVATIONS &&
                                    distinctModes >= MINIMUM_DISTINCT_MODES &&
                                    transitions >= MINIMUM_MODE_TRANSITIONS;
         return new Result(suspicious,

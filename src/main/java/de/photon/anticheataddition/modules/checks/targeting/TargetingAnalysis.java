@@ -1,12 +1,11 @@
 package de.photon.anticheataddition.modules.checks.targeting;
 
-import de.photon.anticheataddition.util.mathematics.KolmogorovSmirnov;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
+
 import java.util.Arrays;
 
-import static de.photon.anticheataddition.modules.checks.targeting.TargetingDiscontinuityCorrection.removeDiscontinuities;
-import static de.photon.anticheataddition.util.mathematics.DataUtil.*;
-import static de.photon.anticheataddition.util.mathematics.TimeSeriesUtil.*;
+import static de.photon.anticheataddition.modules.checks.targeting.TargetingResidualAnalysis.*;
+import static de.photon.anticheataddition.util.mathematics.DataUtil.correlation;
 
 /**
  * Pure statistical analysis shared by the Targeting submodules.
@@ -24,38 +23,7 @@ public final class TargetingAnalysis
 {
     public static final int MINIMUM_SAMPLE_COUNT = 32;
 
-    private static final double PRECISE_MAX_STANDARD_DEVIATION = 0.0005D;
-    private static final double PRECISE_MAX_ABSOLUTE_RESIDUAL = 0.0015D;
-
-    private static final double RANDOM_MINIMUM_SCORE = 0.78D;
-    private static final double DISTRIBUTION_FREE_MINIMUM_SCORE = 0.68D;
-    private static final double RANDOM_LAG_ONE_SCALE = 0.6D;
-    private static final double RANDOM_AVERAGE_AUTOCORRELATION_SCALE = 0.45D;
-    private static final double RANDOM_VARIANCE_LOG_SCALE = 2.5D;
-    private static final double RANDOM_RUNS_Z_SCALE = 3.5D;
-
-    private static final double PITCH_CLAMP_EPSILON = 0.0001D;
-    private static final double PITCH_CLAMP_MINIMUM_RATIO = 0.75D;
-
     private static final double YAW_MINIMUM_DISCONTINUITY = 25D;
-    private static final double PITCH_MINIMUM_DISCONTINUITY = 15D;
-
-    private static final double UNIFORM_MIN_P_VALUE = 0.1D;
-    private static final double UNIFORM_MAX_D_STATISTIC = 0.22D;
-    private static final double GAUSSIAN_MAX_ABS_SKEWNESS = 0.9D;
-    private static final double GAUSSIAN_MIN_KURTOSIS = 1.7D;
-    private static final double GAUSSIAN_MAX_KURTOSIS = 5D;
-
-    private static final double PERIODIC_MIN_CORRELATION = 0.9D;
-    private static final double PERIODIC_MAX_REPEAT_ERROR = 0.35D;
-    private static final double STRONG_FULL_PERIODIC_MIN_CORRELATION = 0.97D;
-    private static final double STRONG_FULL_PERIODIC_MAX_REPEAT_ERROR = 0.28D;
-    private static final double ALTERNATING_MAX_LAG_ONE = -0.72D;
-    private static final double ALTERNATING_MIN_LAG_TWO = 0.72D;
-    private static final double ALTERNATING_MIN_SIGN_CHANGE_RATIO = 0.8D;
-    private static final double LOW_ENTROPY_MAX_PERMUTATION_ENTROPY = 0.55D;
-    private static final double LOW_ENTROPY_MAX_DISTINCT_LEVEL_RATIO = 0.32D;
-    private static final double LOW_ENTROPY_MIN_PERIODIC_CORRELATION = 0.65D;
 
     private TargetingAnalysis()
     {
@@ -179,9 +147,7 @@ public final class TargetingAnalysis
                                 : randomRepresentative == null || randomWindowCount < 2
                                   ? Pattern.NATURAL
                                   : randomRepresentative.pattern();
-        final boolean strongFullPeriodic = full.syntheticPattern() == SyntheticPattern.PERIODIC &&
-                                           full.maxPeriodicCorrelation() >= STRONG_FULL_PERIODIC_MIN_CORRELATION &&
-                                           full.repeatError() <= STRONG_FULL_PERIODIC_MAX_REPEAT_ERROR;
+        final boolean strongFullPeriodic = TargetingPatternAnalysis.isStrongFullPeriodic(full);
         final SyntheticPattern syntheticPattern = syntheticRepresentative == null ||
                                                   syntheticWindowCount < 2 && !strongFullPeriodic
                                                   ? SyntheticPattern.NONE
@@ -207,198 +173,6 @@ public final class TargetingAnalysis
                (1D - result.permutationEntropy()) * 0.1D;
     }
 
-
-    /**
-     * Pitch is hard-clamped by the vanilla client at straight up and straight down. A long clamped section can be
-     * mathematically precise without representing automated targeting, so only the precision classification is
-     * suppressed. Other residual and deterministic classifications remain available.
-     */
-    private static AxisAnalysis analyzePitchAxis(final double[] rotations, final boolean[] trustedBreakBefore)
-    {
-        final AxisAnalysis analysis = analyzeAxis(rotations, PITCH_MINIMUM_DISCONTINUITY, trustedBreakBefore);
-        if (analysis.result().pattern() != Pattern.PRECISE || !isPitchClampWindow(rotations)) return analysis;
-
-        final AxisResult result = analysis.result();
-        return new AxisAnalysis(AxisResult.natural(result.standardDeviation(),
-                                                   result.maxAbsoluteResidual(),
-                                                   result.rotationRange()),
-                                analysis.residuals());
-    }
-
-    private static boolean isPitchClampWindow(final double[] rotations)
-    {
-        int clamped = 0;
-        for (double rotation : rotations) {
-            if (Math.abs(Math.abs(rotation) - 90D) <= PITCH_CLAMP_EPSILON) clamped++;
-        }
-        return clamped >= Math.ceil(rotations.length * PITCH_CLAMP_MINIMUM_RATIO);
-    }
-
-    private static AxisAnalysis analyzeAxis(final double[] rotations,
-                                            final double minimumDiscontinuity,
-                                            final boolean[] trustedBreakBefore)
-    {
-        final double rotationRange = range(rotations);
-        final double[] correctedRotations = removeDiscontinuities(rotations,
-                                                                  minimumDiscontinuity,
-                                                                  trustedBreakBefore);
-        final double[] residuals = detrendQuadratic(correctedRotations);
-        center(residuals);
-
-        final double variance = meanSquare(residuals, 0, residuals.length);
-        final double standardDeviation = Math.sqrt(variance);
-        final double maxAbsoluteResidual = maximumAbsolute(residuals);
-        if (standardDeviation <= PRECISE_MAX_STANDARD_DEVIATION &&
-            maxAbsoluteResidual <= PRECISE_MAX_ABSOLUTE_RESIDUAL) {
-            return new AxisAnalysis(AxisResult.precise(standardDeviation, maxAbsoluteResidual, rotationRange), residuals);
-        }
-
-        if (!Double.isFinite(standardDeviation) || standardDeviation == 0D) {
-            return new AxisAnalysis(AxisResult.natural(standardDeviation, maxAbsoluteResidual, rotationRange), residuals);
-        }
-
-        final double[] normalizedResiduals = normalizeResiduals(residuals, standardDeviation);
-        double thirdMoment = 0D;
-        double fourthMoment = 0D;
-        for (double standardized : normalizedResiduals) {
-            final double squared = standardized * standardized;
-            thirdMoment += squared * standardized;
-            fourthMoment += squared * squared;
-        }
-
-        final double skewness = thirdMoment / residuals.length;
-        final double kurtosis = fourthMoment / residuals.length;
-        final double lagOne = correlation(residuals, residuals, 1);
-        final double lagTwo = correlation(residuals, residuals, 2);
-        final double lagThree = correlation(residuals, residuals, 3);
-        final double averageAbsAutocorrelation = (Math.abs(lagOne) + Math.abs(lagTwo) + Math.abs(lagThree)) / 3D;
-        final double signChangeRatio = signChangeRatio(residuals);
-        final double permutationEntropy = permutationEntropy(normalizedResiduals);
-        final double runsZScore = runsZScore(normalizedResiduals);
-        final double distinctLevelRatio = distinctLevelRatio(normalizedResiduals);
-        final Periodicity periodicity = periodicity(normalizedResiduals);
-
-        final int midpoint = residuals.length / 2;
-        final double firstVariance = meanSquare(residuals, 0, midpoint);
-        final double secondVariance = meanSquare(residuals, midpoint, residuals.length);
-        final double varianceRatio = secondVariance == 0D ? Double.POSITIVE_INFINITY : firstVariance / secondVariance;
-
-        final var ksResult = KolmogorovSmirnov.uniformTest(residuals);
-        final boolean uniformLike = ksResult.pValue() >= UNIFORM_MIN_P_VALUE &&
-                                    ksResult.dStatistic() <= UNIFORM_MAX_D_STATISTIC;
-        final boolean gaussianLike = Math.abs(skewness) <= GAUSSIAN_MAX_ABS_SKEWNESS &&
-                                     kurtosis >= GAUSSIAN_MIN_KURTOSIS &&
-                                     kurtosis <= GAUSSIAN_MAX_KURTOSIS;
-
-        // Amplitude is deliberately not used as an exemption. The temporal characteristics are combined into a
-        // continuous score instead of a chain of individually bypassable cut-offs. A client therefore cannot evade
-        // the check merely by moving one public metric just beyond its former threshold.
-        final double randomnessScore = randomnessScore(lagOne,
-                                                       averageAbsAutocorrelation,
-                                                       signChangeRatio,
-                                                       varianceRatio,
-                                                       permutationEntropy,
-                                                       runsZScore);
-        final boolean randomDynamics = randomnessScore >= RANDOM_MINIMUM_SCORE;
-        final double distributionFreeScore = (permutationEntropy + runsScore(runsZScore)) * 0.5D;
-        final boolean distributionFreeLike = distributionFreeScore >= DISTRIBUTION_FREE_MINIMUM_SCORE;
-
-        final Pattern pattern;
-        if (!randomDynamics) pattern = Pattern.NATURAL;
-        else if (uniformLike) pattern = Pattern.UNIFORM;
-        else if (gaussianLike) pattern = Pattern.GAUSSIAN;
-        else if (distributionFreeLike) pattern = Pattern.DISTRIBUTION_FREE;
-        else pattern = Pattern.NATURAL;
-
-        final SyntheticPattern syntheticPattern = classifySyntheticPattern(lagOne,
-                                                                           lagTwo,
-                                                                           signChangeRatio,
-                                                                           permutationEntropy,
-                                                                           distinctLevelRatio,
-                                                                           periodicity);
-
-        return new AxisAnalysis(new AxisResult(pattern,
-                                               syntheticPattern,
-                                               standardDeviation,
-                                               maxAbsoluteResidual,
-                                               rotationRange,
-                                               randomnessScore,
-                                               lagOne,
-                                               averageAbsAutocorrelation,
-                                               signChangeRatio,
-                                               ksResult.dStatistic(),
-                                               ksResult.pValue(),
-                                               skewness,
-                                               kurtosis,
-                                               varianceRatio,
-                                               permutationEntropy,
-                                               runsZScore,
-                                               distinctLevelRatio,
-                                               periodicity.correlation(),
-                                               periodicity.lag(),
-                                               periodicity.repeatError(),
-                                               pattern.isRandomized() ? 1 : 0,
-                                               syntheticPattern == SyntheticPattern.NONE ? 0 : 1),
-                                residuals);
-    }
-
-    private static double randomnessScore(final double lagOne,
-                                          final double averageAbsAutocorrelation,
-                                          final double signChangeRatio,
-                                          final double varianceRatio,
-                                          final double permutationEntropy,
-                                          final double runsZScore)
-    {
-        final double lagOneScore = 1D - unitClamp(Math.abs(lagOne) / RANDOM_LAG_ONE_SCALE);
-        final double averageCorrelationScore =
-                1D - unitClamp(averageAbsAutocorrelation / RANDOM_AVERAGE_AUTOCORRELATION_SCALE);
-        final double signScore = 1D - unitClamp(Math.abs(signChangeRatio - 0.5D) * 2D);
-        final double safeVarianceRatio = Math.max(Double.MIN_NORMAL, varianceRatio);
-        final double varianceScore = Math.exp(-Math.abs(Math.log(safeVarianceRatio)) / RANDOM_VARIANCE_LOG_SCALE);
-        final double entropyScore = unitClamp(permutationEntropy);
-        final double runsScore = runsScore(runsZScore);
-
-        return (1.5D * lagOneScore +
-                1.5D * averageCorrelationScore +
-                signScore +
-                varianceScore +
-                1.5D * entropyScore +
-                0.5D * runsScore) / 7D;
-    }
-
-    private static double runsScore(final double runsZScore)
-    {
-        return Double.isFinite(runsZScore)
-               ? Math.exp(-Math.abs(runsZScore) / RANDOM_RUNS_Z_SCALE)
-               : 0D;
-    }
-
-    private static double unitClamp(final double value)
-    {
-        return Math.clamp(value, 0D, 1D);
-    }
-
-    private static SyntheticPattern classifySyntheticPattern(final double lagOne,
-                                                             final double lagTwo,
-                                                             final double signChangeRatio,
-                                                             final double permutationEntropy,
-                                                             final double distinctLevelRatio,
-                                                             final Periodicity periodicity)
-    {
-        if (lagOne <= ALTERNATING_MAX_LAG_ONE &&
-            lagTwo >= ALTERNATING_MIN_LAG_TWO &&
-            signChangeRatio >= ALTERNATING_MIN_SIGN_CHANGE_RATIO) return SyntheticPattern.ALTERNATING;
-
-        if (periodicity.correlation() >= PERIODIC_MIN_CORRELATION &&
-            periodicity.repeatError() <= PERIODIC_MAX_REPEAT_ERROR) return SyntheticPattern.PERIODIC;
-
-        if (permutationEntropy <= LOW_ENTROPY_MAX_PERMUTATION_ENTROPY &&
-            distinctLevelRatio <= LOW_ENTROPY_MAX_DISTINCT_LEVEL_RATIO &&
-            periodicity.correlation() >= LOW_ENTROPY_MIN_PERIODIC_CORRELATION) return SyntheticPattern.LOW_ENTROPY;
-
-        return SyntheticPattern.NONE;
-    }
-
     /** Starts from a canonical yaw so large raw angles cannot swallow subsequent deltas. */
     private static double[] unwrapYaw(final double[] yaw)
     {
@@ -410,69 +184,11 @@ public final class TargetingAnalysis
         return result;
     }
 
-    private static double[] normalizeResiduals(final double[] residuals, final double standardDeviation)
-    {
-        final double[] normalized = new double[residuals.length];
-        if (!Double.isFinite(standardDeviation) || standardDeviation == 0D) return normalized;
-        for (int i = 0; i < residuals.length; i++) normalized[i] = residuals[i] / standardDeviation;
-        return normalized;
-    }
-
     private static double[] normalizeFingerprint(final double[] residuals, final AxisResult result)
     {
         return result.pattern() == Pattern.PRECISE
                ? new double[residuals.length]
                : normalizeResiduals(residuals, result.standardDeviation());
-    }
-
-    private static double distinctLevelRatio(final double[] normalizedResiduals)
-    {
-        final int[] levels = new int[normalizedResiduals.length];
-        int distinct = 0;
-        for (double residual : normalizedResiduals) {
-            final int level = (int) Math.rint(residual * 8D);
-            boolean known = false;
-            for (int i = 0; i < distinct; i++) {
-                if (levels[i] == level) {
-                    known = true;
-                    break;
-                }
-            }
-            if (!known) levels[distinct++] = level;
-        }
-        return distinct / (double) normalizedResiduals.length;
-    }
-
-    private static Periodicity periodicity(final double[] normalizedResiduals)
-    {
-        final int maximumLag = normalizedResiduals.length / 2;
-        double bestCorrelation = 0D;
-        double bestRepeatError = Double.POSITIVE_INFINITY;
-        int bestLag = 0;
-
-        for (int lag = 2; lag <= maximumLag; lag++) {
-            final double signedCorrelation = correlation(normalizedResiduals, normalizedResiduals, lag);
-            final double absoluteCorrelation = Math.abs(signedCorrelation);
-            final double repeatError = repeatError(normalizedResiduals, lag, signedCorrelation < 0D ? -1D : 1D);
-            if (absoluteCorrelation > bestCorrelation ||
-                (absoluteCorrelation == bestCorrelation && repeatError < bestRepeatError)) {
-                bestCorrelation = absoluteCorrelation;
-                bestRepeatError = repeatError;
-                bestLag = lag;
-            }
-        }
-        return new Periodicity(bestCorrelation, bestLag, bestRepeatError);
-    }
-
-    private static double repeatError(final double[] values, final int lag, final double sign)
-    {
-        double squaredError = 0D;
-        final int length = values.length - lag;
-        for (int i = 0; i < length; i++) {
-            final double difference = values[i + lag] - sign * values[i];
-            squaredError += difference * difference;
-        }
-        return Math.sqrt(squaredError / length);
     }
 
     private static void validateFinite(final double[] values)
@@ -583,7 +299,7 @@ public final class TargetingAnalysis
                              int randomWindowCount,
                              int syntheticWindowCount)
     {
-        private static AxisResult precise(final double standardDeviation,
+        static AxisResult precise(final double standardDeviation,
                                           final double maxAbsoluteResidual,
                                           final double rotationRange)
         {
@@ -611,7 +327,7 @@ public final class TargetingAnalysis
                                   0);
         }
 
-        private static AxisResult natural(final double standardDeviation,
+        static AxisResult natural(final double standardDeviation,
                                           final double maxAbsoluteResidual,
                                           final double rotationRange)
         {
@@ -672,11 +388,4 @@ public final class TargetingAnalysis
         }
     }
 
-    private record AxisAnalysis(AxisResult result, double[] residuals)
-    {
-    }
-
-    private record Periodicity(double correlation, int lag, double repeatError)
-    {
-    }
 }

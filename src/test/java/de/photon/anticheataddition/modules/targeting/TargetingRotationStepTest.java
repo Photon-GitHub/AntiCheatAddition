@@ -40,7 +40,7 @@ final class TargetingRotationStepTest
         final var management = mock(ViolationManagement.class);
         doReturn(management).when(module).getManagement();
         report(module);
-        verify(management).flag(argThat(flag -> flag.getAddedVl() == 5 && flag.getOnCancel() == null));
+        verify(management).flag(argThat(flag -> flag.getAddedVl() == 15 && flag.getOnCancel() == null));
         assertEquals("anticheataddition.bypass.targeting.parts.rotationstep", module.getBypassPermission());
     }
 

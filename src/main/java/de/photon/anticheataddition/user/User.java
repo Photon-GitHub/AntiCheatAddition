@@ -59,9 +59,6 @@ public final class User implements Permissible
 
     private final BrandChannelData brandChannelData = new BrandChannelData();
     private final LookPacketData lookPacketData = new LookPacketData();
-    private final TargetingAcquisitionData targetingAcquisitionData = new TargetingAcquisitionData();
-    private final TargetingData targetingData = new TargetingData();
-    private final TargetingReplayData targetingReplayData = new TargetingReplayData();
 
     /**
      * This is the minecraft version of the client.
@@ -86,9 +83,6 @@ public final class User implements Permissible
         }
 
         if (InternalPermission.DEBUG.hasPermission(player)) DEBUG_USERS.add(this);
-
-        // Seed targeting with 0 position as the player location is still null at this point in time.
-        this.targetingData.addMovement(0, 0, 0, 0, 0, true, true, System.nanoTime());
 
         // Join log for debugging purposes.
         Log.finer(() -> "User %s created | General bypass permissions: %s | Debug permissions: %s".formatted(player.getName(), InternalPermission.BYPASS.hasPermission(player), InternalPermission.DEBUG.hasPermission(player)));

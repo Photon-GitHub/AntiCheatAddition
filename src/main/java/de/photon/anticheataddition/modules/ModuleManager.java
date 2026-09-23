@@ -24,7 +24,6 @@ import de.photon.anticheataddition.modules.checks.scaffold.Scaffold;
 import de.photon.anticheataddition.modules.checks.shield.ShieldHit;
 import de.photon.anticheataddition.modules.checks.skinblinker.SkinBlinkerSprinting;
 import de.photon.anticheataddition.modules.checks.skinblinker.SkinBlinkerUnusedBit;
-import de.photon.anticheataddition.modules.checks.targeting.Targeting;
 import de.photon.anticheataddition.modules.checks.teaming.Teaming;
 import de.photon.anticheataddition.modules.checks.tower.Tower;
 import de.photon.anticheataddition.modules.sentinel.SentinelChannelModule;
@@ -80,8 +79,6 @@ public final class ModuleManager {
                 ViolationModule.parentOf("Shield", ShieldHit.INSTANCE),
 
                 ViolationModule.parentOf("Skinblinker", SkinBlinkerUnusedBit.INSTANCE, SkinBlinkerSprinting.INSTANCE),
-
-                Targeting.INSTANCE,
 
                 Teaming.INSTANCE,
 

@@ -4,8 +4,6 @@ import de.photon.anticheataddition.modules.checks.autopotion.AutoPotion;
 import de.photon.anticheataddition.modules.checks.autotool.AutoTool;
 import de.photon.anticheataddition.user.data.subdata.PacketFloodData;
 import de.photon.anticheataddition.user.data.subdata.PlayerActionData;
-import de.photon.anticheataddition.user.data.subdata.TargetingSilentRotationData;
-import de.photon.anticheataddition.user.data.subdata.TargetingRotationStepData;
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -90,13 +88,6 @@ public final class Data
         public final ViolationCounter scaffoldSafewalkTimingFails = new ViolationCounter(3);
         public final ViolationCounter scaffoldSprintingFails = new ViolationCounter(5);
 
-        public final ViolationCounter targetingAcquisitionFails = new ViolationCounter(6);
-        public final ViolationCounter targetingMixedFails = new ViolationCounter(4);
-        public final ViolationCounter targetingNoiseFails = new ViolationCounter(12);
-        public final ViolationCounter targetingPatternFails = new ViolationCounter(8);
-        public final ViolationCounter targetingPrecisionFails = new ViolationCounter(12);
-        public final ViolationCounter targetingReplayFails = new ViolationCounter(3);
-        public final ViolationCounter targetingSwitchingFails = new ViolationCounter(12);
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
@@ -113,8 +104,6 @@ public final class Data
 
         public final PacketFloodData packetFloodData = new PacketFloodData();
         public final PlayerActionData playerActionData = new PlayerActionData();
-        public final TargetingSilentRotationData targetingSilentRotationData = new TargetingSilentRotationData();
-        public final TargetingRotationStepData targetingRotationStepData = new TargetingRotationStepData();
 
         public ItemStack lastConsumedItemStack = null;
         public volatile Material lastMaterialClicked = Material.BEDROCK;

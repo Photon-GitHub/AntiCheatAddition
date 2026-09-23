@@ -375,6 +375,11 @@ PacketAnalysis:
     # Adds 150 VL.
     Malformed:
       enabled: true
+    # MovementPacketsPerTick counts the player's movement packet variants up to CLIENT_TICK_END.
+    # Only available for 1.21.2+ clients on supported 1.21.5+ servers.
+    # Adds 20 VL once for a second movement packet in a client tick.
+    MovementPacketsPerTick:
+      enabled: true
     # PacketFlood tolerates short movement bursts but detects sustained movement packet flooding.
     # The bucket refills at sustained_packets_per_second and can hold burst_capacity packets.
     # A violation is only raised after sustained_violation_duration_ms of continued depletion.

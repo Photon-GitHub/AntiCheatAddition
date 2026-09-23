@@ -70,6 +70,8 @@ public final class Data
         public final ViolationCounter inventoryPerfectExitFails = new ViolationCounter(6);
 
         public final ViolationCounter packetAnalysisAimStepFails = new ViolationCounter(8);
+        public final ViolationCounter packetAnalysisMovementPacketsThisTick = new ViolationCounter(2);
+        public final ViolationCounter packetAnalysisMovementPacketsThisTickFails = new ViolationCounter(3);
         public final ViolationCounter packetAnalysisPerfectRotationYawFails = new ViolationCounter(5);
         public final ViolationCounter packetAnalysisPerfectRotationPitchFails = new ViolationCounter(5);
         // 1 second in nanos.

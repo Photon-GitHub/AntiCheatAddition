@@ -337,39 +337,42 @@ PacketAnalysis:
     AimStep:
       enabled: true
     # This part checks that the client sends an arm animation packet following an attack.
-    # This only detects the worst Killauras.
+    # This only detects the worst killauras.
     # Adds 30 VL.
     Animation:
       enabled: true
-    # Checks that boat paddle input is sent at most once between client tick-end markers.
-    # Requires a 1.21.5+ server and clients using the server's protocol; disabled pending vanilla/proxy validation.
-    # Adds 20 VL after three excess packets, at most once per second; ten seconds without excess resets the buffer.
-    # PacketFrequency must be enabled to constrain forged tick-end markers; missing markers do not disable counting.
+    # BoatPaddlePacketsPerTick checks for repeated boat steering packets within a tick.
+    # This catches some boat movement and packet-spam cheats.
+    # Adds 20 VL.
     BoatPaddlePacketsPerTick:
-      enabled: false
-    # Digging checks block/face consistency for START and FINISH actions.
-    # CANCEL actions reset the tracked state because clients can cancel stale targets while retargeting.
-    # It does not enforce block-breaking timing or physics.
+      enabled: true
+    # Digging checks for invalid block-breaking targets.
+    # Detects some Nuker and AutoMine cheats.
+    # Adds 20 VL.
     Digging:
       enabled: true
-    # DiggingPayload checks zero position and face on drop, release-use and offhand-swap actions.
-    # Adds 20 VL; does not cancel packets.
+    # DroppingPayload checks for invalid data in item-action packets.
+    # Catches some inventory cheats and exploit clients.
+    # Adds 20 VL.
     DroppingPayload:
       enabled: true
-    # A selected hotbar slot is sent only when the client changes selection; repeated selections cannot arise from normal slot movement.
-    # Server slot updates, joins and respawns reset the comparison; assumes clients use the server's protocol.
-    # Adds 10 VL per duplicate selection.
+    # DuplicateHeldSlot checks for repeated selections of the same hotbar slot.
+    # Detects some inventory cheats.
+    # Adds 10 VL.
     DuplicateHeldSlot:
       enabled: true
-    # Each client reply must correspond to a challenge sent by this server, and an ID sent again by the server permits another reply.
-    # Outstanding credits survive respawns; unsolicited and repeated replies add 20 VL.
-    # Each stream permits 1024 outstanding credits (including reissues); further issuances add 20 VL without evicting pending IDs.
-    # This bound also constrains plugin-generated challenge bursts; rejected issuances grant no reply credit.
-    # Pong checks require 1.21.5+ servers.
+    # DuplicateKeepAlive checks for repeated or unsolicited keep-alive replies.
+    # Adds 20 VL.
     DuplicateKeepAlive:
       enabled: true
+    # DuplicatePong checks for repeated or unsolicited ping replies.
+    # Detects some packet-spam and exploit clients.
+    # Adds 20 VL.
     DuplicatePong:
       enabled: true
+    # DuplicateTeleportConfirm checks for repeated or unsolicited teleport confirmations.
+    # This catches some teleport and packet-spam cheats.
+    # Adds 20 VL.
     DuplicateTeleportConfirm:
       enabled: true
     # EqualRotation scans for repeated rotation packets.
@@ -377,15 +380,18 @@ PacketAnalysis:
     # Adds 5 VL.
     EqualRotation:
       enabled: true
-    # ExtremeYaw detects very large yaw deltas that even with extreme mouse sensitivity are impossible to achieve.
+    # ExtremeYaw checks for unusually large horizontal rotations.
+    # This catches some Derp and rotation exploits.
     # Adds 50 VL.
     ExtremeYaw:
       enabled: true
-    # HeldSlot checks that a selected hotbar slot is actually in the hotbar.
+    # HeldSlot checks for selections of invalid hotbar slots.
+    # This catches some inventory cheats and exploit clients.
     # Adds 50 VL.
     HeldSlot:
       enabled: true
-    # Checks if the client sends out of range horse jump parameters.
+    # HorseJump checks for invalid horse jump values.
+    # This catches some horse movement cheats and exploit clients.
     # Adds 50 VL.
     HorseJump:
       enabled: true
@@ -393,46 +399,49 @@ PacketAnalysis:
     # Adds 150 VL.
     IllegalPitch:
       enabled: true
-    # Malformed cancels malformed packets before other packet checks process them.
+    # Malformed detects and cancels packets that cannot be read correctly.
+    # This blocks some crash and exploit clients.
     # Adds 150 VL.
     Malformed:
       enabled: true
-    # MovementPacketsPerTick counts the player's movement packet variants up to CLIENT_TICK_END.
-    # Only available for 1.21.2+ clients on supported 1.21.5+ servers.
-    # Adds 20 VL once for a second movement packet in a client tick.
+    # MovementPacketsPerTick checks for repeated movement packets within a tick.
+    # Detects bad Timer and movement cheats.
+    # Adds 20 VL.
     MovementPacketsPerTick:
       enabled: true
-    # PacketFlood tolerates short movement bursts but detects sustained movement packet flooding.
-    # The bucket refills at sustained_packets_per_second and can hold burst_capacity packets.
-    # A violation is only raised after sustained_violation_duration_ms of continued depletion.
-    # Adds 5 VL per sustained overflow window.
+    # PacketFlood checks for sustained movement packet spam.
+    # Catches various movement and timer cheats.
+    # Adds 5 VL.
     PacketFlood:
       enabled: true
+      # Maximum movement packets per second allowed during sustained traffic.
       sustained_packets_per_second: 40
+      # Maximum movement packets tolerated in a short burst.
       burst_capacity: 200
+      # How long excessive traffic must continue before flagging (in milliseconds).
       sustained_violation_duration_ms: 3000
-    # Checks that each PLAYER_INPUT packet is sent at most once between client tick-end markers.
-    # Requires a 1.21.5+ server and clients using the server's protocol; arrival time does not define a tick.
-    # Adds 20 VL after three excess packets, at most once per second; ten seconds without excess resets the buffer.
-    # PacketFrequency must be enabled to constrain forged tick-end markers; missing markers do not disable counting.
+    # PlayerInputPacketsPerTick checks for repeated movement input packets within a tick.
+    # This catches some movement and packet-spam cheats.
+    # Adds 20 VL.
     PlayerInputPacketsPerTick:
       enabled: true
     # PerfectRotation checks for very precise rotations that some cheats exhibit.
     # Adds 4 to 5 VL.
     PerfectRotation:
       enabled: true
-    # Sequence checks negative and replayed sequences on START/FINISH digging actions.
-    # Vanilla CANCEL actions use sequence 0 and are intentionally excluded.
-    # Not available on Minecraft versions below 1.19.
+    # Sequence checks for invalid or repeated block-breaking sequences.
+    # This catches some packet replay and mining cheats.
     # Adds 10 to 150 VL.
     Sequence:
       enabled: true
-    # Stab validates that piercing packets are only sent when the player has a piercing weapon.
-    # Adds 50 VL when a STAB packet has no piercing weapon in the main hand.
+    # Stab checks for stabbing attacks without a suitable weapon.
+    # This catches some combat exploits.
+    # Adds 50 VL.
     Stab:
       enabled: true
-    # UseItem checks RELEASE_USE_ITEM transitions against known USE_ITEM state.
-    # Adds 10 VL for repeated impossible releases.
+    # UseItem checks for repeated attempts to stop using an item.
+    # This catches some NoSlow and item-use cheats.
+    # Adds 10 VL.
     UseItem:
       enabled: true
   # Commands to execute at specific violation levels.
@@ -441,7 +450,9 @@ PacketAnalysis:
     160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected by PacketAnalysis"
     200: "kick {player} Suspicious packets"
 
-# PacketFrequency keeps a packet-time balance to detect Timer cheats.
+# PacketFrequency checks whether movement packets arrive faster than expected.
+# This catches some Timer and movement-speed cheats.
+# Adds VL based on how far the packet rate exceeds the expected rate.
 PacketFrequency:
   enabled: true
   # This is the maximum duration of lagspikes PacketFrequency should allow for.

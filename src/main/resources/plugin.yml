@@ -2,7 +2,7 @@ name: AntiCheatAddition
 version: ${project.version}
 description: ${project.description}
 author: Photon
-api-version: 1.20
+api-version: 1.21
 website: https://www.spigotmc.org/resources/anticheataddition.33590/
 
 depend:
@@ -66,9 +66,21 @@ permissions:
       anticheataddition.bypass.packetanalysis: true
       anticheataddition.bypass.packetanalysis.parts.aimstep: true
       anticheataddition.bypass.packetanalysis.parts.animation: true
+      anticheataddition.bypass.packetanalysis.parts.digging: true
+      anticheataddition.bypass.packetanalysis.parts.droppingpayload: true
       anticheataddition.bypass.packetanalysis.parts.equalrotation: true
+      anticheataddition.bypass.packetanalysis.parts.extremeyaw: true
+      anticheataddition.bypass.packetanalysis.parts.heldslot: true
+      anticheataddition.bypass.packetanalysis.parts.horsejump: true
       anticheataddition.bypass.packetanalysis.parts.illegalpitch: true
+      anticheataddition.bypass.packetanalysis.parts.malformed: true
+      anticheataddition.bypass.packetanalysis.parts.movementpacketspertick: true
+      anticheataddition.bypass.packetanalysis.parts.packetflood: true
       anticheataddition.bypass.packetanalysis.parts.perfectrotation: true
+      anticheataddition.bypass.packetanalysis.parts.sequence: true
+      anticheataddition.bypass.packetanalysis.parts.stab: true
+      anticheataddition.bypass.packetanalysis.parts.useitem: true
+      anticheataddition.bypass.packetfrequency: true
       anticheataddition.bypass.scaffold: true
       anticheataddition.bypass.scaffold.parts.angle: true
       anticheataddition.bypass.scaffold.parts.face: true

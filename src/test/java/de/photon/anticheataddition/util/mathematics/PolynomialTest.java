@@ -55,7 +55,7 @@ class PolynomialTest
             x = random.nextDouble(-500, 500);
             actual = polynomial.apply(x);
             expected = 7 * x * x * x + 5 * x * x + x + 9;
-            Assertions.assertTrue(MathUtil.inRange(expected - epsilon, expected + epsilon, expected), "Evaluation failed: Epsilon " + epsilon + " | x " + x + " | actual " + actual + " | expected " + expected);
+            Assertions.assertTrue(MathUtil.inRange(expected - epsilon, expected + epsilon, actual), "Evaluation failed: Epsilon " + epsilon + " | x " + x + " | actual " + actual + " | expected " + expected);
         }
     }
 }

@@ -59,6 +59,28 @@ public final class ViolationCounter
     }
 
     /**
+     * Adds an amount to the counter and returns the new value.
+     *
+     * <p>This overload is useful for counters whose unit does not fit into an {@code int}, such as nanoseconds.</p>
+     */
+    public long addAndGet(long amount)
+    {
+        return this.counter.addAndGet(amount);
+    }
+
+    /**
+     * Adds an amount to the counter while preventing it from falling below a minimum value.
+     *
+     * @param amount  the amount to add
+     * @param minimum the smallest value the counter may have
+     * @return the new value
+     */
+    public long addWithMinimumAndGet(long amount, long minimum)
+    {
+        return this.counter.updateAndGet(current -> Math.max(current + amount, minimum));
+    }
+
+    /**
      * This method calls {@link #incrementCompareThreshold()} if the condition is true, else {@link #decrementAboveZero()}.
      *
      * @return true if the condition is true and {@link #incrementCompareThreshold()} also returns true, else false.

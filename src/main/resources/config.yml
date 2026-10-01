@@ -337,28 +337,133 @@ PacketAnalysis:
     AimStep:
       enabled: true
     # This part checks that the client sends an arm animation packet following an attack.
-    # This only detects the worst Killauras.
+    # This only detects the worst killauras.
     # Adds 30 VL.
     Animation:
+      enabled: true
+    # BoatPaddlePacketsPerTick checks for repeated boat steering packets within a tick.
+    # This catches some boat movement and packet-spam cheats.
+    # Adds 20 VL.
+    BoatPaddlePacketsPerTick:
+      enabled: true
+    # Digging checks for invalid block-breaking targets.
+    # Detects some Nuker and AutoMine cheats.
+    # Adds 20 VL.
+    Digging:
+      enabled: true
+    # DroppingPayload checks for invalid data in item-action packets.
+    # Catches some inventory cheats and exploit clients.
+    # Adds 20 VL.
+    DroppingPayload:
+      enabled: true
+    # DuplicateHeldSlot checks for repeated selections of the same hotbar slot.
+    # Detects some inventory cheats.
+    # Adds 10 VL.
+    DuplicateHeldSlot:
+      enabled: true
+    # DuplicateKeepAlive checks for repeated or unsolicited keep-alive replies.
+    # Adds 20 VL.
+    DuplicateKeepAlive:
+      enabled: true
+    # DuplicatePong checks for repeated or unsolicited ping replies.
+    # Detects some packet-spam and exploit clients.
+    # Adds 20 VL.
+    DuplicatePong:
+      enabled: true
+    # DuplicateTeleportConfirm checks for repeated or unsolicited teleport confirmations.
+    # This catches some teleport and packet-spam cheats.
+    # Adds 20 VL.
+    DuplicateTeleportConfirm:
       enabled: true
     # EqualRotation scans for repeated rotation packets.
     # This catches some Scaffold, Tower, Killaura and Aimbot cheats.
     # Adds 5 VL.
     EqualRotation:
       enabled: true
+    # ExtremeYaw checks for unusually large horizontal rotations.
+    # This catches some Derp and rotation exploits.
+    # Adds 50 VL.
+    ExtremeYaw:
+      enabled: true
+    # HeldSlot checks for selections of invalid hotbar slots.
+    # This catches some inventory cheats and exploit clients.
+    # Adds 50 VL.
+    HeldSlot:
+      enabled: true
+    # HorseJump checks for invalid horse jump values.
+    # This catches some horse movement cheats and exploit clients.
+    # Adds 50 VL.
+    HorseJump:
+      enabled: true
     # IllegalPitch detects illegal pitches that a vanilla client cannot send.
     # Adds 150 VL.
     IllegalPitch:
       enabled: true
+    # Malformed detects and cancels packets that cannot be read correctly.
+    # This blocks some crash and exploit clients.
+    # Adds 150 VL.
+    Malformed:
+      enabled: true
+    # MovementPacketsPerTick checks for repeated movement packets within a tick.
+    # Detects bad Timer and movement cheats.
+    # Adds 20 VL.
+    MovementPacketsPerTick:
+      enabled: true
+    # PacketFlood checks for sustained movement packet spam.
+    # Catches various movement and timer cheats.
+    # Adds 5 VL.
+    PacketFlood:
+      enabled: true
+      # Maximum movement packets per second allowed during sustained traffic.
+      sustained_packets_per_second: 40
+      # Maximum movement packets tolerated in a short burst.
+      burst_capacity: 200
+      # How long excessive traffic must continue before flagging (in milliseconds).
+      sustained_violation_duration_ms: 3000
+    # PlayerInputPacketsPerTick checks for repeated movement input packets within a tick.
+    # This catches some movement and packet-spam cheats.
+    # Adds 20 VL.
+    PlayerInputPacketsPerTick:
+      enabled: true
     # PerfectRotation checks for very precise rotations that some cheats exhibit.
     # Adds 4 to 5 VL.
     PerfectRotation:
+      enabled: true
+    # Sequence checks for invalid or repeated block-breaking sequences.
+    # This catches some packet replay and mining cheats.
+    # Adds 10 to 150 VL.
+    Sequence:
+      enabled: true
+    # Stab checks for stabbing attacks without a suitable weapon.
+    # This catches some combat exploits.
+    # Adds 50 VL.
+    Stab:
+      enabled: true
+    # UseItem checks for repeated attempts to stop using an item.
+    # This catches some NoSlow and item-use cheats.
+    # Adds 10 VL.
+    UseItem:
       enabled: true
   # Commands to execute at specific violation levels.
   thresholds:
     110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected by PacketAnalysis"
     160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected by PacketAnalysis"
     200: "kick {player} Suspicious packets"
+
+# PacketFrequency checks whether movement packets arrive faster than expected.
+# This catches some Timer and movement-speed cheats.
+# Adds VL based on how far the packet rate exceeds the expected rate.
+PacketFrequency:
+  enabled: true
+  # This is the maximum duration of lagspikes PacketFrequency should allow for.
+  # Note that this also allows bypassing the check for this time by deliberately slowing down the client beforehand
+  # (in milliseconds).
+  minimum_balance: 8000
+  # Commands to execute at specific violation levels.
+  thresholds:
+    110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected of using a Timer."
+    160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected of using a Timer."
+    200: "kick {player} Timer"
 
 # Scaffold detects cheats that place blocks below the player to rapidly construct bridges.
 # The always active Average core part adds 20 to 130 VLs.

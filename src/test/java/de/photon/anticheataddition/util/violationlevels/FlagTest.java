@@ -2,10 +2,17 @@ package de.photon.anticheataddition.util.violationlevels;
 
 import de.photon.anticheataddition.Dummy;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class FlagTest
 {
+    @BeforeAll
+    static void setup()
+    {
+        Dummy.mockAntiCheatAddition();
+    }
+
     @Test
     void testRunApplicableActions()
     {
@@ -21,5 +28,18 @@ class FlagTest
 
         Assertions.assertDoesNotThrow(() -> flag.runApplicableActions(0));
         Assertions.assertThrows(IllegalStateException.class, () -> flag.runApplicableActions(1));
+    }
+
+    @Test
+    void cancelVlZeroDoesNotRunCancelAction()
+    {
+        final var user = Dummy.mockUser();
+
+        Flag flag = Flag.of(user);
+        flag.setCancelAction(0, () -> {
+            throw new IllegalStateException();
+        });
+
+        Assertions.assertDoesNotThrow(() -> flag.runApplicableActions(100));
     }
 }

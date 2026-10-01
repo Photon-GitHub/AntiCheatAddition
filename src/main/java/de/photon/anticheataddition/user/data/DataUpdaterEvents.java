@@ -13,7 +13,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -39,6 +38,12 @@ public final class DataUpdaterEvents implements Listener
     private static void closeInternalInventory(User user)
     {
         user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
+    }
+
+    private static void resetProtocolState(User user)
+    {
+        user.getData().object.packetFloodData.reset();
+        user.getData().object.playerActionData.reset();
     }
 
     public static void userUpdate(UUID uuid, TimeKey... update)
@@ -163,6 +168,18 @@ public final class DataUpdaterEvents implements Listener
         }
     }
 
+    @EventHandler
+    public void onItemInteractEntity(PlayerInteractEntityEvent event)
+    {
+        final var user = User.getUser(event.getPlayer());
+        if (user == null) return;
+
+        // Feeding an entity also proves continued right-clicking with food after eating.
+        // InventoryUtil handles the main hand on 1.8 and both hands on newer servers.
+        if (InventoryUtil.INSTANCE.getHandContents(event.getPlayer()).stream().anyMatch(item -> item.getType().isEdible()))
+            user.getTimeMap().at(TimeKey.RIGHT_CLICK_CONSUMABLE_ITEM_EVENT).update();
+    }
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onMove(final PlayerMoveEvent event)
     {
@@ -203,13 +220,19 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRespawn(final PlayerRespawnEvent event)
     {
-        userUpdate(event.getPlayer().getUniqueId(), DataUpdaterEvents::closeInternalInventory, TimeKey.TELEPORT, TimeKey.RESPAWN);
+        userUpdate(event.getPlayer().getUniqueId(), user -> {
+            closeInternalInventory(user);
+            resetProtocolState(user);
+        }, TimeKey.TELEPORT, TimeKey.RESPAWN);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTeleport(final PlayerTeleportEvent event)
     {
-        userUpdate(event.getPlayer().getUniqueId(), DataUpdaterEvents::closeInternalInventory, TimeKey.TELEPORT);
+        userUpdate(event.getPlayer().getUniqueId(), user -> {
+            closeInternalInventory(user);
+            resetProtocolState(user);
+        }, TimeKey.TELEPORT);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -245,6 +268,9 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler
     public void onWorldChange(final PlayerChangedWorldEvent event)
     {
-        userUpdate(event.getPlayer().getUniqueId(), DataUpdaterEvents::closeInternalInventory, TimeKey.TELEPORT, TimeKey.WORLD_CHANGE);
+        userUpdate(event.getPlayer().getUniqueId(), user -> {
+            closeInternalInventory(user);
+            resetProtocolState(user);
+        }, TimeKey.TELEPORT, TimeKey.WORLD_CHANGE);
     }
 }

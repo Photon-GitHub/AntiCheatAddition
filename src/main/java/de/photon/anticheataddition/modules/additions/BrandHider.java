@@ -10,7 +10,7 @@ import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.util.execute.Placeholders;
 import de.photon.anticheataddition.util.log.Log;
-import de.photon.anticheataddition.util.pluginmessage.ByteBufUtil;
+import de.photon.anticheataddition.util.pluginmessage.ACAByteBufUtil;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
 import io.netty.buffer.ByteBuf;
@@ -57,8 +57,8 @@ public final class BrandHider extends Module implements PacketListener, Listener
     {
         final ByteBuf buf = Unpooled.buffer();
         try {
-            ByteBufUtil.writeString(buf, brand);
-            return ByteBufUtil.toArray(buf);
+            ACAByteBufUtil.writeString(buf, brand);
+            return ACAByteBufUtil.toArray(buf);
         } finally {
             buf.release();
         }

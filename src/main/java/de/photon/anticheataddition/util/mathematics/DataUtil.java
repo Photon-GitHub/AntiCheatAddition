@@ -13,14 +13,12 @@ import java.util.Comparator;
  * Supports primitive types int, long, and double.
  */
 @UtilityClass
-public final class DataUtil
-{
+public final class DataUtil {
 
     /**
      * Calculates the sum of the given int values.
      *
      * @param data the ints to sum
-     *
      * @return the total sum of the provided values
      */
     public static int sum(int... data)
@@ -34,7 +32,6 @@ public final class DataUtil
      * Calculates the sum of the given long values.
      *
      * @param data the longs to sum
-     *
      * @return the total sum of the provided values
      */
     public static long sum(long... data)
@@ -48,7 +45,6 @@ public final class DataUtil
      * Calculates the sum of the given double values.
      *
      * @param data the doubles to sum
-     *
      * @return the total sum of the provided values
      */
     public static double sum(double... data)
@@ -62,40 +58,38 @@ public final class DataUtil
      * Computes the arithmetic mean (average) of the given int values.
      *
      * @param data the ints to average
-     *
      * @return the mean value as a double
-     *
-     * @throws ArithmeticException if {@code data.length == 0}
+     * @throws IllegalArgumentException if {@code data.length == 0}
      */
     public static double average(int... data)
     {
         Preconditions.checkArgument(data.length > 0, "Cannot compute average of zero elements.");
-        return sum(data) / (double) data.length;
+        long sum = 0L;
+        for (int datum : data) sum += datum;
+        return sum / (double) data.length;
     }
 
     /**
      * Computes the arithmetic mean (average) of the given long values.
      *
      * @param data the longs to average
-     *
      * @return the mean value as a double
-     *
-     * @throws ArithmeticException if {@code data.length == 0}
+     * @throws IllegalArgumentException if {@code data.length == 0}
      */
     public static double average(long... data)
     {
         Preconditions.checkArgument(data.length > 0, "Cannot compute average of zero elements.");
-        return sum(data) / (double) data.length;
+        double sum = 0D;
+        for (long datum : data) sum += datum;
+        return sum / data.length;
     }
 
     /**
      * Computes the arithmetic mean (average) of the given double values.
      *
      * @param data the doubles to average
-     *
      * @return the mean value as a double
-     *
-     * @throws ArithmeticException if {@code data.length == 0}
+     * @throws IllegalArgumentException if {@code data.length == 0}
      */
     public static double average(double... data)
     {
@@ -110,7 +104,6 @@ public final class DataUtil
      *
      * @param reference the reference or expected value
      * @param value     the observed value
-     *
      * @return the squared difference {@code (value - reference)^2}
      */
     public static double variance(final double reference, final double value)
@@ -124,7 +117,6 @@ public final class DataUtil
      *
      * @param reference the reference value to compare against
      * @param data      the int values to evaluate
-     *
      * @return the sum of squared differences
      */
     public static double variance(double reference, int... data)
@@ -139,7 +131,6 @@ public final class DataUtil
      *
      * @param reference the reference value to compare against
      * @param data      the long values to evaluate
-     *
      * @return the sum of squared differences
      */
     public static double variance(double reference, long... data)
@@ -154,7 +145,6 @@ public final class DataUtil
      *
      * @param reference the reference value to compare against
      * @param data      the double values to evaluate
-     *
      * @return the sum of squared differences
      */
     public static double variance(double reference, double... data)
@@ -173,14 +163,14 @@ public final class DataUtil
      *
      * @param numberOutliers the count of farthest elements to remove
      * @param data           the int array to process
-     *
      * @return a new array containing the remaining elements
-     *
      * @throws IllegalArgumentException if {@code data} is null or too small
      */
     public static int[] removeOutliers(int numberOutliers, int... data)
     {
-        if (data == null || data.length <= numberOutliers) throw new IllegalArgumentException("Not enough data to remove outliers.");
+        Preconditions.checkArgument(data != null, "Data must not be null.");
+        Preconditions.checkArgument(numberOutliers >= 0, "Number of outliers must not be negative.");
+        Preconditions.checkArgument(data.length > numberOutliers, "Not enough data to remove outliers.");
 
         final double mean = average(data);
         return Arrays.stream(data)
@@ -203,14 +193,14 @@ public final class DataUtil
      *
      * @param numberOutliers the count of farthest elements to remove
      * @param data           the long array to process
-     *
      * @return a new array containing the remaining elements
-     *
      * @throws IllegalArgumentException if {@code data} is null or too small
      */
     public static long[] removeOutliers(int numberOutliers, long... data)
     {
-        if (data == null || data.length <= numberOutliers) throw new IllegalArgumentException("Not enough data to remove outliers.");
+        Preconditions.checkArgument(data != null, "Data must not be null.");
+        Preconditions.checkArgument(numberOutliers >= 0, "Number of outliers must not be negative.");
+        Preconditions.checkArgument(data.length > numberOutliers, "Not enough data to remove outliers.");
 
         final double mean = average(data);
         return Arrays.stream(data)
@@ -233,14 +223,14 @@ public final class DataUtil
      *
      * @param numberOutliers the count of farthest elements to remove
      * @param data           the double array to process
-     *
      * @return a new array containing the remaining elements
-     *
      * @throws IllegalArgumentException if {@code data} is null or too small
      */
     public static double[] removeOutliers(int numberOutliers, double... data)
     {
-        if (data == null || data.length <= numberOutliers) throw new IllegalArgumentException("Not enough data to remove outliers.");
+        Preconditions.checkArgument(data != null, "Data must not be null.");
+        Preconditions.checkArgument(numberOutliers >= 0, "Number of outliers must not be negative.");
+        Preconditions.checkArgument(data.length > numberOutliers, "Not enough data to remove outliers.");
 
         final double mean = average(data);
         return Arrays.stream(data)
@@ -253,4 +243,73 @@ public final class DataUtil
                      .mapToDouble(Double::doubleValue)
                      .toArray();
     }
+
+    /** Median of a copy; returns NaN for an empty sample and leaves the input unchanged. */
+    public static double median(final double[] values)
+    {
+        if (values.length == 0) return Double.NaN;
+        final double[] sorted = Arrays.copyOf(values, values.length);
+        Arrays.sort(sorted);
+        final int middle = sorted.length / 2;
+        return (sorted.length & 1) == 0 ? (sorted[middle - 1] + sorted[middle]) * 0.5D : sorted[middle];
+    }
+
+    /** Sample standard deviation divided by the absolute mean; NaN for insufficient or near-zero-mean data. */
+    public static double coefficientOfVariation(final double[] values)
+    {
+        if (values.length < 2) return Double.NaN;
+        final double mean = average(values);
+        if (!Double.isFinite(mean) || Math.abs(mean) <= 1E-9D) return Double.NaN;
+        return sampleStandardDeviation(values) / Math.abs(mean);
+    }
+
+    /** Sample standard deviation (n - 1 normalization), or NaN for fewer than two samples. */
+    public static double sampleStandardDeviation(final double[] values)
+    {
+        if (values.length < 2) return Double.NaN;
+        return Math.sqrt(variance(average(values), values) / (values.length - 1D));
+    }
+
+    /** Pearson correlation; returns zero when fewer than two pairs or a constant series provide no evidence. */
+    public static double correlation(final double[] first, final double[] second)
+    {
+        return correlation(first, second, 0);
+    }
+
+    /**
+     * Pearson correlation of first[i] and second[i + lag] over the overlapping samples.
+     * Arrays must have equal lengths and lag must be nonnegative. Insufficient or effectively constant samples
+     * (product of centered L2 norms at most 1E-12) return zero rather than inventing correlation evidence.
+     */
+    public static double correlation(final double[] first, final double[] second, final int lag)
+    {
+        if (first.length != second.length) throw new IllegalArgumentException("series must have equal lengths");
+        if (lag < 0) throw new IllegalArgumentException("lag must not be negative");
+        final int length = first.length - lag;
+        if (length <= 1) return 0D;
+
+        double firstMean = 0D;
+        double secondMean = 0D;
+        for (int i = 0; i < length; i++) {
+            firstMean += first[i];
+            secondMean += second[i + lag];
+        }
+        firstMean /= length;
+        secondMean /= length;
+
+        double covariance = 0D;
+        double firstVariance = 0D;
+        double secondVariance = 0D;
+        for (int i = 0; i < length; i++) {
+            final double centeredFirst = first[i] - firstMean;
+            final double centeredSecond = second[i + lag] - secondMean;
+            covariance += centeredFirst * centeredSecond;
+            firstVariance += centeredFirst * centeredFirst;
+            secondVariance += centeredSecond * centeredSecond;
+        }
+
+        final double denominator = Math.sqrt(firstVariance * secondVariance);
+        return denominator <= 1E-12D ? 0D : Math.clamp(covariance / denominator, -1D, 1D);
+    }
+
 }

@@ -42,7 +42,7 @@ public class InfoCommand extends InternalCommand
             ChatMessage.sendMessage(sender, "Unable to query brand messages.");
         } else {
             final var brandMessages = user.getBrandChannelData().listBrandChannelMessages();
-            ChatMessage.sendMessage(sender, "The last brand channel messages: " + brandMessages);
+            ChatMessage.sendMessage(sender, "The last brand channel messages: [" + brandMessages + "]");
         }
 
         if (moduleVls.isEmpty()) ChatMessage.sendMessage(sender, "The player has no violations.");

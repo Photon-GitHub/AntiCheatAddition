@@ -29,7 +29,7 @@ public final class AutoEat extends ViolationModule implements Listener
     {
         final var user = User.getUser(event.getPlayer());
         // If the amount is 1, the last right click on a consumable will be perfect (bot-like), as the item disappears from the slot.
-        if (User.isUserInvalid(user, this) || event.getItem().getAmount() <= 1) return;
+        if (User.isUserInvalid(user, this) || !user.inAdventureOrSurvivalMode() || event.getItem().getAmount() <= 1) return;
 
         Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(), () -> {
             // A PlayerInteractEvent will always fire when the right mouse button is clicked, therefore a legit player will always hold his mouse a bit longer than a bot and the last right click will

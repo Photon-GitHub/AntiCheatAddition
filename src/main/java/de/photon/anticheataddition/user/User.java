@@ -4,6 +4,7 @@ import com.github.davidmoten.rtreemulti.Entry;
 import com.github.davidmoten.rtreemulti.geometry.Point;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
+import com.github.retrooper.packetevents.event.ProtocolPacketEvent;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.InternalPermission;
@@ -15,8 +16,7 @@ import de.photon.anticheataddition.user.data.TimestampMap;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
 import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
 import de.photon.anticheataddition.user.data.batch.TowerBatch;
-import de.photon.anticheataddition.user.data.subdata.BrandChannelData;
-import de.photon.anticheataddition.user.data.subdata.LookPacketData;
+import de.photon.anticheataddition.user.data.subdata.*;
 import de.photon.anticheataddition.util.log.Log;
 import de.photon.anticheataddition.util.mathematics.Hitbox;
 import lombok.EqualsAndHashCode;
@@ -35,7 +35,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.OptionalInt;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -90,15 +89,10 @@ public final class User implements Permissible
         Log.finer(() -> "User %s created | General bypass permissions: %s | Debug permissions: %s".formatted(player.getName(), InternalPermission.BYPASS.hasPermission(player), InternalPermission.DEBUG.hasPermission(player)));
     }
 
-    public static User getUser(PacketReceiveEvent event)
+    public static User getUser(ProtocolPacketEvent event)
     {
         final var player = event.getPlayer();
         return player == null ? null : getUser((Player) player);
-    }
-
-    public static User getUser(PacketSendEvent event)
-    {
-        return getUser((Player) event.getPlayer());
     }
 
     public static User getUser(Player player)
@@ -132,7 +126,6 @@ public final class User implements Permissible
      *
      * @param user   the {@link User} to be checked.
      * @param module the module which bypass permission shall be used.
-     *
      * @return true if the {@link User} is null or bypassed.
      */
     public static boolean isUserInvalid(@Nullable User user, @NotNull Module module)
@@ -145,7 +138,6 @@ public final class User implements Permissible
      *
      * @param user             the {@link User} to be checked.
      * @param bypassPermission the bypass permission of the module.
-     *
      * @return true if the {@link User} is null or bypassed.
      */
     public static boolean isUserInvalid(@Nullable User user, @NotNull String bypassPermission)
@@ -255,7 +247,6 @@ public final class User implements Permissible
      *
      * @param movementType what movement should be checked
      * @param milliseconds the amount of time in milliseconds that should be considered.
-     *
      * @return true if the player has moved in the specified time frame.
      */
     public boolean hasMovedRecently(final TimeKey movementType, final long milliseconds)
@@ -270,7 +261,6 @@ public final class User implements Permissible
      * Checks if this {@link User} has sprinted recently
      *
      * @param milliseconds the amount of time in milliseconds that should be considered.
-     *
      * @return true if the player has sprinted in the specified time frame.
      */
     public boolean hasSprintedRecently(final long milliseconds)
@@ -282,7 +272,6 @@ public final class User implements Permissible
      * Checks if this {@link User} has sneaked recently
      *
      * @param milliseconds the amount of time in milliseconds that should be considered.
-     *
      * @return true if the player has sneaked in the specified time frame.
      */
     public boolean hasSneakedRecently(final long milliseconds)
@@ -294,7 +283,6 @@ public final class User implements Permissible
      * Checks if this {@link User} has jumped recently
      *
      * @param milliseconds the amount of time in milliseconds that should be considered.
-     *
      * @return true if the player has sneaked in the specified time frame.
      */
     public boolean hasJumpedRecently(final long milliseconds)
@@ -324,16 +312,6 @@ public final class User implements Permissible
     {
         return this.timeMap.at(TimeKey.WORLD_CHANGE).recentlyUpdated(milliseconds);
     }
-
-    /**
-     * Creates an {@link Entry} of this {@link User} and their location.
-     * This is a convenience method for RTree operations.
-     */
-    public Entry<Player, Point> rTreeEntry()
-    {
-        return rTreeEntryFromPlayer(this.player);
-    }
-
 
     /**
      * Gets the debug state (determines whether an {@link User} gets debug messages).

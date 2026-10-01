@@ -1,24 +1,26 @@
 package de.photon.anticheataddition.user.data;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * A class to manage a timestamp.
  */
 public final class Timestamp
 {
     // Only set and get operations -> no atomic required.
-    private volatile long currentTime = 0;
+    private volatile long currentNanoTime = 0;
 
     public long getTime()
     {
-        return currentTime;
+        return TimeUnit.NANOSECONDS.toMillis(currentNanoTime);
     }
 
     /**
-     * Updates this {@link Timestamp} to the current time as given by {@link System#currentTimeMillis()}.
+     * Updates this {@link Timestamp} to the current time as given by {@link System#nanoTime()}.
      */
     public void update()
     {
-        this.currentTime = System.currentTimeMillis();
+        this.currentNanoTime = System.nanoTime();
     }
 
     /**
@@ -26,7 +28,7 @@ public final class Timestamp
      */
     public void setToZero()
     {
-        this.currentTime = 0;
+        this.currentNanoTime = 0;
     }
 
     /**
@@ -34,7 +36,7 @@ public final class Timestamp
      */
     public void setToFuture(long futureMillis)
     {
-        this.currentTime = System.currentTimeMillis() + futureMillis;
+        this.currentNanoTime = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(futureMillis);
     }
 
     /**
@@ -44,14 +46,21 @@ public final class Timestamp
      */
     public long passedTime()
     {
-        return System.currentTimeMillis() - currentTime;
+        return TimeUnit.NANOSECONDS.toMillis(this.passedNanos());
+    }
+
+    /**
+     * Returns the time passed since the monotonic nanosecond timestamp was updated.
+     */
+    public long passedNanos()
+    {
+        return System.nanoTime() - currentNanoTime;
     }
 
     /**
      * Checks if this {@link Timestamp} has a value that is at most the specified time ago.
      *
      * @param time the time which has passed at most for this method to return true.
-     *
      * @return true if the internal time is smaller or equal to the specified time, false otherwise.
      * If the internal time is 0 (via {@link #setToZero()}) this method will return false.
      * If the internal time is in the future (via {@link #setToFuture(long)}) this method will return true.

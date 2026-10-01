@@ -25,11 +25,13 @@ public final class ModularInteger
     /**
      * A general calculation of what integer should be after mod n.
      * The method will handle negative values automatically and will correctly assign them to n - |value|.
+     *
+     * @param integer the integer on which the modulus operation should be performed.
+     * @param mod     the modulus that must be positive.
      */
     public static int set(int integer, int mod)
     {
-        integer %= mod;
-        return integer < 0 ? integer + mod : integer;
+        return Math.floorMod(integer, mod);
     }
 
     /**

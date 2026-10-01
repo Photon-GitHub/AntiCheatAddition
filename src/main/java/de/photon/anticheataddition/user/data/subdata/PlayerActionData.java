@@ -5,49 +5,54 @@ public final class PlayerActionData
     private boolean hasSequence;
     private int lastSequence;
     private DigTarget diggingTarget;
-    private boolean diggingStateKnown;
     private boolean activeUse;
     private boolean useStateKnown;
 
-    public synchronized boolean observeSequence(final int sequence, final boolean sequenceSupported)
+    /**
+     * Observes a block breaking packet sequence.
+     *
+     * @return true if the sequence is valid
+     */
+    public synchronized boolean observeSequence(final int sequence)
     {
-        if (!sequenceSupported) return true;
         if (sequence < 0) return false;
 
-        final boolean replay = hasSequence && sequence <= lastSequence;
-        if (!replay) {
+        // Valid if there is no sequence yet or the sequence is correctly greater than the last one.
+        if (!hasSequence || sequence > lastSequence) {
             hasSequence = true;
             lastSequence = sequence;
+            return true;
         }
-        return !replay;
+        return false;
     }
 
-    public synchronized void startDigging(final int x, final int y, final int z, final int face)
+    public synchronized void startDigging(final int x, final int y, final int z)
     {
-        diggingTarget = new DigTarget(x, y, z, face);
-        diggingStateKnown = true;
+        diggingTarget = new DigTarget(x, y, z);
     }
 
-    public synchronized TransitionResult finishDigging(final int x, final int y, final int z, final int face)
+    public synchronized TransitionResult finishDigging(final int x, final int y, final int z)
     {
-        if (diggingTarget == null) {
-            final TransitionResult result = diggingStateKnown ? TransitionResult.INVALID : TransitionResult.UNKNOWN;
-            diggingStateKnown = true;
-            return result;
-        }
+        // Without an observed target, cancellation or an unobserved START can leave
+        // several legitimate completions uncheckable until the next START arrives.
+        if (diggingTarget == null) return TransitionResult.UNKNOWN;
+        // The crosshair can move to another face of the same block while mining.
         final boolean matches = diggingTarget.x() == x &&
                                 diggingTarget.y() == y &&
-                                diggingTarget.z() == z &&
-                                diggingTarget.face() == face;
-        diggingTarget = null;
-        diggingStateKnown = true;
+                                diggingTarget.z() == z;
+        // Vanilla retains this position after completion. If placement restores the block
+        // while attack remains held, the client can finish it again without another START.
         return matches ? TransitionResult.VALID : TransitionResult.INVALID;
+    }
+
+    public synchronized String describeDiggingTarget()
+    {
+        return diggingTarget == null ? "none" : diggingTarget.toString();
     }
 
     public synchronized void clearDigging()
     {
         diggingTarget = null;
-        diggingStateKnown = true;
     }
 
     public synchronized void cancelDigging()
@@ -55,7 +60,6 @@ public final class PlayerActionData
         diggingTarget = null;
         // The cancellation may refer to a stale client-side target. Do not let a later
         // completion be judged against the target that was just invalidated.
-        diggingStateKnown = false;
     }
 
     public synchronized void startUse()
@@ -87,12 +91,11 @@ public final class PlayerActionData
         hasSequence = false;
         lastSequence = 0;
         diggingTarget = null;
-        diggingStateKnown = false;
         activeUse = false;
         useStateKnown = false;
     }
 
-    private record DigTarget(int x, int y, int z, int face) {}
+    private record DigTarget(int x, int y, int z) {}
 
     public enum TransitionResult
     {

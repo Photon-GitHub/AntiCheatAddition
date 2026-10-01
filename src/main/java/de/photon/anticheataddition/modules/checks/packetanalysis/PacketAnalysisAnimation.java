@@ -33,16 +33,16 @@ public final class PacketAnalysisAnimation extends ViolationModule
         /* Protocol:
          * 1) Player left clicks
          * 2) Entity use packet with attack.
-         * 3) Arm Animation packet.
+         * 3) Arm Animation packet (Punch packet since 26.3).
          * */
         return ModuleLoader.builder(this)
                            .setAllowedServerVersions(ServerVersion.NON_188_VERSIONS)
-                           .addPacketListeners(PacketAdapterBuilder.of(this, PacketType.Play.Client.ANIMATION, PacketType.Play.Client.ATTACK, PacketType.Play.Client.INTERACT_ENTITY)
+                           .addPacketListeners(PacketAdapterBuilder.of(this, PacketType.Play.Client.ANIMATION, PacketType.Play.Client.PUNCH, PacketType.Play.Client.ATTACK, PacketType.Play.Client.INTERACT_ENTITY)
                                                                    .priority(PacketListenerPriority.LOW)
                                                                    .onReceiving((event, user) -> {
                                                                        switch (event.getPacketType()) {
                                                                            // We received an animation -> No animation expected anymore.
-                                                                           case PacketType.Play.Client.ANIMATION -> user.getData().bool.packetAnalysisAnimationExpected = false;
+                                                                           case PacketType.Play.Client.ANIMATION, PacketType.Play.Client.PUNCH -> user.getData().bool.packetAnalysisAnimationExpected = false;
                                                                            // Potential attack packets.
                                                                            case PacketType.Play.Client.ATTACK -> handleAttack(user);
                                                                            case PacketType.Play.Client.INTERACT_ENTITY -> {

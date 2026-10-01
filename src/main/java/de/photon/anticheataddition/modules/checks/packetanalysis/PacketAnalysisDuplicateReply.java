@@ -14,6 +14,7 @@ import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.subdata.ChallengeReplyData;
 import de.photon.anticheataddition.util.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -27,6 +28,9 @@ import java.util.Set;
  */
 public final class PacketAnalysisDuplicateReply extends ViolationModule
 {
+    // A teleport happens before ACA's user is created, thus a login grace period is needed.
+    private static final long JOIN_GRACE_MILLIS = 5000;
+
     public static final PacketAnalysisDuplicateReply KEEP_ALIVE = new PacketAnalysisDuplicateReply("DuplicateKeepAlive", Kind.KEEP_ALIVE);
     public static final PacketAnalysisDuplicateReply PONG = new PacketAnalysisDuplicateReply("DuplicatePong", Kind.PONG);
     public static final PacketAnalysisDuplicateReply TELEPORT = new PacketAnalysisDuplicateReply("DuplicateTeleportConfirm", Kind.TELEPORT);
@@ -143,7 +147,14 @@ public final class PacketAnalysisDuplicateReply extends ViolationModule
         if (event.isCancelled()) return;
 
         final long id = kind.getID(event);
-        if (!data.replied(id)) getManagement().flag(Flag.of(user)
+        final boolean authorized = data.replied(id);
+
+        // The initial teleport may be sent before PlayerJoinEvent creates ACA's User.
+        // Consume known credits during the grace period so they cannot authorize a later replay.
+        if (kind == Kind.TELEPORT && user.getTimeMap().at(TimeKey.LOGIN_TIME).recentlyUpdated(JOIN_GRACE_MILLIS)) return;
+
+        // When the data says that the id is incorrect, flag.
+        if (!authorized) getManagement().flag(Flag.of(user)
                                                         .setAddedVl(20)
                                                         .setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent an unsolicited or repeated " + kind.response + " | Reply " + id));
     }

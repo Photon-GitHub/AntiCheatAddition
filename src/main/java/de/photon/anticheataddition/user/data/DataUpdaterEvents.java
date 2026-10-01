@@ -168,6 +168,18 @@ public final class DataUpdaterEvents implements Listener
         }
     }
 
+    @EventHandler
+    public void onItemInteractEntity(PlayerInteractEntityEvent event)
+    {
+        final var user = User.getUser(event.getPlayer());
+        if (user == null) return;
+
+        // Feeding an entity also proves continued right-clicking with food after eating.
+        // InventoryUtil handles the main hand on 1.8 and both hands on newer servers.
+        if (InventoryUtil.INSTANCE.getHandContents(event.getPlayer()).stream().anyMatch(item -> item.getType().isEdible()))
+            user.getTimeMap().at(TimeKey.RIGHT_CLICK_CONSUMABLE_ITEM_EVENT).update();
+    }
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onMove(final PlayerMoveEvent event)
     {

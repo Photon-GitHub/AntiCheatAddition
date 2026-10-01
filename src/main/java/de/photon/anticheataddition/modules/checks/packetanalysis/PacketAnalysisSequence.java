@@ -2,7 +2,6 @@ package de.photon.anticheataddition.modules.checks.packetanalysis;
 
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.player.DiggingAction;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
 import de.photon.anticheataddition.ServerVersion;
@@ -40,9 +39,8 @@ public final class PacketAnalysisSequence extends ViolationModule
                                                            // CANCELLED_DIGGING intentionally uses sequence zero in vanilla clients.
                                                            if (packet.getAction() != DiggingAction.START_DIGGING && packet.getAction() != DiggingAction.FINISHED_DIGGING) return;
 
-                                                           final ClientVersion clientVersion = event.getUser().getClientVersion();
-                                                           final boolean sequenceSupported = clientVersion != null && clientVersion.isNewerThanOrEquals(ClientVersion.V_1_19);
-                                                           if (state.observeSequence(packet.getSequence(), sequenceSupported)) return;
+                                                           // This will not run out of sequence numbers for years of playtime with constant block breaking.
+                                                           if (state.observeSequence(packet.getSequence())) return;
 
                                                            final int addedVl = packet.getSequence() < 0 ? 150 : 10;
                                                            getManagement().flag(Flag.of(user)

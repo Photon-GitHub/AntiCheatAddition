@@ -13,27 +13,31 @@ public final class PlayerActionDataTest
     public void acceptsGapsButRejectsReplayedSequences()
     {
         final PlayerActionData data = new PlayerActionData();
-        assertTrue(data.observeSequence(10, true));
-        assertTrue(data.observeSequence(17, true));
-        assertFalse(data.observeSequence(17, true));
-        assertFalse(data.observeSequence(16, true));
+        assertTrue(data.observeSequence(10));
+        assertTrue(data.observeSequence(17));
+        assertFalse(data.observeSequence(17));
+        assertFalse(data.observeSequence(16));
+        assertTrue(data.observeSequence(18));
     }
 
     @Test
-    public void ignoresSequenceValidationOnOldProtocols()
+    public void rejectsNegativeSequencesWithoutChangingHistory()
     {
         final PlayerActionData data = new PlayerActionData();
-        assertTrue(data.observeSequence(-1, false));
-        assertTrue(data.observeSequence(-1, false));
+        assertFalse(data.observeSequence(-1));
+        assertTrue(data.observeSequence(0));
+        assertFalse(data.observeSequence(-1));
+        assertFalse(data.observeSequence(0));
+        assertTrue(data.observeSequence(1));
     }
 
     @Test
     public void tracksDiggingTargetAndUseState()
     {
         final PlayerActionData data = new PlayerActionData();
-        data.startDigging(1, 64, -2, 1);
-        assertEquals(PlayerActionData.TransitionResult.VALID, data.finishDigging(1, 64, -2, 1));
-        assertEquals(PlayerActionData.TransitionResult.INVALID, data.finishDigging(1, 64, -2, 1));
+        data.startDigging(1, 64, -2);
+        assertEquals(PlayerActionData.TransitionResult.VALID, data.finishDigging(1, 64, -2));
+        assertEquals(PlayerActionData.TransitionResult.VALID, data.finishDigging(1, 64, -2));
 
         data.startUse();
         assertEquals(PlayerActionData.TransitionResult.VALID, data.releaseUse());
@@ -43,12 +47,12 @@ public final class PlayerActionDataTest
     }
 
     @Test
-    public void ignoresFirstTerminalTransitionAfterLifecycleReset()
+    public void ignoresUnknownDiggingTargetsAndFirstUseReleaseAfterReset()
     {
         final PlayerActionData data = new PlayerActionData();
 
-        assertEquals(PlayerActionData.TransitionResult.UNKNOWN, data.finishDigging(1, 64, -2, 1));
-        assertEquals(PlayerActionData.TransitionResult.INVALID, data.finishDigging(1, 64, -2, 1));
+        assertEquals(PlayerActionData.TransitionResult.UNKNOWN, data.finishDigging(1, 64, -2));
+        assertEquals(PlayerActionData.TransitionResult.UNKNOWN, data.finishDigging(1, 64, -2));
 
         data.reset();
         assertEquals(PlayerActionData.TransitionResult.UNKNOWN, data.releaseUse());
@@ -59,19 +63,20 @@ public final class PlayerActionDataTest
     public void mismatchedDiggingTargetIsInvalid()
     {
         final PlayerActionData data = new PlayerActionData();
-        data.startDigging(1, 64, -2, 1);
+        data.startDigging(1, 64, -2);
 
-        assertEquals(PlayerActionData.TransitionResult.INVALID, data.finishDigging(2, 64, -2, 1));
+        assertEquals(PlayerActionData.TransitionResult.INVALID, data.finishDigging(2, 64, -2));
     }
 
     @Test
     public void staleDiggingCancellationDoesNotCreateAnInvalidTransition()
     {
         final PlayerActionData data = new PlayerActionData();
-        data.startDigging(1, 64, -2, 1);
+        data.startDigging(1, 64, -2);
 
         data.cancelDigging();
 
-        assertEquals(PlayerActionData.TransitionResult.UNKNOWN, data.finishDigging(1, 64, -2, 1));
+        assertEquals(PlayerActionData.TransitionResult.UNKNOWN, data.finishDigging(1, 64, -2));
+        assertEquals(PlayerActionData.TransitionResult.UNKNOWN, data.finishDigging(1, 64, -2));
     }
 }

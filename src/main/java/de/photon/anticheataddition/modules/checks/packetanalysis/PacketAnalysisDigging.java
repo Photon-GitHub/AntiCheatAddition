@@ -35,7 +35,7 @@ public final class PacketAnalysisDigging extends ViolationModule
                     invalid(user, "invalid digging target");
                     return;
                 }
-                state.startDigging(packet.getBlockPosition().x, packet.getBlockPosition().y, packet.getBlockPosition().z, packet.getBlockFaceId());
+                state.startDigging(packet.getBlockPosition().x, packet.getBlockPosition().y, packet.getBlockPosition().z);
             }
             case CANCELLED_DIGGING -> {
                 // A client can cancel a stale target after it has already retargeted while the
@@ -50,9 +50,11 @@ public final class PacketAnalysisDigging extends ViolationModule
                     return;
                 }
 
-                final PlayerActionData.TransitionResult result = state.finishDigging(packet.getBlockPosition().x, packet.getBlockPosition().y, packet.getBlockPosition().z, packet.getBlockFaceId());
+                final PlayerActionData.TransitionResult result = state.finishDigging(packet.getBlockPosition().x, packet.getBlockPosition().y, packet.getBlockPosition().z);
                 if (result == PlayerActionData.TransitionResult.INVALID) {
-                    invalid(user, "finished a different block than the active dig target");
+                    invalid(user, "dig target mismatch | Expected " + state.describeDiggingTarget() +
+                                  " | Received " + packet.getBlockPosition() + " | Face " + packet.getBlockFaceId() +
+                                  " | Sequence " + packet.getSequence());
                 }
             }
             default -> {

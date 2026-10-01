@@ -46,8 +46,7 @@ public final class PacketAnalysisUseItem extends ViolationModule
         final PlayerActionData state = user.getData().object.playerActionData;
 
         if (packet.getAction() == DiggingAction.SWAP_ITEM_WITH_OFFHAND) {
-            // Vanilla stops active item use when the hands are swapped. Keep this transition with the use-item state
-            // machine so its lifecycle stays local to this check.
+            // Vanilla stops active item use when the hands are swapped.
             state.clearUse();
             return;
         }

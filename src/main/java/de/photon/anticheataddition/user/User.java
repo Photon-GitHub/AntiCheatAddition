@@ -4,6 +4,7 @@ import com.github.davidmoten.rtreemulti.Entry;
 import com.github.davidmoten.rtreemulti.geometry.Point;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
+import com.github.retrooper.packetevents.event.ProtocolPacketEvent;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.InternalPermission;
@@ -88,15 +89,10 @@ public final class User implements Permissible
         Log.finer(() -> "User %s created | General bypass permissions: %s | Debug permissions: %s".formatted(player.getName(), InternalPermission.BYPASS.hasPermission(player), InternalPermission.DEBUG.hasPermission(player)));
     }
 
-    public static User getUser(PacketReceiveEvent event)
+    public static User getUser(ProtocolPacketEvent event)
     {
         final var player = event.getPlayer();
         return player == null ? null : getUser((Player) player);
-    }
-
-    public static User getUser(PacketSendEvent event)
-    {
-        return getUser((Player) event.getPlayer());
     }
 
     public static User getUser(Player player)

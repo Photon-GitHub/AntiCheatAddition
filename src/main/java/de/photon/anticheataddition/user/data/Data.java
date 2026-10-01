@@ -2,8 +2,11 @@ package de.photon.anticheataddition.user.data;
 
 import de.photon.anticheataddition.modules.checks.autopotion.AutoPotion;
 import de.photon.anticheataddition.modules.checks.autotool.AutoTool;
+import de.photon.anticheataddition.user.data.subdata.ChallengeReplyData;
 import de.photon.anticheataddition.user.data.subdata.PacketFloodData;
 import de.photon.anticheataddition.user.data.subdata.PlayerActionData;
+import de.photon.anticheataddition.user.data.subdata.SlotSelectionData;
+import de.photon.anticheataddition.user.data.subdata.TickPacketData;
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -106,6 +109,12 @@ public final class Data
 
         public final PacketFloodData packetFloodData = new PacketFloodData();
         public final PlayerActionData playerActionData = new PlayerActionData();
+        public final TickPacketData packetAnalysisInputPackets = new TickPacketData();
+        public final TickPacketData packetAnalysisBoatPaddlePackets = new TickPacketData();
+        public final SlotSelectionData packetAnalysisSlotSelection = new SlotSelectionData();
+        public final ChallengeReplyData packetAnalysisKeepAliveReplies = new ChallengeReplyData();
+        public final ChallengeReplyData packetAnalysisPongReplies = new ChallengeReplyData();
+        public final ChallengeReplyData packetAnalysisTeleportReplies = new ChallengeReplyData();
 
         public ItemStack lastConsumedItemStack = null;
         public volatile Material lastMaterialClicked = Material.BEDROCK;

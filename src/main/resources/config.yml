@@ -341,6 +341,12 @@ PacketAnalysis:
     # Adds 30 VL.
     Animation:
       enabled: true
+    # Checks that boat paddle input is sent at most once between client tick-end markers.
+    # Requires a 1.21.5+ server and clients using the server's protocol; disabled pending vanilla/proxy validation.
+    # Adds 20 VL after three excess packets, at most once per second; ten seconds without excess resets the buffer.
+    # PacketFrequency must be enabled to constrain forged tick-end markers; missing markers do not disable counting.
+    BoatPaddlePacketsPerTick:
+      enabled: false
     # Digging checks block/face consistency for START and FINISH actions.
     # CANCEL actions reset the tracked state because clients can cancel stale targets while retargeting.
     # It does not enforce block-breaking timing or physics.
@@ -349,6 +355,22 @@ PacketAnalysis:
     # DiggingPayload checks zero position and face on drop, release-use and offhand-swap actions.
     # Adds 20 VL; does not cancel packets.
     DroppingPayload:
+      enabled: true
+    # A selected hotbar slot is sent only when the client changes selection; repeated selections cannot arise from normal slot movement.
+    # Server slot updates, joins and respawns reset the comparison; assumes clients use the server's protocol.
+    # Adds 10 VL per duplicate selection.
+    DuplicateHeldSlot:
+      enabled: true
+    # Each client reply must correspond to a challenge sent by this server, and an ID sent again by the server permits another reply.
+    # Outstanding credits survive respawns; unsolicited and repeated replies add 20 VL.
+    # Each stream permits 1024 outstanding credits (including reissues); further issuances add 20 VL without evicting pending IDs.
+    # This bound also constrains plugin-generated challenge bursts; rejected issuances grant no reply credit.
+    # Pong checks require 1.21.5+ servers.
+    DuplicateKeepAlive:
+      enabled: true
+    DuplicatePong:
+      enabled: true
+    DuplicateTeleportConfirm:
       enabled: true
     # EqualRotation scans for repeated rotation packets.
     # This catches some Scaffold, Tower, Killaura and Aimbot cheats.
@@ -389,6 +411,12 @@ PacketAnalysis:
       sustained_packets_per_second: 40
       burst_capacity: 200
       sustained_violation_duration_ms: 3000
+    # Checks that each PLAYER_INPUT packet is sent at most once between client tick-end markers.
+    # Requires a 1.21.5+ server and clients using the server's protocol; arrival time does not define a tick.
+    # Adds 20 VL after three excess packets, at most once per second; ten seconds without excess resets the buffer.
+    # PacketFrequency must be enabled to constrain forged tick-end markers; missing markers do not disable counting.
+    PlayerInputPacketsPerTick:
+      enabled: true
     # PerfectRotation checks for very precise rotations that some cheats exhibit.
     # Adds 4 to 5 VL.
     PerfectRotation:

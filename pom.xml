@@ -195,14 +195,14 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-buffer</artifactId>
-        <version>4.2.18.Final</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>4.2.19.Final</version>
         </dependency>
         <dependency>
             <groupId>com.viaversion</groupId>
             <artifactId>viaversion-api</artifactId>
-            <version>5.12.0</version>
+            <version>5.12.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -238,7 +238,7 @@
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
-            <version>7.0.14</version>
+            <version>7.0.17</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import static org.bukkit.util.NumberConversions.floor;
+
 @RequiredArgsConstructor
 @Getter
 public enum Hitbox
@@ -56,8 +58,8 @@ public enum Hitbox
     {
         public Location[] getEspLocations()
         {
-            final boolean cullX = (location.getBlockX() - (int) (location.getX() + hitbox.offsetX)) == 0 && (location.getBlockX() - (int) (location.getX() - hitbox.offsetX)) == 0;
-            final boolean cullZ = (location.getBlockZ() - (int) (location.getZ() + hitbox.offsetZ)) == 0 && (location.getBlockZ() - (int) (location.getZ() - hitbox.offsetZ)) == 0;
+            final boolean cullX = location.getBlockX() == floor(location.getX() + hitbox.offsetX) && location.getBlockX() == floor(location.getX() - hitbox.offsetX);
+            final boolean cullZ = location.getBlockZ() == floor(location.getZ() + hitbox.offsetZ) && location.getBlockZ() == floor(location.getZ() - hitbox.offsetZ);
             final World world = location.getWorld();
 
             final double x = location.getX();
@@ -115,7 +117,7 @@ public enum Hitbox
          */
         public boolean isInLiquids()
         {
-            return SetUtil.containsAny(MaterialUtil.INSTANCE.getLiquids(), getPartiallyIncludedMaterials());
+            return getPartiallyIncludedBlocks().stream().map(Block::getType).anyMatch(MaterialUtil.INSTANCE::isLiquid);
         }
 
         /**
@@ -140,11 +142,18 @@ public enum Hitbox
             final var locations = new ArrayList<Location>();
             final var world = location.getWorld();
 
+            final int minX = floor(location.getX() - hitbox.offsetX);
+            final int maxX = floor(location.getX() + hitbox.offsetX);
+            final int minY = floor(location.getY());
+            final int maxY = floor(location.getY() + hitbox.height);
+            final int minZ = floor(location.getZ() - hitbox.offsetZ);
+            final int maxZ = floor(location.getZ() + hitbox.offsetZ);
+
             // Iterate over all the blocks inside the hitbox.
             // Note: <= is used as min and max can be the same block, which should be included.
-            for (int x = (int) (location.getX() - hitbox.offsetX), maxX = (int) (location.getX() + hitbox.offsetX); x <= maxX; ++x) {
-                for (int y = (int) location.getY(), maxY = (int) (location.getY() + hitbox.height); y <= maxY; ++y) {
-                    for (int z = (int) (location.getZ() - hitbox.offsetZ), maxZ = (int) (location.getZ() + hitbox.offsetZ); z <= maxZ; ++z) {
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    for (int z = minZ; z <= maxZ; ++z) {
                         locations.add(new Location(world, x, y, z));
                     }
                 }

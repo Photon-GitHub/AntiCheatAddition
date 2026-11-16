@@ -117,8 +117,8 @@ final class LegacyInventoryUtil implements InventoryUtil
                 return switch (rawSlot) {
                     case 0 -> SlotLocation.opOf(6.5D, 1D);
                     case 1, 2, 3 -> SlotLocation.opOf(rawSlot + 0.25, 0D);
-                    case 4, 5, 6 -> SlotLocation.opOf(rawSlot + 0.25, 1D);
-                    case 7, 8, 9 -> SlotLocation.opOf(rawSlot + 0.25, 2D);
+                    case 4, 5, 6 -> SlotLocation.opOf(rawSlot - 3 + 0.25, 1D);
+                    case 7, 8, 9 -> SlotLocation.opOf(rawSlot - 6 + 0.25, 2D);
                     default -> InventoryUtil.lowerInventoryLocation(10, rawSlot);
                 };
             }

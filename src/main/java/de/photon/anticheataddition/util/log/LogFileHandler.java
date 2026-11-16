@@ -69,7 +69,7 @@ public final class LogFileHandler
 
     /**
      * Replaces the current log file with a new one, creating a new log file for the current day.
-     * This method schedules itself to run again at the start of the next day.
+     * Called by the daily task registered in startCycle.
      */
     private void replaceDebugFile()
     {
@@ -79,18 +79,24 @@ public final class LogFileHandler
         // Create new handler.
         final String path = AntiCheatAddition.getInstance().getDataFolder().getPath() + File.separatorChar + "logs" + File.separatorChar + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log";
         final File file = new File(path);
+        final FileHandler replacement;
         try {
             file.getParentFile().mkdirs();
-            this.currentHandler = new FileHandler(path, true);
-            this.currentHandler.setLevel(fileLevel);
-            this.currentHandler.setFormatter(LOG_FILE_FORMATTER);
+            replacement = new FileHandler(path, true);
+            replacement.setLevel(fileLevel);
+            replacement.setFormatter(LOG_FILE_FORMATTER);
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, "AntiCheatAddition unable to create log file handler.", e);
+            return;
         }
 
         // Replace old handler.
-        this.logger.addHandler(currentHandler);
-        if (oldHandler != null) this.logger.removeHandler(oldHandler);
+        this.logger.addHandler(replacement);
+        this.currentHandler = replacement;
+        if (oldHandler != null) {
+            this.logger.removeHandler(oldHandler);
+            oldHandler.close();
+        }
     }
 
     /**
@@ -98,6 +104,10 @@ public final class LogFileHandler
      */
     public void close()
     {
-        if (currentHandler != null) currentHandler.close();
+        if (currentHandler == null) return;
+        final var handler = currentHandler;
+        currentHandler = null;
+        this.logger.removeHandler(handler);
+        handler.close();
     }
 }

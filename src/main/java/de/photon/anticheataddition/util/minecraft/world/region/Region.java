@@ -17,11 +17,11 @@ public record Region(@NotNull World world, @NotNull AxisAlignedBB regionBox)
     public Region(final World world, final double x1, final double z1, final double x2, final double z2)
     {
         this(world, new AxisAlignedBB(Double.min(x1, x2),
-                                      Double.MIN_VALUE,
+                                      Double.NEGATIVE_INFINITY,
                                       Double.min(z1, z2),
                                       //
                                       Double.max(x1, x2),
-                                      Double.MAX_VALUE,
+                                      Double.POSITIVE_INFINITY,
                                       Double.max(z1, z2)));
     }
 

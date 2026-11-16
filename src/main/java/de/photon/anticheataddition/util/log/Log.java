@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -99,11 +100,9 @@ public final class Log
 
     public static Level minLevel(Level... levels)
     {
-        Level min = Level.ALL;
-        for (Level level : levels) {
-            if (level.intValue() < min.intValue()) min = level;
-        }
-        return min;
+        return Arrays.stream(levels)
+                     .min(Comparator.comparingInt(Level::intValue))
+                     .orElse(Level.OFF);
     }
 
     public void close()

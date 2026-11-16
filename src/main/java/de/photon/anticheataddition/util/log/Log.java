@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class Log
 {
@@ -89,20 +90,13 @@ public final class Log
         if (!Level.OFF.equals(PLAYER_LEVEL)) INSTANCE.logger.addHandler(new DebugUserLogHandler(PLAYER_LEVEL));
 
         // Set the smallest level as the main logger (smaller -> more messages) to ensure all handlers get their messages.
-        INSTANCE.logger.setLevel(minLevel(CONSOLE_LEVEL, FILE_LEVEL, PLAYER_LEVEL));
+        INSTANCE.logger.setLevel(Stream.of(CONSOLE_LEVEL, FILE_LEVEL, PLAYER_LEVEL).min(Comparator.comparingInt(Level::intValue)).orElse(Level.OFF));
 
         // Add the violation debug messages.
         AntiCheatAddition.getInstance().registerListener(new ViolationLogger());
 
         fine(() -> "Logger handlers: " + Arrays.stream(INSTANCE.logger.getHandlers()).map(handler -> handler.getClass().getName() + " with level " + handler.getLevel()).collect(Collectors.joining(", ")));
         info(() -> "Logging setup finished. Console: " + CONSOLE_LEVEL.getName() + " | File: " + FILE_LEVEL.getName() + " | Player: " + PLAYER_LEVEL.getName());
-    }
-
-    public static Level minLevel(Level... levels)
-    {
-        return Arrays.stream(levels)
-                     .min(Comparator.comparingInt(Level::intValue))
-                     .orElse(Level.OFF);
     }
 
     public void close()

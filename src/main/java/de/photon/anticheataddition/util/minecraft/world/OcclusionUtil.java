@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
@@ -25,19 +26,21 @@ public final class OcclusionUtil
 {
 
     // This cache reduces the required getBlock() calls.
-    public static final LoadingCache<Location, Boolean> BLOCK_CACHE = CacheBuilder.newBuilder()
-                                                                                  // About 32000 locations can be cached at most.
-                                                                                  .maximumSize(1L << 14)
-                                                                                  // Use this expireAfterWrite method as the other is not compatible with 1.8.8.
-                                                                                  .expireAfterWrite(TimeUtil.toMillis(Esp.ESP_INTERVAL_TICKS), TimeUnit.MILLISECONDS).build(new CacheLoader<>()
+    private static final LoadingCache<BlockKey, Boolean> BLOCK_CACHE = CacheBuilder.newBuilder()
+                                                                                   // At most 32768 blocks can be cached.
+                                                                                   .maximumSize(1L << 15)
+                                                                                   // Use this expireAfterWrite method as the other is not compatible with 1.8.8.
+                                                                                   .expireAfterWrite(TimeUtil.toMillis(Esp.ESP_INTERVAL_TICKS), TimeUnit.MILLISECONDS).build(new CacheLoader<>()
             {
                 @Override
-                public @NotNull Boolean load(@NotNull Location key)
+                public @NotNull Boolean load(@NotNull BlockKey key)
                 {
-                    final Block block = key.getBlock();
+                    final Block block = key.world().getBlockAt(key.x(), key.y(), key.z());
                     return block != null && !block.isEmpty() && MaterialUtil.INSTANCE.isReallyOccluding(block.getType());
                 }
             });
+
+    private record BlockKey(World world, int x, int y, int z) {}
 
     /**
      * Get to know where the {@link Vector} intersects with a {@link org.bukkit.block.Block}.
@@ -45,7 +48,6 @@ public final class OcclusionUtil
      *
      * @param start     the starting {@link Location}
      * @param direction the {@link Vector} which should be checked
-     *
      * @return The length when the {@link Vector} intersects or 0 if no intersection was found
      */
     public static double getDistanceToFirstIntersectionWithBlock(final Location start, final Vector direction, final int distance)
@@ -71,7 +73,7 @@ public final class OcclusionUtil
 
     public static boolean isOccludingLocation(final Location location)
     {
-        return BLOCK_CACHE.getUnchecked(location);
+        return BLOCK_CACHE.getUnchecked(new BlockKey(location.getWorld(), location.getBlockX(), location.getBlockY(), location.getBlockZ()));
     }
 
     public static boolean isRayOccluded(final Location from, final Location to)

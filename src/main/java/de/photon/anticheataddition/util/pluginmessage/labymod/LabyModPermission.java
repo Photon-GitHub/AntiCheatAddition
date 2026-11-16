@@ -44,6 +44,7 @@ enum LabyModPermission
      */
     LabyModPermission(boolean defaultEnabled)
     {
-        this.configValue = LabyModSentinel.INSTANCE.loadBoolean(".disable" + this.name().toLowerCase(Locale.ENGLISH), defaultEnabled);
+        // The config specifies disabled features; the client permission specifies whether they are allowed.
+        this.configValue = !LabyModSentinel.INSTANCE.loadBoolean(".disable." + this.name().toLowerCase(Locale.ENGLISH), !defaultEnabled);
     }
 }

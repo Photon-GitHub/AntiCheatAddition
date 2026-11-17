@@ -36,7 +36,7 @@ public final class InventoryMove extends ViolationModule implements Listener
     public static final long BASE_BREAKING_TIME = 300L;
 
 
-    // The materials below a player that allow a player to jump while having an open inventory.
+    // Materials that can cause upward movement while a player has an open inventory.
     private static final Set<Material> JUMP_ENABLING_MATERIALS = Stream.of(MaterialUtil.INSTANCE.getAutoStepMaterials(),
                                                                            MaterialUtil.INSTANCE.getBounceMaterials())
                                                                        .flatMap(Set::stream)
@@ -156,7 +156,7 @@ public final class InventoryMove extends ViolationModule implements Listener
 
         Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " is not jump-bypassed.");
 
-        // Bouncing can lead to false positives.
+        // Stepping up or bouncing can look like a jump.
         if (playerCanJumpDueToGroundMaterial(event.getFrom())) return;
 
         Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " no jump enabling materials detected.");
@@ -168,15 +168,21 @@ public final class InventoryMove extends ViolationModule implements Listener
     }
 
     /**
-     * This checks all 9 blocks centered on where the player stands as well as the 9 blocks below to reliably check for materials like slabs.
-     * Checking all those blocks is required because stepping up a slab does not mean the player's block-location is already the slab.
+     * Checks the 3x3 layers at the previous feet position and one block below for possible step-up or bounce surfaces.
+     * A player's hitbox can overlap a diagonal block before the player's center enters that block.
      */
     private static boolean playerCanJumpDueToGroundMaterial(Location location)
     {
-        return Stream.concat(WorldUtil.INSTANCE.getBlocksAround(location.getBlock(), WorldUtil.HORIZONTAL_FACES, Set.of()).stream(),
-                             WorldUtil.INSTANCE.getBlocksAround(location.getBlock().getRelative(BlockFace.DOWN), WorldUtil.HORIZONTAL_FACES, Set.of()).stream())
-                     .map(Block::getType)
-                     .anyMatch(InventoryMove.JUMP_ENABLING_MATERIALS::contains);
+        final Block feetBlock = location.getBlock();
+        final Block groundBlock = feetBlock.getRelative(BlockFace.DOWN);
+
+        if (JUMP_ENABLING_MATERIALS.contains(feetBlock.getType()) || JUMP_ENABLING_MATERIALS.contains(groundBlock.getType())) return true;
+
+        for (BlockFace face : WorldUtil.HORIZONTAL_DIAGONAL_FACES) {
+            if (JUMP_ENABLING_MATERIALS.contains(feetBlock.getRelative(face).getType()) || JUMP_ENABLING_MATERIALS.contains(groundBlock.getRelative(face).getType())) return true;
+        }
+
+        return false;
     }
 
     @Override

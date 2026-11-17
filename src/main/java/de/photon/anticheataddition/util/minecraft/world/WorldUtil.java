@@ -26,6 +26,11 @@ public sealed interface WorldUtil permits ModernWorldUtil
     Set<BlockFace> HORIZONTAL_FACES = Sets.immutableEnumSet(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST);
 
     /**
+     * The {@link BlockFace}s that are directly adjacent to a {@link Block} on the same y-level, including diagonals.
+     */
+    Set<BlockFace> HORIZONTAL_DIAGONAL_FACES = Sets.immutableEnumSet(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST, BlockFace.NORTH_EAST, BlockFace.NORTH_WEST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST);
+
+    /**
      * The {@link BlockFace}s that are directly adjacent to a {@link Block} on the same y-level as well as the {@link Block}s directly below and up.
      */
     Set<BlockFace> ALL_FACES = Sets.immutableEnumSet(BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST);
@@ -36,7 +41,6 @@ public sealed interface WorldUtil permits ModernWorldUtil
      * @param a     the first {@link Block}
      * @param b     the second {@link Block}
      * @param faces the {@link BlockFace}s which shall be checked.
-     *
      * @return true if the {@link Block}s are next to each other, or false if they are not
      */
     @Contract("null, _, _ -> fail; _, null, _ -> fail; _, _, null -> fail")
@@ -49,7 +53,6 @@ public sealed interface WorldUtil permits ModernWorldUtil
      * @param faces   the {@link Set} containing all {@link BlockFace}s which shall be included.
      * @param ignored the {@link Set} of {@link Material}s which shall be ignored.
      *                Empty blocks are automatically ignored.
-     *
      * @return the amount of {@link Block}s which were counted
      */
     @Contract("null, _, _ -> fail; _, null, _ -> fail; _, _, null -> fail")
@@ -63,7 +66,6 @@ public sealed interface WorldUtil permits ModernWorldUtil
      * @param faces   the {@link Set} containing all {@link BlockFace}s which shall be included.
      * @param ignored the {@link Set} of {@link Material}s which shall be ignored.
      *                Empty blocks are automatically ignored.
-     *
      * @return an immutable {@link List} of {@link Block}s around the {@link Block}
      */
     @Contract("null, _, _ -> fail; _, null, _ -> fail; _, _, null -> fail")
@@ -100,7 +102,6 @@ public sealed interface WorldUtil permits ModernWorldUtil
      * @param world  the {@link World} to check for the chunk
      * @param blockX the x - coordinate of a {@link Block} in that {@link World}
      * @param blockZ the z - coordinate of a {@link Block} in that {@link World}
-     *
      * @return True if the chunk is loaded, else false.
      */
     @Contract("null, _ , _ -> fail")
@@ -119,7 +120,6 @@ public sealed interface WorldUtil permits ModernWorldUtil
      * @param firstLocation  the first {@link Location}
      * @param secondLocation the second {@link Location}
      * @param distance       the distance that must be at most between the two {@link Location}s to return true.
-     *
      * @return true if the {@link Location} are in range, false if not
      */
     @Contract("null, _, _ -> fail; _, null, _ -> fail")
@@ -138,7 +138,6 @@ public sealed interface WorldUtil permits ModernWorldUtil
      * @param entity the entity from which the distance is measured
      * @param hitbox the {@link Hitbox} of the entity
      * @param offset additional distance from the hitbox in all directions
-     *
      * @return a {@link List} of {@link LivingEntity}s which are in range.
      */
     @Contract("null, _, _ -> fail; _, null, _ -> fail")
@@ -155,7 +154,6 @@ public sealed interface WorldUtil permits ModernWorldUtil
      * @param x      the maximum x-distance between the initialPlayer and the checked {@link Player} to add the checked {@link Player} to the {@link List}.
      * @param y      the maximum y-distance between the initialPlayer and the checked {@link Player} to add the checked {@link Player} to the {@link List}.
      * @param z      the maximum z-distance between the initialPlayer and the checked {@link Player} to add the checked {@link Player} to the {@link List}.
-     *
      * @return a {@link List} of {@link LivingEntity}s which are in range, excluding the given entity.
      */
     @Contract("null, _, _, _ -> fail")

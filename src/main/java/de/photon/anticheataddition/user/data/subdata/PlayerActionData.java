@@ -5,8 +5,7 @@ public final class PlayerActionData
     private boolean hasSequence;
     private int lastSequence;
     private DigTarget diggingTarget;
-    private boolean activeUse;
-    private boolean useStateKnown;
+    private TransitionResult currentState = TransitionResult.UNKNOWN;
 
     /**
      * Observes a block breaking packet sequence.
@@ -37,12 +36,11 @@ public final class PlayerActionData
         // several legitimate completions uncheckable until the next START arrives.
         if (diggingTarget == null) return TransitionResult.UNKNOWN;
         // The crosshair can move to another face of the same block while mining.
-        final boolean matches = diggingTarget.x() == x &&
-                                diggingTarget.y() == y &&
-                                diggingTarget.z() == z;
         // Vanilla retains this position after completion. If placement restores the block
         // while attack remains held, the client can finish it again without another START.
-        return matches ? TransitionResult.VALID : TransitionResult.INVALID;
+        return diggingTarget.x() == x &&
+               diggingTarget.y() == y &&
+               diggingTarget.z() == z ? TransitionResult.VALID : TransitionResult.INVALID;
     }
 
     public synchronized String describeDiggingTarget()
@@ -64,25 +62,18 @@ public final class PlayerActionData
 
     public synchronized void startUse()
     {
-        activeUse = true;
-        useStateKnown = true;
+        currentState = TransitionResult.VALID;
     }
 
     public synchronized void clearUse()
     {
-        activeUse = false;
-        useStateKnown = true;
+        currentState = TransitionResult.INVALID;
     }
 
     public synchronized TransitionResult releaseUse()
     {
-        if (activeUse) {
-            activeUse = false;
-            useStateKnown = true;
-            return TransitionResult.VALID;
-        }
-        final TransitionResult result = useStateKnown ? TransitionResult.INVALID : TransitionResult.UNKNOWN;
-        useStateKnown = true;
+        final TransitionResult result = currentState;
+        currentState = TransitionResult.INVALID;
         return result;
     }
 
@@ -91,8 +82,7 @@ public final class PlayerActionData
         hasSequence = false;
         lastSequence = 0;
         diggingTarget = null;
-        activeUse = false;
-        useStateKnown = false;
+        currentState = TransitionResult.UNKNOWN;
     }
 
     private record DigTarget(int x, int y, int z) {}
